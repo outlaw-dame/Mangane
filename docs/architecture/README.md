@@ -26,7 +26,9 @@ Target architecture must always be read alongside the verified repository eviden
 
 - [`CURRENT_STATE.md`](./CURRENT_STATE.md) — verified dependency, runtime, risk and documentation baseline;
 - [`SOURCE_INVENTORY.md`](./SOURCE_INVENTORY.md) — verified bootstrap, routing, state, service-worker, accessibility and interaction ownership;
-- [`SECURITY_RUNTIME_INVENTORY.md`](./SECURITY_RUNTIME_INVENTORY.md) — verified authentication selectors, URL handling, HTTP-client behavior, cache implications and required security contracts.
+- [`SECURITY_RUNTIME_INVENTORY.md`](./SECURITY_RUNTIME_INVENTORY.md) — verified authentication selectors, URL handling, HTTP-client behavior, push/share worker behavior, cache implications and required security contracts;
+- [`AUTH_PERSISTENCE_INVENTORY.md`](./AUTH_PERSISTENCE_INVENTORY.md) — verified OAuth flows, plaintext browser credential persistence, multi-account indexing, logout limitations, IndexedDB account snapshots and legacy migration behavior;
+- [`PHASE_0_EVIDENCE_AND_GATES.md`](./PHASE_0_EVIDENCE_AND_GATES.md) — evidence standard, workstream dashboard, required matrices and non-negotiable Phase 0 exit gates.
 
 These files describe the current inherited implementation. They do not override accepted target architecture, but later phases may not ignore their compatibility and security findings.
 
