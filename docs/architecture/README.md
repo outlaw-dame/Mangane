@@ -20,6 +20,16 @@ Every implementation agent and contributor must read these documents in order be
 6. [`ARCHITECTURAL_DECISIONS.md`](./ARCHITECTURAL_DECISIONS.md)
 7. [`IMPLEMENTATION_ROADMAP_V2.md`](./IMPLEMENTATION_ROADMAP_V2.md)
 
+## Verified current-state evidence
+
+Target architecture must always be read alongside the verified repository evidence produced by Phase 0:
+
+- [`CURRENT_STATE.md`](./CURRENT_STATE.md) — verified dependency, runtime, risk and documentation baseline;
+- [`SOURCE_INVENTORY.md`](./SOURCE_INVENTORY.md) — verified bootstrap, routing, state, service-worker, accessibility and interaction ownership;
+- [`SECURITY_RUNTIME_INVENTORY.md`](./SECURITY_RUNTIME_INVENTORY.md) — verified authentication selectors, URL handling, HTTP-client behavior, cache implications and required security contracts.
+
+These files describe the current inherited implementation. They do not override accepted target architecture, but later phases may not ignore their compatibility and security findings.
+
 ## Canonicality and drift control
 
 These documents supersede informal architecture descriptions, old implementation phases, and assumptions inherited from the current codebase whenever they conflict.
