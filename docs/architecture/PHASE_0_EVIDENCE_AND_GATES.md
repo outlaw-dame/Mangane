@@ -10,6 +10,8 @@ It complements:
 
 - [`CURRENT_STATE.md`](./CURRENT_STATE.md), which summarizes verified current behavior;
 - [`SOURCE_INVENTORY.md`](./SOURCE_INVENTORY.md), which records verified source architecture;
+- [`SECURITY_RUNTIME_INVENTORY.md`](./SECURITY_RUNTIME_INVENTORY.md), which records HTTP, URL, push and share-target security boundaries;
+- [`AUTH_PERSISTENCE_INVENTORY.md`](./AUTH_PERSISTENCE_INVENTORY.md), which records verified credential and browser-persistence behavior;
 - [`IMPLEMENTATION_ROADMAP_V2.md`](./IMPLEMENTATION_ROADMAP_V2.md), which defines the canonical sequence.
 
 ## 1. Evidence standard
@@ -53,11 +55,11 @@ Every inventory entry must record:
 | Routing | root and main UI routing inspected | Partial | machine-readable route manifest, reserved path list, redirects, capability gates, auth/public ownership | Phase 3 |
 | Redux | store, root reducer, logout whitelist, broad domain registry inspected | Partial | reducer/action/selector/persistence ownership matrix and duplication map | Phases 1, 7 |
 | React Query | global client defaults inspected | Blocked | all keys, mutations, invalidations, account/instance scope, logout and switch behavior | Phases 1, 5, 7 |
-| Authentication | startup account fetch and logout signal partially inspected | Blocked | token lifecycle, storage, refresh, revocation, multi-account selection, cross-instance isolation | Phases 1, 4, 5, 6 |
-| API/protocol clients | feature detection known at startup | Blocked | clients, interceptors, pagination, retries, cancellation, typed errors, uploads, streaming | Phases 1, 6 |
-| Persistence | localForage dependency and Redux/query/cache signals known | Blocked | all stores, schemas, keys, migrations, purge, quotas, corruption handling | Phases 4, 5, 6 |
-| Service worker/PWA | production OfflinePlugin and custom entry inspected | Partial | runtime caching, push, share target, authenticated response handling, update rollback, scope conflicts | Phase 4 |
-| Sanitization/content safety | risk identified | Blocked | all HTML sinks, sanitizer configuration, embeds, previews, custom pages, URL policy | Phases 1, 8, 9, 29 |
+| Authentication | app/user token creation, refresh path, verification, switching, revocation, reducer persistence and logout inspected | Partial-critical | complete OAuth call graph, callback paths, refresh validity, deletion coverage and cross-instance tests | Phases 1, 4, 5, 6 |
+| API/protocol clients | central Axios client and auth-base selection inspected | Partial | all call sites, interceptors, pagination, retries, cancellation, typed errors, uploads, streaming | Phases 1, 6 |
+| Persistence | localStorage auth, sessionStorage active account and IndexedDB account snapshots inspected | Partial-critical | all remaining stores/keys, migrations, purge, quotas, corruption handling and retention | Phases 4, 5, 6 |
+| Service worker/PWA | OfflinePlugin, push worker and share-target worker inspected | Partial-critical | runtime caching, subscription lifecycle, credential removal, update rollback and scope conflicts | Phase 4 |
+| Sanitization/content safety | push text conversion and share-target ingestion inspected | Blocked | all HTML sinks, sanitizer configuration, embeds, previews, custom pages and URL policy | Phases 1, 8, 9, 29 |
 | Telemetry/error reporting | Sentry dependencies verified | Blocked | initialization, consent, payload schema, redaction, breadcrumbs, user/account identifiers, opt-out | Phases 4, 29 |
 | Design/icons/styles | dependency-level overlap and theme/accessibility classes inspected | Partial | import/call-site inventory, generated theme contract, Sass/Tailwind ownership, active icon usage | Phase 2 |
 | Tests/CI | package commands verified | Blocked | workflows, jobs, matrices, fixtures, browser coverage, flake behavior, baseline pass/fail | Every phase |
@@ -80,6 +82,7 @@ The inventory must follow one identity through:
 - React Query keys and cached values;
 - localForage/IndexedDB/localStorage/sessionStorage;
 - service-worker caches;
+- native notification data;
 - media/object URLs;
 - push subscriptions;
 - streaming connections;
@@ -94,6 +97,7 @@ Required proof:
 - an account A to account B transition cannot expose A data;
 - an instance A to instance B transition cannot reuse incompatible capabilities or records;
 - logout revokes or removes all locally controlled sensitive state;
+- native notifications cannot retain usable credentials after logout;
 - shared public data is explicitly classified rather than accidentally shared;
 - stale asynchronous responses cannot repopulate a cleared account scope;
 - persistent caches have versioned keys and purge rules.
@@ -110,10 +114,10 @@ Inventory:
 - multi-account records;
 - error/log/telemetry exposure;
 - URL and referrer exposure;
-- service-worker or worker visibility;
+- service-worker and notification visibility;
 - test fixtures containing secret-like material.
 
-Any raw token in logs, telemetry, URLs, analytics, crash reports, Redux DevTools, or unencrypted export is a release blocker.
+Any raw token in logs, telemetry, URLs, analytics, crash reports, query keys, native notification data or unencrypted exports is a release blocker.
 
 ### 4.3 Remote content and URL safety
 
@@ -131,9 +135,10 @@ Inventory every path that handles:
 - proxy URLs;
 - attachment filenames and MIME types;
 - object URLs;
-- clipboard/share-target data.
+- clipboard/share-target data;
+- push-supplied display fields and notification destinations.
 
-For each sink, record sanitizer, allowed schemes, rel/referrer behavior, CSP interaction, sandboxing, and test coverage.
+For each sink, record sanitizer, allowed schemes, rel/referrer behavior, CSP interaction, sandboxing, size limits and test coverage.
 
 ## 5. State-authority matrix template
 
@@ -183,7 +188,7 @@ The final capability matrix must distinguish:
 - extension/config-dependent behavior;
 - unsupported or unverified behavior.
 
-Capability cache entries must declare scope, lifetime, refresh trigger, stale behavior, and invalidation on instance/account change.
+Capability cache entries must declare scope, lifetime, refresh trigger, stale behavior and invalidation on instance/account change.
 
 ## 8. Persistence and worker inventory template
 
@@ -198,6 +203,7 @@ Required stores include every reachable use of:
 - sessionStorage;
 - Cache Storage;
 - service-worker globals;
+- native notification data;
 - in-memory singleton caches;
 - object URLs;
 - WebSocket/streaming state;
@@ -230,7 +236,7 @@ Phase 0 must record:
 - runtime and package-manager versions;
 - caching and artifact behavior;
 - jobs required for merge;
-- lint, type, unit, integration, build, browser, accessibility, and security coverage;
+- lint, type, unit, integration, build, browser, accessibility and security coverage;
 - environment secrets and permissions;
 - fork/PR behavior;
 - flaky or quarantined tests;
@@ -241,7 +247,7 @@ A package script existing does not prove CI runs it.
 
 ## 11. Documentation reconciliation ledger
 
-Every architecture, roadmap, history, contribution, deployment, customization, and subsystem document must be classified:
+Every architecture, roadmap, history, contribution, deployment, customization and subsystem document must be classified:
 
 | Document | Classification | Still accurate | Conflicts | Requirements preserved in | Action |
 |---|---|---|---|---|---|
@@ -277,26 +283,16 @@ Phase 0 may be marked complete only when all items are checked:
 - [ ] Redux authority and duplication matrix committed.
 - [ ] React Query key/mutation/invalidation matrix committed.
 - [ ] Authentication and account-switch lifecycle committed.
-- [ ] API, retry, streaming, upload, and feature-detection inventory committed.
-- [ ] Persistence, cache, service-worker, push, and share-target inventory committed.
-- [ ] Sanitization, URL, redirect, preview, embed, and upload safety inventory committed.
+- [ ] API, retry, streaming, upload and feature-detection inventory committed.
+- [ ] Persistence, cache, service-worker, push and share-target inventory committed.
+- [ ] Sanitization, URL, redirect, preview, embed and upload safety inventory committed.
 - [ ] Sentry/telemetry consent and redaction inventory committed.
-- [ ] Icon, component, style, motion, keyboard, and accessibility inventory committed.
+- [ ] Icon, component, style, motion, keyboard and accessibility inventory committed.
 - [ ] Tests and CI workflow inventory with baseline outcomes committed.
-- [ ] Dependency health, advisory, reachability, and license inventory committed.
+- [ ] Dependency health, advisory, reachability and license inventory committed.
 - [ ] Historical documents classified and prior requirements mapped.
-- [ ] Every major subsystem has a current owner, target owner, status, and target phase.
+- [ ] Every major subsystem has a current owner, target owner, status and target phase.
 - [ ] All unknowns have either been resolved or named as explicit blockers accepted by the project owner.
 - [ ] PR description and canonical documents match the evidence.
-- [ ] No unresolved review comments remain.
-- [ ] CI is green.
 
-## 14. Tooling limitation recorded for this PR
-
-During this Phase 0 continuation:
-
-- authenticated repository file reads and pull-request reads were available;
-- repository code search returned no indexed results;
-- a direct read-only checkout failed because the execution environment could not resolve `github.com`.
-
-This limitation must not be converted into an assumption that uninspected call sites are safe or absent. The affected inventories remain blocked until a complete source-tree read is available through a working checkout, repository tree API, or restored code-search index.
+Until every item is satisfied, Phase 0 remains in progress.
