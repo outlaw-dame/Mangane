@@ -39,6 +39,21 @@ describe('architecture inventory', () => {
     ]);
   });
 
+  test('matches React Query calls with nested TypeScript generic arguments', () => {
+    write(
+      root,
+      'app/query.ts',
+      'useQuery<ReadonlyArray<Tag>>([\'trends\'], load);\nuseMutation<Result<Map<string, Tag>>>(save);\n',
+    );
+
+    const result = inventoryRepository(root);
+
+    expect(result.findings).toEqual([
+      { category: 'reactQuery.useMutation', file: 'app/query.ts', count: 1, lines: [2] },
+      { category: 'reactQuery.useQuery', file: 'app/query.ts', count: 1, lines: [1] },
+    ]);
+  });
+
   test('ignores unsupported files, dependency trees, build outputs, and symlinks', () => {
     write(root, 'app/visible.js', 'fetch("/api");\n');
     write(root, 'app/ignored.txt', 'localStorage');
