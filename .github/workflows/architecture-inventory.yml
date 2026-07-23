@@ -1,0 +1,94 @@
+name: Architecture inventory
+
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'webpack/**'
+      - 'scripts/**'
+      - '.github/workflows/architecture-inventory.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'webpack/**'
+      - 'scripts/**'
+      - '.github/workflows/architecture-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: architecture-inventory-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inventory:
+    name: Generate deterministic evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate JSON and Markdown inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture-inventory
+          node scripts/architecture-inventory.js > architecture-inventory/inventory.json
+          node scripts/architecture-inventory.js --markdown > architecture-inventory/inventory.md
+
+      - name: Verify deterministic output
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/architecture-inventory.js > architecture-inventory/inventory.second.json
+          node scripts/architecture-inventory.js --markdown > architecture-inventory/inventory.second.md
+          diff -u architecture-inventory/inventory.json architecture-inventory/inventory.second.json
+          diff -u architecture-inventory/inventory.md architecture-inventory/inventory.second.md
+          rm architecture-inventory/inventory.second.json architecture-inventory/inventory.second.md
+
+      - name: Validate report schema and paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const report = JSON.parse(fs.readFileSync('architecture-inventory/inventory.json', 'utf8'));
+          if (report.schemaVersion !== 1) throw new Error('Unsupported inventory schema version');
+          if (report.generatedAt !== null) throw new Error('Inventory must not contain a timestamp');
+          if (!Number.isInteger(report.scannedFiles) || report.scannedFiles < 1) {
+            throw new Error('Inventory did not scan any source files');
+          }
+          if (!Array.isArray(report.findings)) throw new Error('Inventory findings must be an array');
+
+          for (const finding of report.findings) {
+            if (path.isAbsolute(finding.file) || finding.file.includes('..')) {
+              throw new Error(`Unsafe inventory path: ${finding.file}`);
+            }
+            if (!Number.isInteger(finding.count) || finding.count < 1) {
+              throw new Error(`Invalid match count for ${finding.file}`);
+            }
+            if (!Array.isArray(finding.lines) || finding.lines.some((line) => !Number.isInteger(line) || line < 1)) {
+              throw new Error(`Invalid line data for ${finding.file}`);
+            }
+          }
+          NODE
+
+      - name: Add reviewable report to job summary
+        shell: bash
+        run: cat architecture-inventory/inventory.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-inventory-${{ github.sha }}
+          path: architecture-inventory/
+          if-no-files-found: error
+          retention-days: 30
