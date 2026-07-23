@@ -6,481 +6,172 @@ Last updated: 2026-07-23
 
 ## 1. Objective
 
-Mangane will provide local-first hybrid retrieval and contextual intelligence. The system combines exact lexical retrieval, semantic similarity, entities, topics, conversation structure, relationships, time, and explicit user preferences without requiring a centralized behavioral profile.
+Mangane provides local-first hybrid retrieval and contextual intelligence. Search combines exact lexical retrieval, semantic similarity, entities, topics, conversation structure, relationships, time, and explicit user preferences without requiring a centralized behavioral profile.
 
-Search and intelligence are related but distinct:
-
-- Search retrieves and ranks information in response to explicit intent.
-- Explore recommends and organizes information without an explicit query.
-- Composer intelligence evaluates draft and conversation context.
-- Semantic filtering reduces or hides concepts based on explicit user policy.
-- Gist synthesizes evidence already retrieved; it is not a source of truth.
+Search, Explore, Composer intelligence, semantic filtering, and Gist share infrastructure but remain distinct product capabilities. Gist synthesizes retrieved evidence and is never itself a source of truth.
 
 ## 2. Research synthesis
 
-### ObjectBox lessons
+### ObjectBox principles to emulate
 
-Emulate:
-
-- vectors as first-class projections of canonical local records;
-- embedded, persistent vector indexing;
-- HNSW approximate-nearest-neighbor retrieval;
-- incremental insert, update, and deletion;
+- vectors as versioned projections of canonical local records;
+- embedded and persistent HNSW indexing;
+- incremental insert, update, deletion, and graph repair;
 - metadata constraints around vector retrieval;
-- bounded caches rather than requiring all vectors in memory;
-- graph repair and lifecycle awareness;
+- bounded caches rather than loading every vector into memory;
 - transactional consistency as an architectural goal.
 
-Improve:
+Mangane improves this with strict model/dimension compatibility, browser-safe mutation journals, a dedicated lexical index, explicit rank fusion, parallel index generations, and deterministic degraded modes.
 
-- strict vector dimension/model compatibility;
-- browser-safe journaling across stores;
-- explicit lexical index and rank fusion;
-- model-versioned parallel indexes;
-- deterministic degraded modes.
-
-### Weaviate lessons
-
-Emulate:
+### Weaviate principles to emulate
 
 - independent lexical and vector candidate generation;
 - candidate union rather than intersection;
-- BM25F-style field-aware lexical scoring;
+- field-aware lexical scoring;
 - reciprocal-rank and score-based fusion;
-- configurable lexical/semantic weighting;
-- filters distinct from soft boosts;
-- candidate oversampling;
-- second-stage reranking;
-- named vectors where justified;
-- score contribution explanations.
+- hard filters distinct from soft boosts;
+- candidate oversampling, optional reranking, and score explanations.
 
-Improve:
+Mangane improves this with adaptive query planning, robust score calibration, entity/topic/conversation retrievers, local personalization, and stable incremental ranking.
 
-- adaptive query planning rather than a single alpha;
-- robust score calibration rather than candidate-sensitive min-max only;
-- additional entity, topic, conversation, and relationship retrievers;
-- local privacy-preserving personalization;
-- stable incremental ranking.
+### Meilisearch principles to emulate
 
-### Meilisearch lessons
-
-Emulate:
-
-- typo tolerance as standard behavior;
-- prefix search and search-as-you-type;
-- matched-word coverage;
-- proximity, exactness, and attribute priority;
-- split/concatenated term recovery;
-- semantic score distribution calibration;
+- typo tolerance, prefix search, and search-as-you-type;
+- matched-word coverage, proximity, exactness, and attribute priority;
+- split/concatenated-term recovery;
+- semantic-score calibration;
 - versioned embedding templates;
-- facets and filters;
-- small-model-first evaluation.
+- facets, filters, and small-model-first evaluation.
 
-Improve:
+Mangane improves this with social-token classification, deterministic lexical rules combined with BM25F-like relevance, delayed semantic work while typing, and intent-adaptive semantic weighting.
 
-- combine deterministic lexical rules with BM25F;
-- classify social identifiers before typo or split behavior;
-- avoid embedding on every keystroke;
-- adapt semantic weighting by query intent;
-- add local entity, conversation, and personalization channels.
-
-## 3. Core components
+## 3. Core pipeline
 
 ```text
-Query Understanding
-  ├── Unicode and language normalization
-  ├── token classification
-  ├── temporal parsing
-  ├── entity mention detection
-  └── query-intent classification
-
-Candidate Retrieval
-  ├── lexical inverted index
-  ├── HNSW vector index
-  ├── entity alias/index
-  ├── topic index/graph
-  ├── conversation graph
-  └── relationship and personal-memory lookup
-
-Ranking
-  ├── score calibration
-  ├── rank/score fusion
-  ├── hard eligibility validation
-  ├── soft boosts and penalties
-  ├── optional reranking
-  ├── diversity control
-  └── explanations
+Query understanding
+  -> token, language, time, entity, and intent analysis
+  -> parallel lexical/vector/entity/topic/conversation retrieval
+  -> canonical-record and access validation
+  -> score calibration and fusion
+  -> soft boosts, penalties, optional reranking, and diversity
+  -> machine-readable evidence and user-readable explanations
 ```
 
-## 4. Canonical and derived data
+Canonical social records are authoritative. Every search projection is rebuildable and carries its source revision, content hash, schema/model/template versions, dimensions, and generation time. No result may be exposed without resolving the current canonical record and rechecking visibility, deletion, block policy, and account scope.
 
-Canonical social records are authoritative. Search projections are rebuildable.
+## 4. Lexical retrieval
 
-```ts
-interface SearchProjectionManifest {
-  sourceId: string;
-  sourceRevision: string;
-  contentHash: string;
-  lexicalSchemaVersion: number;
-  embeddingModelId?: string;
-  embeddingModelRevision?: string;
-  embeddingTemplateVersion?: number;
-  vectorDimensions?: number;
-  generatedAt: number;
-}
-```
+The lexical engine combines deterministic social-search rules with corpus relevance.
 
-No search result may be exposed without resolving its canonical record and rechecking current visibility, block, deletion, and account scope.
+Token classes include ordinary words, quoted phrases, handles, hashtags, URLs/domains, DIDs and protocol identifiers, versions and error codes, dates/numbers, emoji, entity aliases, and code fragments.
 
-## 5. Lexical retrieval
+Policies:
 
-The lexical engine should combine deterministic social-search rules and corpus-based relevance.
+- ordinary language and names are typo-tolerant;
+- handles, DIDs, URLs, AT URIs, codes, and cryptographic identifiers are exact or narrowly prefix-aware;
+- original and accent-folded forms are retained;
+- stopwords remain indexed and are handled at query time;
+- trigrams are selective, not universal;
+- exact identifiers may override generic relevance scoring.
 
-### Token classes
+Post fields may include body, hashtags, author identity, entities, topics, URLs/domains, alt text, quoted text, and bounded conversation context. Deterministic match quality and field priority are combined with BM25F or equivalent corpus scoring.
 
-- normal word;
-- quoted phrase;
-- handle;
-- hashtag;
-- URL/domain;
-- DID or protocol identifier;
-- version/error code;
-- numeric/date token;
-- emoji;
-- entity alias;
-- code fragment.
+## 5. Semantic retrieval
 
-### Policy
+The initial semantic representation is a compact text-content embedding. Additional named vectors for conversation, media, or entities require evaluation evidence.
 
-- typo-tolerant: ordinary words, names, discovery terms;
-- exact or narrowly prefix-aware: handles, DIDs, URLs, AT URIs, codes and cryptographic identifiers;
-- semantic-expandable: ordinary concepts and resolved entities;
-- accent-folded alongside original forms;
-- stopwords retained in the index and handled at query time;
-- trigrams used selectively for names and discovery, never indiscriminately.
+Every vector index manifest binds model and revision, dimensions, normalization, distance metric, embedding-template version, and index algorithm/version. Incompatible vectors are rejected rather than truncated or silently accepted.
 
-### Field profiles
+HNSW is the baseline ANN algorithm. Construction quality, graph connectivity, deletion repair, query breadth, memory use, and candidate limits are device-profiled and benchmarked.
 
-Post search may index:
-
-- body;
-- hashtags;
-- author handle and display name;
-- entity labels and aliases;
-- topic labels;
-- domains and URLs;
-- alt text;
-- quoted post text;
-- limited conversation context.
-
-Exact identifiers receive override rules. BM25F or equivalent scoring operates within appropriate result groups, not as the sole lexical authority.
-
-## 6. Semantic retrieval
-
-The initial semantic representation should be a compact text-content embedding. Additional named vectors require evaluation evidence.
-
-Potential vector spaces:
-
-- content;
-- conversation;
-- media;
-- entity.
-
-Every vector index has a manifest binding:
-
-- model and revision;
-- dimensions;
-- normalization;
-- distance metric;
-- template version;
-- index algorithm/version.
-
-Mismatched vectors must be rejected, never truncated silently.
-
-### HNSW policy
-
-HNSW is the baseline ANN algorithm. Construction and query parameters are device-profiled. Candidate limits, graph connectivity, insertion quality, deletion repair, and memory use require corpus benchmarks.
-
-### Model lifecycle
+Model/index migration uses parallel generations:
 
 ```text
-index-v1 active
-index-v2 building
-index-v2 verified
-atomic activation
-index-v1 retiring
+current index active
+  -> next index building
+  -> next index verified
+  -> atomic activation
+  -> previous index retired
 ```
 
-Search remains available through the old index or lexical-only mode during migration.
+Search remains available through the current index or lexical-only mode throughout migration.
 
-## 7. Embedding templates
+## 6. Query planning and fusion
 
-Embedding input must be intentional, bounded, and versioned. A post projection may include:
+The planner selects retrievers, lexical field profiles, semantic weight, confidence thresholds, vector spaces, and candidate depth.
 
-- author display context where useful;
-- post text;
-- language;
-- resolved entities;
-- topic labels;
-- limited parent/thread summary;
-- alt text.
+- handles, URLs, codes, and quoted phrases are lexical-dominant;
+- broad conceptual queries increase semantic/entity weight;
+- personal-recall queries add conversation, time, and local interaction evidence;
+- account search uses identity fields rather than post-content ranking.
 
-It must exclude tokens, private local annotations, engagement manipulation signals, hidden account data, and unrelated storage metadata.
+User modes are **Balanced**, **Exact**, and **Conceptual**. They adjust planner policy rather than exposing raw fusion parameters.
 
-## 8. Query planning
-
-The planner selects retrievers, field weights, semantic weight, thresholds, vector space, and candidate depth.
-
-Examples:
-
-- handle/URL/code query: lexical dominant;
-- quoted phrase: lexical dominant with optional semantic support;
-- broad conceptual query: semantic and entity stronger;
-- personal recall query: semantic, conversation, time, and local interaction evidence;
-- media query: text plus media vector where available;
-- account search: handle/display-name profile, not post-content ranking.
-
-User-facing modes:
-
-- Balanced;
-- Exact;
-- Conceptual.
-
-These adjust planner policy rather than expose raw alpha values.
-
-## 9. Candidate generation and fusion
-
-Retriever candidates are unioned and deduplicated.
-
-```ts
-interface RetrievalCandidate {
-  documentId: string;
-  retriever: 'lexical' | 'semantic' | 'entity' | 'topic' | 'conversation' | 'relationship';
-  rank: number;
-  rawScore?: number;
-  calibratedScore?: number;
-  evidence: Record<string, unknown>;
-}
-```
-
-Supported fusion strategies:
+Candidates from all enabled retrievers are unioned and deduplicated. Supported fusion strategies are:
 
 1. reciprocal-rank fusion for incompatible or uncalibrated retrievers;
-2. relative-score fusion for early experimentation;
+2. relative-score fusion for early experiments;
 3. calibrated weighted fusion as the long-term target;
 4. learned fusion only after sufficient relevance data and privacy review.
 
-Fallback order:
+Fallback order is calibrated fusion, then relative-score fusion, then reciprocal-rank fusion. Calibration artifacts are retriever- and model-specific, versioned, and tested against outlier sensitivity.
 
-```text
-calibrated fusion
-  → relative score
-  → reciprocal rank
-```
+## 7. Eligibility, boosts, and penalties
 
-## 10. Score calibration
+Hard eligibility includes current access, account scope, deletion/tombstones, block policy, strict mute or semantic-hide policy, explicit date/surface scope, and a valid canonical record.
 
-Raw vector similarity and BM25-like scores are not directly comparable. Calibration is model- and retriever-specific.
+Soft contributions may include lexical and semantic relevance, entity/topic match, conversation continuity, relationship affinity, explicit interests, recency, source preference, and capped popularity.
 
-Evaluate:
+Penalties may include repetition, already-seen content where requested, near duplicates, excessive same-author concentration, low-confidence vector-only results, and stale projections.
 
-- percentile clipping;
-- sigmoid mapping;
-- quantile mapping;
-- isotonic regression;
-- query-class-specific calibration.
+Canonical relevance and personal utility are recorded separately so personalization is never represented as objective truth.
 
-Calibration artifacts are versioned and testable. Ranking must not change unpredictably merely because one outlier enters or leaves the candidate set.
+## 8. Entities, topics, Gist, and Explore
 
-## 11. Eligibility, boosts, and penalties
+Entity processing follows mention detection, candidate generation, contextual resolution, a canonical local entity, and optional Wikidata/DBpedia enrichment. External knowledge bases enrich internal records but do not define them. Cached enrichment retains provenance, retrieval time, and attribution metadata.
 
-### Hard eligibility
+Topic assignments are local, versioned derived data with confidence values. They are not permanent facts about users or authors.
 
-- current access and visibility;
-- account scope;
-- deletion/tombstone;
-- block policy;
-- strict mute or semantic-hide policy;
-- explicit date/surface scope;
-- valid canonical record.
+Gist requires sufficient and diverse evidence, citations to posts or linked sources, separation of facts/claims/interpretation, visible uncertainty, disagreement preservation, and refusal to synthesize when evidence is insufficient.
 
-### Soft contributions
+Explore may use follows, lists, bookmarks, explicit interests, retention-governed search/reading history, topic/entity affinity, trends, recency, diversity, and negative feedback. It must not become a hidden engagement-maximization feed.
 
-- lexical relevance;
-- semantic relevance;
-- entity/topic match;
-- conversation continuity;
-- relationship affinity;
-- explicit interests;
-- recency;
-- source preference;
-- popularity with logarithmic caps.
+## 9. Semantic filtering
 
-### Penalties
+Semantic filters support Hide, Reduce, and Deprioritize, plus duration, surface scope, positive/negative examples, confidence thresholds, explanations, feedback, and undo.
 
-- repetition;
-- already-seen content where requested;
-- near duplicates;
-- excessive same-author concentration;
-- low-confidence vector-only retrieval;
-- stale or incomplete projection.
+Strict hide policies fail closed at presentation. Broad semantic filtering must provide preview and recovery controls to reduce overblocking.
 
-Canonical relevance and personal utility remain separately recorded.
+## 10. Composer intelligence and interpolator
 
-## 12. Reranking
+Composer context may analyze the draft, replied-to post, accessible parent thread, selected replies, entities, links, sentiment, and conversational dynamics.
 
-Reranking is optional and operates only on a bounded fused candidate set. Initial options:
+Capabilities include entity disambiguation, missing-context detection, misunderstanding warnings, duplicate-discussion detection, audience/thread awareness, concise tone and sentiment feedback, source/context suggestions, and interpolation of omitted context from accessible evidence.
 
-- feature-based local reranker;
-- small cross-encoder if device budgets permit;
-- entity and conversation consistency model;
-- pairwise local learning-to-rank after sufficient evaluation.
+All assistance is advisory, concise, dismissible, non-shaming, uncertainty-aware, local for private drafts unless the user explicitly invokes a remote model, and incapable of posting automatically.
 
-Progressive reranking may refine lower, unseen results. Do not reorder content under the user's pointer, focus, or current reading position.
+## 11. Explainability
 
-## 13. Entity and topic intelligence
+Every intelligent result retains machine-readable evidence and can explain exact matches, related concepts, entities, relationship or topic signals, recent conversation participation, and semantic-filter effects. Explanations must never expose inaccessible content or private-profile details.
 
-Entity pipeline:
-
-```text
-mention detection
-  → candidate generation
-  → contextual resolution
-  → canonical local entity
-  → optional Wikidata/DBpedia enrichment
-```
-
-External knowledge bases enrich but do not define internal storage. Cache only needed fields with provenance, retrieval time, and license/attribution metadata.
-
-Topic assignments are local derived data with confidence and model/version provenance. They are not permanent facts about users or authors.
-
-## 14. Gist architecture
-
-Gist is a presentation of retrieved evidence.
-
-Requirements:
-
-- sufficient and diverse source material;
-- citations back to posts or linked sources;
-- separation of facts, claims, and interpretation;
-- visible uncertainty;
-- disagreement preservation;
-- no synthesis when evidence is too sparse;
-- regeneration when source set materially changes;
-- local generation where feasible, optional remote generation only behind explicit privacy policy.
-
-Suggested sections:
-
-- overview;
-- key points;
-- entities;
-- topic clusters;
-- notable conversations;
-- differing perspectives;
-- source list.
-
-## 15. Explore and recommendations
-
-Explore combines global/instance signals with local interest and diversity controls. It must not be a hidden engagement-maximization feed.
-
-Inputs may include:
-
-- followed accounts and lists;
-- bookmarks and explicit interests;
-- searches and reading history according to retention settings;
-- topic/entity affinities;
-- instance trends;
-- recency and source diversity;
-- negative feedback and reduced topics.
-
-Sensitive-trait inference is prohibited as a recommendation feature unless the user explicitly creates such a category for private personal use, and even then it must not leave the device by default.
-
-## 16. Semantic filtering
-
-Semantic filters support:
-
-- Hide;
-- Reduce;
-- Deprioritize;
-- duration;
-- surface scope;
-- positive examples;
-- negative examples;
-- confidence threshold;
-- explanation and feedback.
-
-Strict hide filters fail closed at presentation: uncertain index state must not expose content that a verified exact policy would hide. Broad semantic overblocking must be mitigated with previews, confidence controls, and undo.
-
-## 17. Composer intelligence and interpolator
-
-Composer context may analyze:
-
-- draft text;
-- replied-to post;
-- parent thread;
-- selected relevant replies;
-- entities and links;
-- sentiment and conversational dynamics.
-
-Capabilities:
-
-- entity disambiguation;
-- missing antecedent or context detection;
-- likely misunderstanding warnings;
-- duplicate discussion detection;
-- audience and thread awareness;
-- concise tone/sentiment feedback;
-- source/context suggestions;
-- interpolation of omitted context from the accessible thread.
-
-Rules:
-
-- advisory by default;
-- concise and dismissible;
-- no shaming or grading;
-- no claim of certainty without evidence;
-- private drafts remain local unless the user explicitly invokes a remote model;
-- never post automatically;
-- accessibility and keyboard parity required.
-
-## 18. Explainability
-
-Every intelligent result stores machine-readable evidence and can produce a user-readable explanation such as:
-
-- exact phrase match;
-- related concept;
-- matched entity;
-- followed author;
-- bookmarked topic;
-- recent conversation participation;
-- reduced because of a selected semantic filter.
-
-Explanations must omit private details that would reveal hidden profiles or inaccessible content.
-
-## 19. Degraded modes
+## 12. Degraded modes
 
 ```text
 Full: lexical + vector + entities + personalization + reranking
 Reduced: lexical + vector + entities
 Degraded: lexical + entities
-Minimum: remote search + local exact filters
+Lexical-only: local lexical index + exact local filters
+Minimum online fallback: remote search + local exact filters
 ```
 
-Model or vector failures must never blank Search. Index corruption triggers quarantine and rebuild while lexical or remote search remains available.
+The local lexical index is the mandatory offline floor whenever it is healthy. Failure or quarantine of vectors, embedding models, entities, topics, personalization, or reranking must not force remote search or disable local retrieval.
 
-## 20. Evaluation
+Remote search is used only when the local lexical index is unavailable, corrupt, not yet built, or insufficient for an explicitly remote-only scope, and only when network access and user policy permit it.
 
-Create representative, privacy-safe relevance suites covering:
+Failures are quarantined per component. Corruption in one derived index must not automatically quarantine healthy indexes. Search must continue in the healthiest remaining local mode while failed components rebuild.
 
-- handles, hashtags, URLs, quotes and codes;
-- typos and prefixes;
-- multilingual and accented terms;
-- conceptual queries;
-- entities with ambiguous names;
-- conversation recall;
-- recent-event searches;
-- semantic-filter false positives and negatives;
-- cross-account isolation;
-- cold/warm latency, memory, storage and battery.
+## 13. Evaluation
 
-Track recall@k, precision@k, MRR/NDCG where appropriate, exact-match preservation, query latency, index growth, rebuild time, energy use, and explanation correctness.
+Privacy-safe relevance suites must cover exact social identifiers, hashtags, URLs, quotations, codes, typos, prefixes, multilingual and accented text, conceptual queries, ambiguous entities, conversation recall, recent events, semantic-filter false positives/negatives, cross-account isolation, and every degraded-mode transition—including lexical-only offline operation.
+
+Track recall@k, precision@k, MRR/NDCG where appropriate, exact-match preservation, latency, index growth, rebuild time, memory, energy use, explanation correctness, and degraded-mode continuity.
