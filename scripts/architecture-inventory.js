@@ -5,12 +5,14 @@ const path = require('path');
 
 const DEFAULT_ROOTS = ['app', 'webpack', 'scripts'];
 const SOURCE_EXTENSIONS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs']);
+const IGNORED_DIRECTORIES = new Set(['node_modules', 'coverage', 'dist']);
+const OPTIONAL_TYPE_ARGUMENTS = String.raw`(?:<(?:(?:[^<>]+)|<[^<>]*>)*>\s*)?`;
 
 const RULES = [
-  ['reactQuery.useQuery', /\buseQuery\s*(?:<[^>]*>)?\s*\(/g],
-  ['reactQuery.useInfiniteQuery', /\buseInfiniteQuery\s*(?:<[^>]*>)?\s*\(/g],
+  ['reactQuery.useQuery', new RegExp(String.raw`\buseQuery\s*${OPTIONAL_TYPE_ARGUMENTS}\(`, 'g')],
+  ['reactQuery.useInfiniteQuery', new RegExp(String.raw`\buseInfiniteQuery\s*${OPTIONAL_TYPE_ARGUMENTS}\(`, 'g')],
   ['reactQuery.useQueries', /\buseQueries\s*\(/g],
-  ['reactQuery.useMutation', /\buseMutation\s*(?:<[^>]*>)?\s*\(/g],
+  ['reactQuery.useMutation', new RegExp(String.raw`\buseMutation\s*${OPTIONAL_TYPE_ARGUMENTS}\(`, 'g')],
   ['reactQuery.fetchQuery', /\bfetchQuery\s*\(/g],
   ['reactQuery.prefetchQuery', /\bprefetchQuery\s*\(/g],
   ['reactQuery.getQueryData', /\bgetQueryData\s*\(/g],
@@ -43,10 +45,10 @@ function normalizePath(value) {
 
 function walk(root) {
   const files = [];
-  if (!fs.existsSync(root)) return files;
+  if (!fs.existsSync(root) || IGNORED_DIRECTORIES.has(path.basename(root))) return files;
 
   for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name === 'coverage' || entry.name === 'dist') continue;
+    if (IGNORED_DIRECTORIES.has(entry.name)) continue;
     const fullPath = path.join(root, entry.name);
     if (entry.isSymbolicLink()) continue;
     if (entry.isDirectory()) files.push(...walk(fullPath));
