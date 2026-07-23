@@ -4,311 +4,163 @@ Status: **Current / Phase 0 in progress**
 
 Last updated: 2026-07-23
 
-This document records source-level findings verified directly from the current repository. It complements [`CURRENT_STATE.md`](./CURRENT_STATE.md). It does not describe the accepted target architecture unless explicitly stated.
+This inventory records source-level findings verified directly from the repository. It complements `CURRENT_STATE.md` and the specialized security, authentication, content-safety and evidence-gate documents.
 
 ## 1. Application bootstrap
 
-### Build entry
+- webpack entry: `app/application.ts`;
+- React mount: `app/soapbox/main.tsx` using React 17 `ReactDOM.render`;
+- production service-worker update flow through `@lcdp/offline-plugin/runtime`;
+- development share-target worker registration differs from production behavior.
 
-Webpack's shared configuration defines a single application entry:
+## 2. Root provider hierarchy
 
-```text
-app/application.ts
-```
-
-`app/application.ts`:
-
-1. loads polyfills;
-2. imports the web manifest;
-3. includes image assets through webpack context;
-4. loads React Datepicker CSS and the global application Sass entry;
-5. dynamically loads `app/soapbox/main` after polyfills complete.
-
-### React mount
-
-`app/soapbox/main.tsx` mounts the application through React 17's `ReactDOM.render` into the `#soapbox` element.
-
-The production runtime installs `@lcdp/offline-plugin/runtime`. When an update is ready it dispatches a Redux snackbar, waits for the user to select Update, sets a service-worker updating flag, applies the update, and reloads after activation.
-
-In development, a separate `/share_target.js` service worker is registered at root scope for debugging.
-
-### Current status
-
-| Concern | Current implementation | Phase status |
-|---|---|---|
-| Build system | webpack 5 | current, later migration decision required |
-| UI runtime | React 17 | current, compatibility constraint |
-| Root mount | `ReactDOM.render` | current, later React migration |
-| Global styles | Sass plus imported third-party CSS | current, migrating in Phase 2 |
-| Manifest | webpack-imported `manifest.json` | current, audit in Phase 4 |
-| Production SW runtime | `@lcdp/offline-plugin/runtime` | current, high-priority audit |
-
-## 2. Root provider and application initialization
-
-`app/soapbox/containers/soapbox.tsx` defines the highest-level provider hierarchy:
+The verified root hierarchy is:
 
 ```text
 Redux Provider
   -> React Query QueryClientProvider
-    -> head/theme/metadata layer
-      -> initial-data loader
-        -> router/application mount
+    -> head/theme/metadata
+      -> initial data loading
+        -> router/application
 ```
 
-The module performs synchronous preloading and onboarding-status checks at module initialization.
+Startup loads account identity, instance/capability data, application configuration and optional verification configuration. Rendering can proceed after rejected initial loading, so downstream surfaces must tolerate partial state.
 
-Initial backend loading currently dispatches, in order:
+## 3. Routing
 
-1. authenticated current-account fetch;
-2. instance loading and feature detection;
-3. Soapbox/Mangane configuration loading;
-4. optional verification configuration loading.
+The application uses React Router 5 with BrowserRouter, Switch, Redirect, scroll restoration and a large centralized route matrix.
 
-The root blocks normal rendering while account identity, locale messages, initial data, or service-worker updating state remain unresolved.
+The route surface includes timelines, conversations, hashtags, lists, bookmarks, notifications, search, moderation, profiles, composer, scheduled posts, settings, administration, migration and legacy Mastodon/Pleroma/Gab/Soapbox compatibility paths.
 
-### Risk and migration implications
+Phase 3 requires a generated or audited route manifest; a small replacement route list would be unsafe.
 
-- Initialization is coupled to Redux thunks and root rendering.
-- Backend feature detection is part of startup rather than an isolated protocol-capability service.
-- Error handling intentionally marks initial loading complete even when `loadInitial()` rejects; later surfaces must therefore tolerate partially loaded state.
-- Module-level synchronous dispatches complicate isolated testing and future app-shell composition.
-- Framework7 introduction must preserve locale loading, instance feature detection, onboarding, service-worker update blocking, and global modal/notification containers.
+## 4. Redux
 
-## 3. Router architecture
+The Redux root contains more than fifty domains spanning remote entities, session state, configuration, moderation, publishing and transient UI state.
 
-The current router uses React Router 5 with:
+On logout, most state is rebuilt while `instance`, `soapbox`, `custom_emojis` and `auth` are preserved at the root. The auth reducer separately removes the selected account and associated token records.
 
-- `BrowserRouter`;
-- `Switch`, `Route`, `Redirect`;
-- `react-router-scroll-4` for scroll restoration;
-- a root basename derived from `FE_SUBDIRECTORY`;
-- public, authentication, onboarding, waitlist, and application route branches.
+Redux logout does not prove React Query, browser persistence, service-worker caches, notifications, streams or media are purged.
 
-The top-level router handles:
+## 5. React Query
 
-- public landing;
-- login and registration;
-- verification;
-- password reset/edit;
-- invitations;
-- waitlist and onboarding;
-- transition into the main `UI` feature.
-
-The main UI router is centralized in `app/soapbox/features/ui/index.tsx`. It contains a large route and redirect matrix for:
-
-- Home and federated timelines;
-- conversations;
-- hashtags;
-- lists and bookmarks;
-- notifications and search;
-- recommendations and directory;
-- moderation lists and filters;
-- profiles, followers, following, media, favourites, pins, and posts;
-- composer and scheduled posts;
-- settings, export/import, security, administration, developer, and migration surfaces;
-- Mastodon, Pleroma FE, Gab, and Soapbox legacy URL compatibility.
-
-Routes are frequently gated by backend capability flags from `useFeatures()`.
-
-### Verified compatibility constraint
-
-The source explicitly warns that Mastodon and Pleroma reserve backend route basenames. New frontend routes must avoid collisions and provide compatibility redirects when needed.
-
-### Migration implications
-
-Phase 3 must not replace routing with a small hand-authored list. It requires:
-
-- a generated or audited route manifest;
-- compatibility redirects preserved and tested;
-- backend-reserved basename tests;
-- exact deep-link and browser-history behavior;
-- scroll restoration equivalence;
-- feature-gated route equivalence;
-- authentication/public-route parity;
-- modal-route state preservation.
-
-## 4. Redux architecture
-
-### Store
-
-`app/soapbox/store.ts` uses Redux Toolkit `configureStore` with:
-
-- the application root reducer;
-- Redux Thunk;
-- error middleware;
-- sound middleware;
-- Redux DevTools enabled unconditionally in the store configuration.
-
-### State shape
-
-The root reducer uses `redux-immutable` and an `Immutable.Record` state root. The current reducer registry contains more than fifty state domains, including:
-
-- accounts, statuses, relationships and account metadata;
-- timelines, contexts, conversations and notifications;
-- compose, pending and scheduled statuses;
-- search, trends, trending statuses and suggestions;
-- lists, filters, mutes, blocks-related state and reports;
-- instance, backend configuration, feature-oriented state and authentication;
-- onboarding, verification, administration, backups and security;
-- groups-related reducers, even though several group UI routes are commented out;
-- modals, dropdowns, sidebar, hover cards, alerts and other UI state.
-
-### Logout behavior
-
-On `AUTH_LOGGED_OUT`, the root reducer rebuilds most state while preserving this whitelist:
-
-```text
-instance
-soapbox
-custom_emojis
-auth
-```
-
-In production it also assigns `location.href = '/login'`.
-
-### Risks
-
-- The root state combines server entities, session/auth state, backend configuration, user preferences, mutations, and transient UI state.
-- Immutable.js shapes are part of many reducer and selector contracts.
-- Redux DevTools behavior requires production verification.
-- Logout clears the Redux state graph but does not itself prove React Query, service-worker cache, browser persistence, object URLs, or other module caches are cleared.
-- Preserving `auth` through logout requires inspection to determine exactly which authentication records remain and whether this is intentional multi-account behavior.
-- Group reducers and commented routes indicate possible dormant or partially retained functionality that must be classified before removal.
-
-## 5. React Query architecture
-
-The application creates one global React Query client with:
+One global QueryClient uses:
 
 - `refetchOnWindowFocus: false`;
-- `staleTime: 60 seconds`;
-- `cacheTime: Infinity`.
+- one-minute stale time;
+- infinite cache lifetime.
 
-### Risks
+A complete query-key, mutation, invalidation and account/instance-scope inventory remains blocked by unavailable directory enumeration.
 
-- Infinite cache lifetime makes account and instance scope of every query key security-relevant.
-- Redux logout does not automatically clear the QueryClient.
-- Query ownership is currently mixed with Redux ownership and must be inventoried query by query.
-- A single global client may be safe only if every key includes sufficient account/instance scope and logout/account-switch invalidation is comprehensive.
+## 6. Authentication and persistence
 
-### Required Phase 0 follow-up
+Verified authentication modules implement:
 
-Inventory all files under `app/soapbox/queries/` and classify:
+- OAuth app registration;
+- client-credentials application token;
+- password-grant user token;
+- refresh action with an unresolved state-shape mismatch;
+- MFA challenge;
+- credential verification;
+- multi-account switching;
+- token revocation and logout.
 
-- query keys;
-- account and instance scope;
-- cache invalidation;
-- mutation behavior;
-- duplication with Redux entities;
-- use of infinite cache entries;
-- logout and account-switch behavior.
+The auth reducer persists the full authentication graph in localStorage, persists selected account identity in sessionStorage, migrates legacy keys and stores account snapshots through localForage IndexedDB.
 
-## 6. Service worker and offline architecture
+## 7. API client
 
-### Production generation
+The shared Axios factory:
 
-`webpack/production.js` configures `@lcdp/offline-plugin` with automatic update checks.
+- attaches bearer credentials when present;
+- permits configured `BACKEND_URL` to override account-derived origin after a broad URL check;
+- parses JSON permissively;
+- provides Link-header pagination helpers.
 
-The production service worker:
+It does not centrally guarantee timeout, bounded response size, retry/backoff, cancellation, typed errors, rate-limit behavior, redirect policy, content-type enforcement or account/destination assertions.
 
-- uses the cache name `soapbox`;
-- has a custom entry at `app/soapbox/service_worker/entry.ts`;
-- pre-caches application assets;
-- treats locale, polyfill, chunk, font, image, and SVG assets as optional caches;
-- excludes maps, compressed files, reports, instance customization, legacy font formats, sounds, and large emoji/crypto asset groups;
-- maps navigation requests for known backend route prefixes back to the network/backend;
-- uses the frontend root as the app shell.
+## 8. Service worker and workers
 
-The custom service-worker entry currently imports:
+The production service worker uses an inherited global cache name and custom push/share handlers.
 
-- web push notification handling;
-- share-target handling.
+### Push
 
-### Backend navigation bypass list
+Verified push behavior includes:
 
-The current cache map recognizes many backend prefixes, including API, OAuth, media, proxy, socket, inbox, objects, activities, Pleroma, internal and administrative paths.
+- bearer token accepted from push payload;
+- authenticated notification fetch;
+- bearer token retained in notification data;
+- later favourite/repost actions using the retained token;
+- grouped notifications and content-warning expansion.
 
-### Confirmed concerns
+### Share target
 
-- Cache name is global and not visibly account-scoped in webpack configuration.
-- The inspected configuration primarily concerns assets and navigation; authenticated API-response behavior still requires service-worker runtime inspection.
-- Update behavior reloads the whole page after user-approved activation.
-- Service-worker push/share handlers require separate data-validation and account-scope review.
-- Development and production service-worker behavior differ.
-- The inherited cache name and app-shell policy must be migrated without trapping users on incompatible assets.
+Verified share-target behavior includes:
 
-## 7. Theme, accessibility and presentation settings
+- substring matching for `/share` POST requests;
+- unbounded form-field reads;
+- compose redirect carrying generated text in a query parameter.
 
-The root head layer currently:
+## 9. HTML and content transformation
 
-- sets document language;
-- toggles a global `dark` class;
-- writes theme color metadata;
-- injects generated theme CSS variables;
-- applies body classes for reduced motion, underlined links, dyslexic font and demetrication.
+`app/soapbox/utils/html.ts` contains shared helpers that assign strings through detached-element `innerHTML`.
 
-Current reduced-motion behavior uses a negative class convention: `no-reduce-motion` is applied when reduced motion is not requested.
+These helpers strip or alter markup but do not define a full sanitizer policy. Every rendering sink and caller remains to be inventoried.
 
-### Implications
+## 10. Theme, accessibility and interaction
 
-- Existing user accessibility preferences must be preserved during design-system migration.
-- The generated theme-variable contract is part of instance customization and cannot be discarded casually.
-- Dark mode and theme generation are coupled to Redux-backed settings/configuration.
-- Phase 2 requires mapping existing tokens and classes before adding new design tokens.
+Verified inherited behavior includes:
 
-## 8. Keyboard and interaction architecture
+- document language;
+- dark mode and generated theme variables;
+- reduced motion;
+- underlined links;
+- dyslexic font;
+- demetrication;
+- broad keyboard shortcuts;
+- legacy deep-link and history behavior.
 
-The main UI defines a broad keyboard command map for:
+These are compatibility requirements for Framework7 and design-system work.
 
-- help and new post;
-- search;
-- reply, favourite, reaction, boost and mention;
-- open and profile navigation;
-- list movement;
-- navigation to common destinations;
-- sensitive/hidden content toggles;
-- media opening.
+## 11. Test harness
 
-### Implications
+The package scripts provide Jest, coverage, ESLint, Stylelint and webpack build commands.
 
-The Framework7 shell and redesigned surfaces must preserve or deliberately migrate these keyboard affordances. A visually modern shell that loses existing keyboard navigation would be a regression.
+Jest runs in jsdom and excludes the service-worker entry from coverage. Dedicated browser, accessibility, worker-security, dependency-audit, license and migration scripts are not established by the package manifest.
 
-## 9. Initial subsystem status table
+## 12. Subsystem status
 
-| Subsystem | Current owner/location | Current status | Target handling |
-|---|---|---|---|
-| Bootstrap | `app/application.ts`, `app/soapbox/main.tsx` | current | wrap, then migrate |
-| Root providers | `containers/soapbox.tsx` | current | split into stable application boundaries |
-| Routing | root container + `features/ui/index.tsx` | current, highly centralized | compatibility manifest and Framework7 bridge |
-| Redux | `store.ts`, `reducers/index.ts` | current, broad mixed ownership | isolate in Phases 1 and 7 |
-| React Query | `queries/client.ts` | current, global infinite cache | audit keys and scope; define authority |
-| Theme | root head + generated CSS | current | map into design tokens |
-| Service worker | webpack OfflinePlugin + custom entry | current, high-risk legacy | audit/harden in Phase 4 |
-| Push/share target | service-worker modules | current | retain behind validated contracts |
-| Keyboard shortcuts | main UI | current | preserve and test |
-| Framework7 | absent | accepted target | Phase 3 |
-| Phosphor | absent | accepted target | Phase 2 |
-| Local canonical store | absent/unverified | accepted target | Phase 5 |
-| Hybrid local search | absent/unverified | accepted target | Phases 12–17 |
+| Subsystem | Status | Target handling |
+|---|---|---|
+| Bootstrap/providers | substantial inventory | split behind stable boundaries |
+| Routing | partial inventory | manifest and Framework7 bridge |
+| Redux | partial inventory | authority matrix and adapters |
+| React Query | blocked | complete key and scope inventory |
+| Authentication | substantial inventory | AccountScope and credential provider |
+| Browser persistence | partial inventory | versioned scoped stores and deterministic purge |
+| API client | shared client verified | typed transport contracts |
+| Push/share workers | handlers verified | remove notification tokens and validate inputs |
+| HTML safety | transformer boundary verified | sink and sanitizer inventory |
+| Theme/accessibility | substantial inventory | preserve through tokens and shell migration |
+| Tests/CI | partial inventory | workflow and baseline verification |
+| Framework7 | absent/currently unverified | accepted Phase 3 target |
+| Phosphor | absent/currently unverified | accepted Phase 2 target |
+| Local canonical store | absent/unverified | accepted Phase 5 target |
+| Hybrid search | absent/unverified | accepted later target |
 
-## 10. Mandatory remaining inventories
+## 13. Remaining mandatory inventories
 
-Phase 0 remains incomplete. Required next inspections include:
+1. complete repository tree and feature list;
+2. React Query modules, keys, mutations and invalidations;
+3. complete state-authority/duplication matrix;
+4. API call sites, streaming, uploads and feature detection;
+5. every browser store, cache, object URL and purge path;
+6. every HTML sink, sanitizer, redirect, preview and embed;
+7. Sentry initialization, consent and redaction;
+8. icon, style and component imports;
+9. exact CI workflows and baseline outcomes;
+10. dependency advisories, reachability and licenses;
+11. historical document and prior-requirement mapping;
+12. backend capability and route manifests.
 
-1. every React Query module and key;
-2. authentication token creation, persistence, refresh and deletion;
-3. API client creation, interceptors, retry behavior and error normalization;
-4. feature-detection implementation and cache lifetime;
-5. localForage and any other browser persistence call sites;
-6. web-push and share-target service-worker modules;
-7. HTML sanitization and every `dangerouslySetInnerHTML` path;
-8. external URL, redirect, preview and proxy handling;
-9. media upload, object URL and metadata processing;
-10. Sentry initialization, consent and redaction;
-11. icon-library and shared-component call sites;
-12. Sass/Tailwind ownership and generated theme variables;
-13. Jest setup, integration tests and CI workflows;
-14. dependency licenses, advisories and reachable legacy packages;
-15. documentation/history/roadmap reconciliation;
-16. complete route manifest and capability matrix.
-
-No later phase should treat any item above as settled until its inventory is committed.
+No later phase may treat an uncompleted inventory as settled.
