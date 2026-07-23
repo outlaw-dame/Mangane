@@ -6,6 +6,8 @@ Last updated: 2026-07-23
 
 This document records verified repository behavior and known unknowns before modernization begins. It is intentionally distinct from accepted-target architecture. A claim belongs here only when supported by the current repository or a reproducible inspection.
 
+Operational completion tracking, evidence standards, inventory templates, and exit gates live in [`PHASE_0_EVIDENCE_AND_GATES.md`](./PHASE_0_EVIDENCE_AND_GATES.md). That ledger is authoritative for whether Phase 0 is complete.
+
 ## 1. Repository baseline
 
 Verified from `README.md`, `package.json`, and the merged canonical architecture documents:
@@ -168,7 +170,9 @@ Still required during Phase 0:
 
 ## 10. Evidence limitations
 
-The authenticated connector currently exposes file reads and indexed search, but repository code search returned no results and the execution runtime could not clone GitHub because outbound DNS was unavailable. Therefore this first Phase 0 commit records only facts directly verified from accessible repository files.
+The authenticated connector currently exposes file reads and pull-request metadata, but repository code search returned no indexed results and the execution runtime could not clone GitHub because outbound DNS resolution for `github.com` was unavailable.
+
+Therefore this Phase 0 branch records only facts directly verified from accessible repository files. The limitation does not reduce the completion standard and must not be converted into assumptions that uninspected behavior is safe or absent.
 
 This is not Phase 0 completion. The following remain mandatory before exit:
 
