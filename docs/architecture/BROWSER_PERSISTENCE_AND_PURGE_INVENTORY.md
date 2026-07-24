@@ -8,7 +8,7 @@ Last updated: 2026-07-23
 
 This document establishes the canonical Phase 0 evidence model for every browser-resident copy of account, instance, content, credential, notification, upload, cache, mutation, and derived-intelligence state. Its primary goal is to make logout, account removal, instance switching, privacy reset, migration, and recovery deterministic rather than best-effort.
 
-This is an inventory and contract baseline. It does not claim that every repository persistence call site has already been enumerated.
+This is an inventory and contract baseline. It records the persistence surfaces and concrete keys verified by the current Phase 0 source review, but it does not claim that every repository persistence call site has already been enumerated.
 
 ## Initial verified persistence surfaces
 
@@ -16,14 +16,39 @@ This is an inventory and contract baseline. It does not claim that every reposit
 |---|---|---|---|---|---|
 | Redux authentication graph persisted to `localStorage` | durable authentication and multi-account state | user/account URLs and active authentication graph | access tokens, refresh tokens, application credentials, account/session metadata | auth reducer removes selected records during logout, but root logout preserves the auth domain | **Blocked** — plaintext credential persistence and purge completeness require full call-site verification |
 | `sessionStorage` selected-account identity | preserves current account selection for the tab/session | active account identity | account identifier and cross-instance selection state | no complete account-removal or stale-tab invalidation contract verified | **Partial** |
-| localForage / IndexedDB account snapshots | restores account entities through `authAccount:<accountUrl>` keys | account URL | profile/account metadata; may expose private identity context | `rememberAuthAccount` reads snapshots; complete deletion/versioning paths not yet enumerated | **Partial** |
-| localForage / IndexedDB instance snapshots | restores instance metadata through `instance:<host>` keys | instance host | capabilities, policy, limits, branding, registration state | storage restore races or runs concurrently with network refresh; schema/version invalidation not verified | **Partial** |
-| React Query singleton cache | in-memory remote-data cache with infinite cache lifetime | currently global unless each key encodes account and instance | potentially private account, relationship, notification, moderation, search, and timeline data | no verified global purge/recreation on logout or account switch | **Blocked** |
-| Redux entity and feature domains | active application state and normalized projections | mixed: deployment, instance, account, route, and transient UI | private entities and moderation state may be present | root logout rebuilds most domains but preserves `instance`, `soapbox`, `custom_emojis`, and `auth` | **Partial** |
+| localForage / IndexedDB account snapshots | restores account entities through `authAccount:<accountUrl>` keys | account URL | profile/account metadata and instance-specific extensions | `rememberAuthAccount` reads snapshots; logout does not visibly remove them | **Partial** |
+| localForage / IndexedDB instance snapshots | restores instance metadata through `instance:<host>` keys | instance host | capabilities, policy, limits, branding and registration state | storage restore races or runs concurrently with network refresh; schema/version invalidation not verified | **Partial** |
+| React Query singleton cache | in-memory remote-data cache with infinite cache lifetime | currently global unless each key encodes account and instance | potentially private account, relationship, notification, moderation, search and timeline data | no verified global purge/recreation on logout or account switch | **Blocked** |
+| Redux entity and feature domains | active application state and normalized projections | mixed: deployment, instance, account, route and transient UI | private entities and moderation state may be present | root logout rebuilds most domains but preserves `instance`, `soapbox`, `custom_emojis` and `auth` | **Partial** |
 | Service-worker application/runtime caches | offline/static resource availability and inherited production caching | deployment/origin | application assets; runtime content remains unenumerated | cache-name ownership exists, but account/private response caching and purge behavior are not fully inventoried | **Unknown** |
 | Native notification data | supports notification navigation and action handling outside page lifetime | notification, account and instance are not explicitly bound | bearer token, status/account identifiers, URLs, hidden content and images | no verified logout/account-removal closure and credential purge path | **Blocked** |
-| Browser native notifications | persisted operating-system/browser UI state | potentially multiple accounts and instances | titles, bodies, avatars, media previews, URLs, hidden content | grouping and closure are not verified as account-scoped | **Blocked** |
+| Browser native notifications | persisted operating-system/browser UI state | potentially multiple accounts and instances | titles, bodies, avatars, media previews, URLs and hidden content | grouping and closure are not verified as account-scoped | **Blocked** |
 | Share-target redirect/query state | transfers external shared text into the composer | deployment route/tab | external text and URLs | transient redirect only; size, exact routing and cleanup behavior remain unresolved | **Partial** |
+
+## Verified key and call-site registry
+
+The following entries are verified from the current source-backed Phase 0 inventories. This registry is intentionally explicit about what is known and what remains unproven.
+
+| Owner / source | API or storage engine | Verified key, store or field shape | Authority classification | Scope | Verified lifecycle and purge gap |
+|---|---|---|---|---|---|
+| `app/soapbox/reducers/auth.js` | `localStorage` | `soapbox:auth` or `soapbox@<FE_SUBDIRECTORY>:auth` | durable credential-bearing application state | deployment plus multiple accounts/instances inside one serialized graph | rewritten after auth state changes; no encryption, schema version, integrity envelope or complete privacy-purge proof |
+| `app/soapbox/reducers/auth.js` | `sessionStorage` | corresponding `...:auth:me` | selected-account marker, not credential authority | tab/session plus selected account | stale-tab invalidation and account-removal synchronization are not verified |
+| legacy auth migration in `app/soapbox/reducers/auth.js` | `localStorage` | `soapbox:auth:app` | deprecated duplicate credential copy | deployment/application credential | read during migration and intentionally left in place; current logout does not prove deletion |
+| legacy auth migration in `app/soapbox/reducers/auth.js` | `localStorage` | `soapbox:auth:user` | deprecated duplicate user credential copy | deployment/user credential | read during migration and intentionally left in place; current logout does not prove deletion |
+| `app/soapbox/storage/kv_store.ts` | localForage backed by IndexedDB | database `soapbox`, store `keyvaluepairs` | generic persisted key/value cache and snapshot store | origin-wide unless encoded in each key | no verified schema registry, retention policy, corruption repair, quota handling or deterministic store purge |
+| authentication account snapshot path | localForage / IndexedDB | `authAccount:<account URL>` | persisted account snapshot/cache | account URL, with instance implied by URL | may retain private settings or extensions; no inspected logout deletion path |
+| instance restore path | localForage / IndexedDB | `instance:<host>` | persisted instance capability/metadata snapshot | host | concurrent storage/network restoration is verified; versioning and incompatible-capability invalidation are not |
+| root React Query provider | in-memory `QueryClient` | query and mutation keys not yet fully enumerated | remote-data cache and optimistic projection | global client; individual key scope unproven | infinite cache lifetime; no verified account/instance purge or recreation during account transitions |
+| `app/soapbox/service_worker/web_push_notifications.ts` | `NotificationOptions.data` | `access_token`, notification/status identifiers and `url` among retained action data | background action state; currently an unsafe credential duplicate | notification lifetime, with account/instance binding unproven | bearer token survives outside page/Redux lifecycle; no verified close-and-invalidate path on logout/account removal |
+| `app/soapbox/service_worker/web_push_notifications.ts` | browser/OS notification store | generated notification tag/group and display fields | user-visible background projection | grouping scope not proven | grouped notifications may combine identities; account-scoped enumeration and closure are not verified |
+| `app/soapbox/service_worker/share_target.js` | URL query/history state | `/statuses/compose?text=<encoded shared values>` | transient untrusted input transfer | route/tab | no explicit total-size, field-length, exact-path, origin or URL-scheme contract; browser history retention remains to be assessed |
+| root Redux reducer | in-memory state with auth persistence side effect | domains preserved across logout: `instance`, `soapbox`, `custom_emojis`, `auth` | mixed canonical state, cache and configuration | mixed deployment, instance and account scope | retained domains are not fully classified, so logout cannot be described as deterministic purge |
+
+### Evidence limitations
+
+- The registry above is complete only for the concrete keys and fields already verified by Phase 0 source inspection.
+- Repository code search did not yield an authoritative exhaustive call-site list through the available index, so absence from this table must not be interpreted as absence from the repository.
+- Full closure still requires direct enumeration of every storage wrapper user, cache name, notification tag, query key, object URL, upload buffer, draft/outbox record and telemetry/developer-tool buffer.
 
 ## Required repository-wide inventory
 
@@ -109,4 +134,4 @@ The completion gate requires tests for:
 
 ## Completion gate
 
-This bounded artifact establishes the persistence and purge evidence model and records the currently verified high-risk surfaces. The broader Phase 0 gate remains open until every browser-resident store and copy is enumerated and deterministic purge, migration, isolation, corruption, quota, crash-recovery and cross-tab tests are documented.
+This bounded artifact establishes the persistence and purge evidence model and records the concrete credential-bearing and snapshot keys verified so far. The broader Phase 0 gate remains open until every browser-resident store and copy is enumerated and deterministic purge, migration, isolation, corruption, quota, crash-recovery and cross-tab tests are documented.
