@@ -1,9 +1,11 @@
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const { execFileSync } = require('child_process');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const test = require('node:test');
 
 const repositoryRoot = path.resolve(__dirname, '..', '..');
 const script = path.join(repositoryRoot, 'scripts', 'check-browser-persistence-authority-inventory.js');
@@ -34,46 +36,50 @@ const mutate = (root, relativePath, transform) => {
   fs.writeFileSync(target, transform(fs.readFileSync(target, 'utf8')));
 };
 
-describe('browser persistence authority inventory drift gate', () => {
-  it('verifies the bounded current persistence inventory', () => {
-    expect(JSON.parse(run())).toMatchObject({
-      checkedSurfaces: 7,
-      sensitiveSurfaces: 7,
-      explicitUnknowns: 4,
-    });
+const assertRunFails = (root, pattern) => {
+  assert.throws(() => run(root), error => {
+    const output = `${error.stderr || ''}\n${error.message || ''}`;
+    return pattern.test(output);
   });
+};
 
-  it('fails when credential persistence drifts without reconciliation', () => {
-    const root = fixture();
-    mutate(root, 'app/soapbox/reducers/auth.js', source => source.replace('localStorage.setItem(STORAGE_KEY, JSON.stringify(state.toJS()))', 'void state'));
-    expect(() => run(root)).toThrow(/auth-local-storage/);
-  });
+test('verifies the bounded current persistence inventory', () => {
+  const report = JSON.parse(run());
+  assert.equal(report.checkedSurfaces, 7);
+  assert.equal(report.sensitiveSurfaces, 7);
+  assert.equal(report.explicitUnknowns, 4);
+});
 
-  it('fails when a legacy credential copy is silently removed from the inventory', () => {
-    const root = fixture();
-    const manifestPath = 'config/browser-persistence-authority-inventory.json';
-    mutate(root, manifestPath, source => {
-      const manifest = JSON.parse(source);
-      manifest.surfaces = manifest.surfaces.filter(surface => surface.id !== 'legacy-auth-user');
-      return `${JSON.stringify(manifest, null, 2)}\n`;
-    });
-    expect(() => run(root)).toThrow(/required credential-bearing surface legacy-auth-user/);
-  });
+test('fails when credential persistence drifts without reconciliation', () => {
+  const root = fixture();
+  mutate(root, 'app/soapbox/reducers/auth.js', source => source.replace('localStorage.setItem(STORAGE_KEY, JSON.stringify(state.toJS()))', 'void state'));
+  assertRunFails(root, /auth-local-storage/);
+});
 
-  it('fails when notification action credentials drift without review', () => {
-    const root = fixture();
-    mutate(root, 'app/soapbox/service_worker/web_push_notifications.ts', source => source.replace('data.access_token).then', "'redacted').then"));
-    expect(() => run(root)).toThrow(/native-notification-data/);
+test('fails when a legacy credential copy is silently removed from the inventory', () => {
+  const root = fixture();
+  const manifestPath = 'config/browser-persistence-authority-inventory.json';
+  mutate(root, manifestPath, source => {
+    const manifest = JSON.parse(source);
+    manifest.surfaces = manifest.surfaces.filter(surface => surface.id !== 'legacy-auth-user');
+    return `${JSON.stringify(manifest, null, 2)}\n`;
   });
+  assertRunFails(root, /required credential-bearing surface legacy-auth-user/);
+});
 
-  it('rejects source paths escaping the repository root', () => {
-    const root = fixture();
-    const manifestPath = 'config/browser-persistence-authority-inventory.json';
-    mutate(root, manifestPath, source => {
-      const manifest = JSON.parse(source);
-      manifest.surfaces[0].path = '../outside.js';
-      return `${JSON.stringify(manifest, null, 2)}\n`;
-    });
-    expect(() => run(root)).toThrow(/unsafe source path/);
+test('fails when notification action credentials drift without review', () => {
+  const root = fixture();
+  mutate(root, 'app/soapbox/service_worker/web_push_notifications.ts', source => source.replace('data.access_token).then', "'redacted').then"));
+  assertRunFails(root, /native-notification-data/);
+});
+
+test('rejects source paths escaping the repository root', () => {
+  const root = fixture();
+  const manifestPath = 'config/browser-persistence-authority-inventory.json';
+  mutate(root, manifestPath, source => {
+    const manifest = JSON.parse(source);
+    manifest.surfaces[0].path = '../outside.js';
+    return `${JSON.stringify(manifest, null, 2)}\n`;
   });
+  assertRunFails(root, /unsafe source path/);
 });
