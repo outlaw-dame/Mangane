@@ -2,7 +2,7 @@
 
 Status: **Accepted foundation**
 
-Last updated: 2026-07-23
+Last updated: 2026-07-24
 
 This directory is the canonical source for Mangane's product direction, technical architecture, local intelligence system, design language, data model, privacy boundaries, architectural decisions, and implementation roadmap.
 
@@ -39,7 +39,8 @@ Target architecture must always be read alongside the verified repository eviden
 - [`BROWSER_PERSISTENCE_AND_PURGE_INVENTORY.md`](./BROWSER_PERSISTENCE_AND_PURGE_INVENTORY.md) — verified browser storage keys, credential-bearing notification state, persistence ownership, deterministic purge requirements, and remaining repository-wide enumeration gates;
 - [`ACCOUNT_TRANSITION_AND_PURGE_CONTRACT.md`](./ACCOUNT_TRANSITION_AND_PURGE_CONTRACT.md) — source-backed current login, activation, switching, refresh, logout, worker, cache and emergency-reset paths plus the accepted fail-closed transition and purge contract;
 - [`ROUTE_AND_COMPATIBILITY_MANIFEST.md`](./ROUTE_AND_COMPATIBILITY_MANIFEST.md) — source-backed root and primary route matrix, public/auth/role and capability gates, backend-compatible redirects, reserved-basename rules and Framework7 route-conformance requirements;
-- [`NAVIGATION_CALLSITE_AND_DESTINATION_INVENTORY.md`](./NAVIGATION_CALLSITE_AND_DESTINATION_INVENTORY.md) — source-backed navigation-producer classes, initially verified worker/session/shortcut call sites, destination-policy requirements and repository-wide enumeration schema;
+- [`NAVIGATION_CALLSITE_AND_DESTINATION_INVENTORY.md`](./NAVIGATION_CALLSITE_AND_DESTINATION_INVENTORY.md) — source-backed navigation-producer classes, verified worker/session/shortcut and continuation call sites, destination-policy requirements and executable repository-wide enumeration gate;
+- [`DEPLOYMENT_REWRITE_AND_RESERVED_PATH_INVENTORY.md`](./DEPLOYMENT_REWRITE_AND_RESERVED_PATH_INVENTORY.md) — source-backed build basename, asset public path, development SPA fallback, production OfflinePlugin navigation exclusions, backend reservations, rewrite precedence and external production-edge gates;
 - [`PHASE_0_EVIDENCE_AND_GATES.md`](./PHASE_0_EVIDENCE_AND_GATES.md) — evidence standard, workstream dashboard, required matrices and non-negotiable Phase 0 exit gates.
 
 These files describe the current inherited implementation. They do not override accepted target architecture, but later phases may not ignore their compatibility and security findings.
