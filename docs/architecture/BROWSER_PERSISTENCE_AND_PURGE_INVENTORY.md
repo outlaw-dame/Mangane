@@ -91,8 +91,8 @@ Later implementation must expose one account- and instance-aware purge coordinat
 
 At minimum it must:
 
-- revoke or invalidate credentials before deleting local references when network access permits;
-- never block local credential removal on remote revocation success;
+- attempt remote credential revocation or invalidation first when network access permits and bounded policy allows;
+- proceed with local credential deletion and account-private purge regardless of whether remote revocation succeeds, fails, times out, is unavailable, or cannot be attempted;
 - clear account-scoped Redux and React Query state;
 - delete account-scoped browser persistence and mutation journals;
 - close native notifications for the removed scope;
