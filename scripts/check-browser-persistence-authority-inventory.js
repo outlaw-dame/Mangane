@@ -7,10 +7,27 @@ const root = path.resolve(process.env.BROWSER_PERSISTENCE_INVENTORY_ROOT || path
 const manifestPath = path.join(root, 'config', 'browser-persistence-authority-inventory.json');
 const fail = message => { throw new Error(`browser-persistence-authority: ${message}`); };
 
+const requiredSurfaceIds = [
+  'auth-local-storage',
+  'auth-session-selection',
+  'legacy-auth-app',
+  'legacy-auth-user',
+  'indexeddb-kv-store',
+  'auth-account-snapshot',
+  'native-notification-data',
+];
+
+const requiredUnknowns = [
+  'Repository-wide localStorage and sessionStorage enumeration remains incomplete.',
+  'All localForage key prefixes and schemas are not yet enumerated.',
+  'Cache Storage, object URLs, uploads, drafts, outbox and telemetry buffers remain unverified.',
+  'Deterministic logout, account-removal and emergency-reset purge behavior is not proven.',
+];
+
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.schemaVersion !== 1) fail(`unsupported schemaVersion ${manifest.schemaVersion}`);
 if (!Array.isArray(manifest.surfaces) || manifest.surfaces.length === 0) fail('surfaces must be a non-empty array');
-if (!Array.isArray(manifest.explicitUnknowns) || manifest.explicitUnknowns.length === 0) fail('explicitUnknowns must remain non-empty');
+if (!Array.isArray(manifest.explicitUnknowns)) fail('explicitUnknowns must be an array');
 
 const seenIds = new Set();
 let sensitiveSurfaces = 0;
@@ -44,8 +61,14 @@ for (const invariant of requiredInvariants) {
   if (manifest.invariants?.[invariant] !== true) fail(`required invariant ${invariant} must remain true`);
 }
 
-for (const requiredId of ['auth-local-storage', 'legacy-auth-app', 'legacy-auth-user', 'native-notification-data']) {
-  if (!seenIds.has(requiredId)) fail(`required credential-bearing surface ${requiredId} is missing`);
+for (const requiredId of requiredSurfaceIds) {
+  if (!seenIds.has(requiredId)) fail(`required baseline surface ${requiredId} is missing`);
+}
+
+const unknowns = new Set(manifest.explicitUnknowns);
+if (unknowns.size !== manifest.explicitUnknowns.length) fail('explicitUnknowns must not contain duplicates');
+for (const requiredUnknown of requiredUnknowns) {
+  if (!unknowns.has(requiredUnknown)) fail(`required explicit unknown is missing: ${requiredUnknown}`);
 }
 
 process.stdout.write(`${JSON.stringify({
