@@ -15,10 +15,10 @@ It does not claim that Sentry is initialized, disabled, safe, consented, or prod
 | Concern | Source | Verified behavior | Status |
 |---|---|---|---|
 | Browser SDK dependencies | `package.json` | `@sentry/browser`, `@sentry/react`, and `@sentry/tracing` are direct runtime dependencies at version range `^7.2.0` | Verified-current |
-| Build configuration input | `app/soapbox/build_config.js` | The build configuration exposes `SENTRY_DSN` as a configured value | Verified-current |
+| Build configuration input | `app/soapbox/build_config.js` | `SENTRY_DSN` is read from `process.env` and exported through the application build configuration | Verified-current |
 | Webpack environment exposure | `webpack/configuration.js`, `webpack/shared.js` | The inspected webpack environment path explicitly exports `NODE_ENV`; complete propagation and embedding behavior for `SENTRY_DSN` remains unverified | Partial |
 | Root failure surface | `app/soapbox/components/error_boundary.tsx` | A root error boundary exists and provides an emergency browser reset path; whether it reports exceptions to Sentry is unverified | Partial |
-| Indexed code search | repository searches for `Sentry.init`, `@sentry/react`, and `SENTRY_DSN` | The available repository search index returned no matching source files | Inconclusive |
+| Indexed code search | repository search for `Sentry.init` | The available repository search index returned no matching source files for this initialization term | Inconclusive |
 | Runtime initialization | Complete repository tree and call-site inventory not yet established | No source-backed conclusion may yet be made about `Sentry.init`, enabled environments, integrations, sampling, release metadata, or transport behavior | Unknown |
 | Event redaction | Complete repository tree and call-site inventory not yet established | No verified `beforeSend`, `beforeBreadcrumb`, denylist, allowlist, URL sanitizer, header sanitizer, or body sanitizer has yet been established | Blocked |
 | Consent and opt-out | Complete repository tree and call-site inventory not yet established | User consent, administrator control, privacy disclosure, and runtime opt-out behavior remain unverified | Blocked |
@@ -26,7 +26,9 @@ It does not claim that Sentry is initialized, disabled, safe, consented, or prod
 
 ## Search limitations and disposition
 
-The available repository code-search index returned no matches for the inspected Sentry terms. That result is not treated as proof of absence because index coverage, generated files, dynamic imports, aliases, and unindexed paths have not been ruled out.
+The available repository code-search index returned no match for the inspected `Sentry.init` initialization term. That result is not treated as proof of absence because index coverage, generated files, dynamic imports, aliases, and unindexed paths have not been ruled out.
+
+The dependency and DSN terms are not absent: `@sentry/react` is directly declared in `package.json`, and `SENTRY_DSN` is read and exported in `app/soapbox/build_config.js`.
 
 Therefore:
 
