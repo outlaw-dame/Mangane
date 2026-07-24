@@ -72,7 +72,7 @@ This is a bounded source-backed manifest. It covers the root router in `app/soap
 | `/blocks` | blocks | wrapper default |
 | `/domain_blocks` | domain blocks | federating capability |
 | `/mutes` | mutes | wrapper default |
-| `/filters` | filters | filters capability |
+| `/filters` | filters capability |
 
 ### Profiles and statuses
 
@@ -156,6 +156,7 @@ These redirects are part of current external compatibility and deep-link behavio
 ### Gab and Soapbox legacy routes
 
 - `/home` → `/`
+- `/@:username/:statusId` → `/@:username/posts/:statusId`
 - `/canary` and `/canary.txt` → `/about/canary`
 - `/auth/external` → `/login/external`
 - `/auth/mfa` → `/settings/mfa`
