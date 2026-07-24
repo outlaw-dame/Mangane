@@ -36,6 +36,7 @@ Target architecture must always be read alongside the verified repository eviden
 - [`TEST_AND_CI_BASELINE.md`](./TEST_AND_CI_BASELINE.md) — verified package test commands, Jest coverage boundaries, observed CI gaps, and the required workflow/job matrix;
 - [`BACKEND_CAPABILITY_MATRIX.md`](./BACKEND_CAPABILITY_MATRIX.md) — canonical evidence structure for Akkoma, Pleroma, Mastodon-compatible, and Mangane-specific backend capabilities and fallbacks;
 - [`STATE_AUTHORITY_AND_DUPLICATION_MATRIX.md`](./STATE_AUTHORITY_AND_DUPLICATION_MATRIX.md) — canonical ownership, duplication, persistence, purge, and synchronization matrix for application state;
+- [`BROWSER_PERSISTENCE_AND_PURGE_INVENTORY.md`](./BROWSER_PERSISTENCE_AND_PURGE_INVENTORY.md) — verified browser storage keys, credential-bearing notification state, persistence ownership, deterministic purge requirements, and remaining repository-wide enumeration gates;
 - [`PHASE_0_EVIDENCE_AND_GATES.md`](./PHASE_0_EVIDENCE_AND_GATES.md) — evidence standard, workstream dashboard, required matrices and non-negotiable Phase 0 exit gates.
 
 These files describe the current inherited implementation. They do not override accepted target architecture, but later phases may not ignore their compatibility and security findings.
