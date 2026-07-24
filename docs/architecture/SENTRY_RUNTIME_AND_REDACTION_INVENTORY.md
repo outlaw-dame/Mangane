@@ -6,9 +6,9 @@ Last updated: 2026-07-23
 
 ## Purpose
 
-This document begins the source-backed Phase 0 reconciliation of Sentry and crash-reporting behavior. It distinguishes dependency and build-configuration presence from verified runtime activation, consent, capture, redaction, retention, and opt-out behavior.
+This document records the source-backed Phase 0 reconciliation of Sentry and crash-reporting behavior. It distinguishes dependency and build-configuration presence from verified runtime activation, consent, capture, redaction, retention, and opt-out behavior.
 
-It does not claim that Sentry is initialized, disabled, safe, consented, or production-ready where source evidence has not yet been established.
+It does not claim that Sentry is initialized, disabled, safe, consented, or production-ready where source evidence has not been established.
 
 ## Verified current evidence
 
@@ -18,16 +18,29 @@ It does not claim that Sentry is initialized, disabled, safe, consented, or prod
 | Build configuration input | `app/soapbox/build_config.js` | The build configuration exposes `SENTRY_DSN` as a configured value | Verified-current |
 | Webpack environment exposure | `webpack/configuration.js`, `webpack/shared.js` | The inspected webpack environment path explicitly exports `NODE_ENV`; complete propagation and embedding behavior for `SENTRY_DSN` remains unverified | Partial |
 | Root failure surface | `app/soapbox/components/error_boundary.tsx` | A root error boundary exists and provides an emergency browser reset path; whether it reports exceptions to Sentry is unverified | Partial |
-| Runtime initialization | Complete repository call-site inventory not yet established | No source-backed conclusion may yet be made about `Sentry.init`, enabled environments, integrations, sampling, release metadata, or transport behavior | Unknown |
-| Event redaction | Complete repository call-site inventory not yet established | No verified `beforeSend`, `beforeBreadcrumb`, denylist, allowlist, URL sanitizer, header sanitizer, or body sanitizer has yet been established | Blocked |
-| Consent and opt-out | Complete repository call-site inventory not yet established | User consent, administrator control, privacy disclosure, and runtime opt-out behavior remain unverified | Blocked |
-| Capture call sites | Complete repository call-site inventory not yet established | `captureException`, `captureMessage`, scoped context, tags, breadcrumbs, attachments, and manual event construction remain unverified | Unknown |
+| Indexed code search | repository searches for `Sentry.init`, `@sentry/react`, and `SENTRY_DSN` | The available repository search index returned no matching source files | Inconclusive |
+| Runtime initialization | Complete repository tree and call-site inventory not yet established | No source-backed conclusion may yet be made about `Sentry.init`, enabled environments, integrations, sampling, release metadata, or transport behavior | Unknown |
+| Event redaction | Complete repository tree and call-site inventory not yet established | No verified `beforeSend`, `beforeBreadcrumb`, denylist, allowlist, URL sanitizer, header sanitizer, or body sanitizer has yet been established | Blocked |
+| Consent and opt-out | Complete repository tree and call-site inventory not yet established | User consent, administrator control, privacy disclosure, and runtime opt-out behavior remain unverified | Blocked |
+| Capture call sites | Complete repository tree and call-site inventory not yet established | `captureException`, `captureMessage`, scoped context, tags, breadcrumbs, attachments, and manual event construction remain unverified | Unknown |
+
+## Search limitations and disposition
+
+The available repository code-search index returned no matches for the inspected Sentry terms. That result is not treated as proof of absence because index coverage, generated files, dynamic imports, aliases, and unindexed paths have not been ruled out.
+
+Therefore:
+
+- dependency and build-configuration presence are verified;
+- runtime activation remains unknown;
+- telemetry safety remains blocked;
+- Phase 1 work must not assume Sentry is active or safe;
+- production telemetry must remain disabled unless a later implementation explicitly establishes the required policy, redaction, consent, tests, and operational controls.
 
 ## Security conclusions
 
 The presence of Sentry dependencies and a DSN configuration signal is not proof that telemetry is active. It is also not proof that telemetry is safe.
 
-Until runtime initialization and every capture boundary are enumerated, the following must remain release blockers:
+Until runtime initialization and every capture boundary are enumerated, the following remain release blockers:
 
 - authorization, cookie, password, MFA, OAuth-code, client-secret, access-token, refresh-token, and session values reaching events or breadcrumbs;
 - Axios configuration, headers, request bodies, response bodies, redirect URLs, or server error payloads being serialized without explicit redaction;
@@ -38,7 +51,7 @@ Until runtime initialization and every capture boundary are enumerated, the foll
 
 ## Required runtime inventory
 
-The next source inspection must enumerate:
+The next complete source inspection must enumerate:
 
 1. all imports from `@sentry/browser`, `@sentry/react`, and `@sentry/tracing`;
 2. all initialization sites and environment gates;
@@ -81,6 +94,8 @@ Tests must cover mixed-case keys, aliases, cycles, arrays, deep nesting, custom 
 
 ## Completion gate
 
-This inventory remains incomplete until runtime initialization, all capture paths, event schemas, environment behavior, consent, opt-out, source-map handling, retention, redaction, failure behavior, and adversarial tests are directly verified.
+This inventory records the verified baseline and the unresolved release blockers. It does not close the broader Phase 0 telemetry gate.
+
+The gate remains open until runtime initialization, all capture paths, event schemas, environment behavior, consent, opt-out, source-map handling, retention, redaction, failure behavior, and adversarial tests are directly verified, or telemetry is explicitly removed and its build/runtime inputs are proven absent.
 
 Dependency presence or an unused DSN must not be treated as evidence that telemetry is active. Absence of a discovered call site in a partial search must not be treated as proof that telemetry is absent.
