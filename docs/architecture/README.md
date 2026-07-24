@@ -33,6 +33,7 @@ Target architecture must always be read alongside the verified repository eviden
 - [`OBSERVABILITY_AND_CI_INVENTORY.md`](./OBSERVABILITY_AND_CI_INVENTORY.md) — verified Sentry configuration signals, root error-boundary behavior, emergency browser reset, build-time customization boundaries and current CI uncertainty;
 - [`TELEMETRY_SECRET_EXPOSURE_MATRIX.md`](./TELEMETRY_SECRET_EXPOSURE_MATRIX.md) — canonical Phase 0 matrix for credentials, private account data, telemetry, developer tooling, notifications, URLs, workers, tests, builds, and required fail-closed redaction evidence;
 - [`SENTRY_RUNTIME_AND_REDACTION_INVENTORY.md`](./SENTRY_RUNTIME_AND_REDACTION_INVENTORY.md) — source-backed Sentry dependency and configuration baseline, explicit runtime unknowns, redaction requirements, and adversarial leak-test gates;
+- [`TEST_AND_CI_BASELINE.md`](./TEST_AND_CI_BASELINE.md) — verified package test commands, Jest coverage boundaries, observed CI gaps, and the required workflow/job matrix;
 - [`PHASE_0_EVIDENCE_AND_GATES.md`](./PHASE_0_EVIDENCE_AND_GATES.md) — evidence standard, workstream dashboard, required matrices and non-negotiable Phase 0 exit gates.
 
 These files describe the current inherited implementation. They do not override accepted target architecture, but later phases may not ignore their compatibility and security findings.
