@@ -156,6 +156,7 @@ These redirects are part of current external compatibility and deep-link behavio
 ### Gab and Soapbox legacy routes
 
 - `/home` → `/`
+- `/@:username/:statusId` → `/@:username/posts/:statusId`
 - `/canary` and `/canary.txt` → `/about/canary`
 - `/auth/external` → `/login/external`
 - `/auth/mfa` → `/settings/mfa`
