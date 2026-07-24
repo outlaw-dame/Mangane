@@ -8,7 +8,7 @@ Last updated: 2026-07-23
 
 This document records the verified top-level and primary application routing surface that must be preserved while Mangane introduces a Framework7 application shell. It distinguishes canonical frontend routes, public and authentication layouts, capability-gated routes, compatibility redirects, backend-owned basename conflicts and unresolved route ownership.
 
-This is a bounded source-backed manifest. It covers the root router in `app/soapbox/containers/soapbox.tsx` and the primary application switch in `app/soapbox/features/ui/index.tsx`. It does not claim that every nested feature router, imperative navigation call, link generator, server rewrite, deployment proxy or historical route has been enumerated.
+This is a bounded source-backed manifest. It covers the root router in `app/soapbox/containers/soapbox.tsx`, the primary application switch in `app/soapbox/features/ui/index.tsx`, and the shared wrapper in `app/soapbox/features/ui/util/react_router_helpers.tsx`. It does not claim that every nested feature router, imperative navigation call, link generator, server rewrite, deployment proxy or historical route has been enumerated.
 
 ## Router ownership and bootstrap
 
@@ -17,6 +17,7 @@ This is a bounded source-backed manifest. It covers the root router in `app/soap
 | Root router | `BrowserRouter` is mounted with `basename={BuildConfig.FE_SUBDIRECTORY}` | Framework7 routing must preserve subdirectory deployments and cannot assume root hosting |
 | Root route ordering | Root redirects and public/auth layouts run before the catch-all UI route | Route order is behavior; moving catch-all routes earlier can shadow authentication and public pages |
 | Main application switch | `SwitchingColumnsArea` owns the primary authenticated/public application route matrix through `WrappedRoute`, `Redirect` and a final not-found route | Shell migration must preserve first-match semantics and wrapper authorization behavior |
+| Shared route wrapper | `WrappedRoute` performs account/role authorization, login redirection, lazy loading and standard loading/error/forbidden projections | Framework7 routes need one equivalent policy boundary rather than duplicated guards |
 | Scroll restoration | `react-router-scroll-4` owns scroll decisions and suppresses restoration changes for modal-key transitions | Framework7 navigation must reproduce or deliberately migrate scroll and modal continuity |
 | Startup gate | Initial account, instance and configuration loading completes or fails before the route body is shown | Route-level degraded behavior depends on startup state and must not be mistaken for route absence |
 | Onboarding and waitlist | Onboarding can replace the normal router body; a waitlisted account can replace all ordinary routes | These are application state gates, not ordinary pages, and require explicit migration tests |
@@ -173,17 +174,31 @@ The primary route source explicitly warns that Mastodon and Pleroma route some b
 
 The complete reserved-basename list is not yet source-backed. Its absence is a blocker for adding or renaming top-level routes during Phase 3.
 
-## Authorization and capability behavior
+## Verified `WrappedRoute` authorization contract
 
-`WrappedRoute` parameters observed in the primary matrix include:
+The shared wrapper accepts `publicRoute`, `staffOnly`, `adminOnly` and `developerOnly`, with all flags defaulting to false.
 
-- `publicRoute`;
-- `adminOnly`;
-- `staffOnly`;
-- `developerOnly`;
-- feature-conditional rendering outside the wrapper.
+Authorization is the conjunction of:
 
-A route manifest is incomplete until `WrappedRoute` itself is inspected and its redirect, loading, unauthorized, account-state and role semantics are recorded. Route presence alone does not establish reachability or authorization safety.
+- an authenticated account or `publicRoute`;
+- developer mode in settings for `developerOnly`;
+- `account.staff` for `staffOnly`;
+- `account.admin` for `adminOnly`.
+
+When authorization fails:
+
+- an anonymous user has the current pathname and query string URL-encoded and persisted under `localStorage['soapbox:redirect_uri']`, then receives a redirect to `/login`;
+- an authenticated user who fails a role or developer check receives the standard forbidden column instead of a redirect.
+
+When authorization succeeds, `WrappedRoute` lazy-loads the route bundle. Page-backed routes render through the specified page component; routes without a page render through `ColumnsArea`. Loading, forbidden and bundle-error states use standard layout projections.
+
+Security and migration consequences:
+
+- the redirect key is another browser persistence and URL-bearing surface requiring validation, expiry and purge classification;
+- authorization is presentation gating, not proof of backend authorization;
+- the `/developers` index is not itself marked `developerOnly`, while its child tool routes are;
+- the replacement shell must preserve anonymous return-to behavior without permitting open redirects or stale cross-account destinations;
+- role failures must not leak private content while rendering loading or error states.
 
 Capability conditions currently include federating, bubble timeline, conversations, lists, bookmarks, suggestions, profile directory, filters, scheduled statuses, export/import, account aliases, account moving and backups. Configuration conditions include registrations, Pepe verification, LDAP, single-user mode, authenticated profile mode and configured crypto addresses.
 
@@ -210,7 +225,8 @@ A later URL and navigation policy must validate worker-provided and notification
 7. Preserve single-user, waitlist and onboarding route interception.
 8. Preserve subdirectory hosting and avoid backend-owned basenames.
 9. Prevent worker or notification messages from navigating to unvalidated external or privileged destinations.
-10. Keep the legacy router available behind a rollback seam until route-conformance tests pass.
+10. Preserve safe return-to-login behavior while expiring or rejecting stale, external and cross-account redirect destinations.
+11. Keep the legacy router available behind a rollback seam until route-conformance tests pass.
 
 ## Required tests
 
@@ -223,6 +239,7 @@ The Phase 3 gate requires at minimum:
 - all compatibility redirects, including parameter and query-string preservation;
 - `FE_SUBDIRECTORY` deployments;
 - direct navigation, browser refresh, back/forward and PWA relaunch;
+- anonymous return-to-login behavior, malformed persisted destinations and cross-account stale redirects;
 - worker and notification navigation with malformed, external, privileged and oversized destinations;
 - backend basename conflicts and reverse-proxy behavior;
 - not-found behavior without leaking protected route existence;
@@ -232,11 +249,11 @@ The Phase 3 gate requires at minimum:
 
 This bounded manifest remains incomplete until Phase 0 additionally enumerates:
 
-- the exact `WrappedRoute` contract;
 - all nested or feature-local routers;
 - all `history.push`, `history.replace`, `Redirect`, `Link`, `NavLink` and route-generation helpers;
 - complete reserved backend paths and deployment rewrite rules;
 - server-rendered, API, OAuth callback, share-target and notification destination ownership;
+- lifecycle, validation and deletion of `soapbox:redirect_uri`;
 - route analytics, telemetry and referrer behavior;
 - accessibility focus ownership for every route transition;
 - test coverage and actual baseline outcomes.
