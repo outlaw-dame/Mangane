@@ -72,7 +72,7 @@ This is a bounded source-backed manifest. It covers the root router in `app/soap
 | `/blocks` | blocks | wrapper default |
 | `/domain_blocks` | domain blocks | federating capability |
 | `/mutes` | mutes | wrapper default |
-| `/filters` | filters capability |
+| `/filters` | filters | filters capability |
 
 ### Profiles and statuses
 
