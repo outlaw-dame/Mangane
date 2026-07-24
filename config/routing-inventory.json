@@ -20,7 +20,7 @@
       "owner": "authorization-route-wrapper",
       "requiredFragments": [
         "soapbox:redirect_uri",
-        "encodeURIComponent(`${location.pathname}${location.search}`)",
+        "encodeURIComponent(`${history.location.pathname}${history.location.search}`)",
         "<Redirect to='/login' />"
       ]
     },
