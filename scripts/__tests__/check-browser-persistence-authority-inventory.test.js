@@ -36,6 +36,12 @@ const mutate = (root, relativePath, transform) => {
   fs.writeFileSync(target, transform(fs.readFileSync(target, 'utf8')));
 };
 
+const mutateManifest = (root, transform) => mutate(
+  root,
+  'config/browser-persistence-authority-inventory.json',
+  source => `${JSON.stringify(transform(JSON.parse(source)), null, 2)}\n`,
+);
+
 const assertRunFails = (root, pattern) => {
   assert.throws(() => run(root), error => {
     const output = `${error.stderr || ''}\n${error.message || ''}`;
@@ -56,15 +62,31 @@ test('fails when credential persistence drifts without reconciliation', () => {
   assertRunFails(root, /auth-local-storage/);
 });
 
+test('fails when any baseline persistence surface is silently removed', () => {
+  const root = fixture();
+  mutateManifest(root, manifest => {
+    manifest.surfaces = manifest.surfaces.filter(surface => surface.id !== 'auth-account-snapshot');
+    return manifest;
+  });
+  assertRunFails(root, /required baseline surface auth-account-snapshot/);
+});
+
 test('fails when a legacy credential copy is silently removed from the inventory', () => {
   const root = fixture();
-  const manifestPath = 'config/browser-persistence-authority-inventory.json';
-  mutate(root, manifestPath, source => {
-    const manifest = JSON.parse(source);
+  mutateManifest(root, manifest => {
     manifest.surfaces = manifest.surfaces.filter(surface => surface.id !== 'legacy-auth-user');
-    return `${JSON.stringify(manifest, null, 2)}\n`;
+    return manifest;
   });
-  assertRunFails(root, /required credential-bearing surface legacy-auth-user/);
+  assertRunFails(root, /required baseline surface legacy-auth-user/);
+});
+
+test('fails when a Phase 0 unknown is silently removed', () => {
+  const root = fixture();
+  mutateManifest(root, manifest => {
+    manifest.explicitUnknowns = manifest.explicitUnknowns.slice(0, 1);
+    return manifest;
+  });
+  assertRunFails(root, /required explicit unknown is missing/);
 });
 
 test('fails when notification action credentials drift without review', () => {
@@ -75,11 +97,9 @@ test('fails when notification action credentials drift without review', () => {
 
 test('rejects source paths escaping the repository root', () => {
   const root = fixture();
-  const manifestPath = 'config/browser-persistence-authority-inventory.json';
-  mutate(root, manifestPath, source => {
-    const manifest = JSON.parse(source);
+  mutateManifest(root, manifest => {
     manifest.surfaces[0].path = '../outside.js';
-    return `${JSON.stringify(manifest, null, 2)}\n`;
+    return manifest;
   });
   assertRunFails(root, /unsafe source path/);
 });
