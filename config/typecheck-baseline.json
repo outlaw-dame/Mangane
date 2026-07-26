@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "clean",
+  "owner": "frontend-maintainers",
+  "trackingIssue": "Phase 1 TypeScript authority migration completed",
+  "expiresOn": "2026-10-31",
+  "rationale": "Phase 1 eliminated the inherited diagnostics. The production TypeScript graph must remain at zero diagnostics.",
+  "compilerExitCode": 0,
+  "diagnosticCount": 0,
+  "countsByCode": {},
+  "diagnostics": []
+}

@@ -2,38 +2,40 @@
   "schemaVersion": 1,
   "status": "current-phase-0a-evidence",
   "sourceDigests": {
-    "packageJsonSha256": "75240a56b036e0b533ddf179d1d764aea4506af19b1f9fddf55bf40aa0cd760c",
-    "twemojiDownloaderSha256": "97939496d78e1037a3755847962b1b249936d960abcbb5aa35d6676134212ab7",
-    "yarnLockSha256": "28638463005a75aa97b35851032e491bd78a7d2b2533a65a3f0da246cc78ba3d"
+    "packageJsonSha256": "dceab51a2d1c2e5c2bc66406c9f276d9518d3376159e3dc8fa2b74eeee2607fb",
+    "twemojiDownloaderSha256": "89f1d9fec29b1d53c8862466efbfc270fc5324bfc476095ced7ae3ee5b26c303",
+    "yarnLockSha256": "1b73722b7bd8068c6be269fb3edbe5b2955920416492b05b559864e1895c7239"
   },
   "repositorySupplyChain": {
     "postinstall": {
-      "command": "node scripts/download-twemoji-assets.js",
+      "command": "yarn prepare:twemoji",
       "downloadsDuringInstall": true,
-      "integrityVerification": false,
-      "networkTimeout": false,
+      "integrityVerification": true,
+      "maxResponseBytes": true,
+      "networkTimeout": true,
       "path": "scripts/download-twemoji-assets.js",
-      "retryPolicy": false,
-      "shellPipelineToArchiveExtractor": true,
-      "status": "remediation-required"
+      "redirectAllowlist": true,
+      "retryPolicy": true,
+      "shellPipelineToArchiveExtractor": false,
+      "status": "hardened"
     }
   },
   "summary": {
-    "actionUses": 26,
+    "actionUses": 44,
     "advisories": {
       "critical": 4,
-      "high": 50,
+      "high": 49,
       "moderate": 107,
       "low": 8
     },
     "directPackages": 206,
-    "duplicatePackageNames": 232,
+    "duplicatePackageNames": 229,
     "installScriptPackages": 4,
     "nativeBindingPackages": 5,
     "networkInstallIndicatorPackages": 0,
     "packageScriptNetworkIndicatorPackages": 45,
-    "codeGenerationIndicatorPackages": 662,
-    "resolvedPackages": 2015,
+    "codeGenerationIndicatorPackages": 659,
+    "resolvedPackages": 1993,
     "unpinnedActionUses": 24
   },
   "packages": [
@@ -6951,16 +6953,13 @@
       "version": "19.8.1"
     },
     {
-      "classification": "build-transitive",
+      "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
-        "@discoveryjs/json-ext@npm:0.5.7",
         "@discoveryjs/json-ext@npm:^0.5.0"
       ],
       "direct": false,
-      "executionContexts": [
-        "build"
-      ],
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -6977,10 +6976,9 @@
         "author": "Roman Dvornov <rdvornov@gmail.com> (https://github.com/lahmatiy)",
         "repository": "discoveryjs/json-ext"
       },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer, webpack-cli.",
+      "purpose": "Transitive dependency required by: webpack-cli.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "webpack-bundle-analyzer",
         "webpack-cli"
       ],
       "installBehavior": {
@@ -9919,10 +9917,6 @@
           "context": "browser"
         },
         {
-          "path": "scripts/check-service-worker-cache-authority-inventory.js",
-          "context": "build"
-        },
-        {
           "path": "webpack/production.js",
           "context": "build"
         }
@@ -11460,6 +11454,57 @@
       "version": "6.41.0"
     },
     {
+      "classification": "runtime",
+      "declaredSection": "dependencies",
+      "descriptors": [
+        "@phosphor-icons/react@npm:2.1.10"
+      ],
+      "direct": true,
+      "executionContexts": [
+        "browser"
+      ],
+      "license": {
+        "evidence": "Installed package.json metadata.",
+        "expression": "MIT",
+        "obligations": [
+          "retain-applicable-copyright-license-and-notice-text"
+        ],
+        "status": "declared"
+      },
+      "locator": "@phosphor-icons/react@npm:2.1.10",
+      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
+      "name": "@phosphor-icons/react",
+      "owner": "frontend-runtime-maintainers",
+      "upstream": {
+        "author": "Tobias Fried",
+        "repository": "phosphor-icons/react"
+      },
+      "purpose": "A clean and friendly icon family for React",
+      "replacementRelevance": "none-recorded",
+      "rootDependencies": [
+        "@phosphor-icons/react"
+      ],
+      "installBehavior": {
+        "hasInstallScript": false,
+        "hasInstallTimeNetworkIndicator": false,
+        "hasPackageScriptNetworkIndicator": false,
+        "hasCodeGenerationIndicator": true,
+        "hasNativeBinding": false,
+        "platformConstraints": {
+          "cpu": [],
+          "os": []
+        },
+        "scripts": {}
+      },
+      "usageEvidence": [
+        {
+          "path": "app/soapbox/components/ui/icon/semantic-icon-registry.ts",
+          "context": "browser"
+        }
+      ],
+      "version": "2.1.10"
+    },
+    {
       "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -11502,52 +11547,6 @@
       },
       "usageEvidence": [],
       "version": "0.1.2"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@polka/url@npm:^1.0.0-next.24"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@polka/url@npm:1.0.0-next.29",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@polka/url",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Luke Edwards",
-        "repository": "lukeed/polka"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "1.0.0-next.29"
     },
     {
       "classification": "unused-or-dynamically-referenced-unverified",
@@ -12316,504 +12315,6 @@
       "version": "1.1.0"
     },
     {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry-internal/feedback@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry-internal/feedback@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry-internal/feedback",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry-internal/replay-canvas@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry-internal/replay-canvas@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry-internal/replay-canvas",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git+https://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry-internal/tracing@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry-internal/tracing@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry-internal/tracing",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, @sentry/tracing.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
-        "@sentry/tracing"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unused-or-dynamically-referenced-unverified",
-      "declaredSection": "dependencies",
-      "descriptors": [
-        "@sentry/browser@npm:7.120.4",
-        "@sentry/browser@npm:^7.2.0"
-      ],
-      "direct": true,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/browser@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/browser",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Official Sentry SDK for browsers",
-      "replacementRelevance": "review-required",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry/core@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/core@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/core",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, @sentry/tracing.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
-        "@sentry/tracing"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry/integrations@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/integrations@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/integrations",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unused-or-dynamically-referenced-unverified",
-      "declaredSection": "dependencies",
-      "descriptors": [
-        "@sentry/react@npm:^7.2.0"
-      ],
-      "direct": true,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/react@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/react",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Official Sentry SDK for React.js",
-      "replacementRelevance": "review-required",
-      "rootDependencies": [
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry/replay@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/replay@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/replay",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git+https://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unused-or-dynamically-referenced-unverified",
-      "declaredSection": "dependencies",
-      "descriptors": [
-        "@sentry/tracing@npm:^7.2.0"
-      ],
-      "direct": true,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/tracing@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/tracing",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Sentry Performance Monitoring Package",
-      "replacementRelevance": "review-required",
-      "rootDependencies": [
-        "@sentry/tracing"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry/types@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/types@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/types",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, @sentry/tracing.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
-        "@sentry/tracing"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
-      "classification": "unverified-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@sentry/utils@npm:7.120.4"
-      ],
-      "direct": false,
-      "executionContexts": [],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@sentry/utils@npm:7.120.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@sentry/utils",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sentry",
-        "repository": "git://github.com/getsentry/sentry-javascript.git"
-      },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, @sentry/tracing.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
-        "@sentry/tracing"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.120.4"
-    },
-    {
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -13354,10 +12855,6 @@
         },
         {
           "path": "app/soapbox/components/upload-progress.tsx",
-          "context": "browser"
-        },
-        {
-          "path": "app/soapbox/components/validation-checkmark.tsx",
           "context": "browser"
         },
         {
@@ -15970,11 +15467,19 @@
       },
       "usageEvidence": [
         {
+          "path": "package.json#scripts.test:browser-accessibility",
+          "context": "build"
+        },
+        {
           "path": "package.json#scripts.test",
           "context": "build"
         },
         {
           "path": "package.json#scripts.test:html-safety",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:telemetry",
           "context": "build"
         }
       ],
@@ -16585,16 +16090,14 @@
       "version": "1.3.14"
     },
     {
-      "classification": "build-transitive",
-      "declaredSection": null,
+      "classification": "build-only",
+      "declaredSection": "devDependencies",
       "descriptors": [
-        "@types/node@npm:*"
+        "@types/node@npm:16.18.11"
       ],
-      "direct": false,
+      "direct": true,
       "executionContexts": [
-        "build",
-        "node",
-        "test"
+        "build"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -16604,32 +16107,18 @@
         ],
         "status": "declared"
       },
-      "locator": "@types/node@npm:25.6.0",
+      "locator": "@types/node@npm:16.18.11",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "@types/node",
-      "owner": "dependency-governance-maintainers",
+      "owner": "build-and-release-maintainers",
       "upstream": {
         "author": null,
         "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
       },
-      "purpose": "Transitive dependency required by: @commitlint/cli, @commitlint/config-conventional, @jest/globals, @testing-library/jest-dom, @types/http-link-header, @types/jest, babel-jest, babel-plugin-react-intl, danger, jest, jest-environment-jsdom, terser-webpack-plugin, ts-jest, webpack, webpack-dev-server.",
+      "purpose": "TypeScript definitions for Node.js",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@commitlint/cli",
-        "@commitlint/config-conventional",
-        "@jest/globals",
-        "@testing-library/jest-dom",
-        "@types/http-link-header",
-        "@types/jest",
-        "babel-jest",
-        "babel-plugin-react-intl",
-        "danger",
-        "jest",
-        "jest-environment-jsdom",
-        "terser-webpack-plugin",
-        "ts-jest",
-        "webpack",
-        "webpack-dev-server"
+        "@types/node"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -16643,8 +16132,177 @@
         },
         "scripts": {}
       },
-      "usageEvidence": [],
-      "version": "25.6.0"
+      "usageEvidence": [
+        {
+          "path": "package.json#scripts.check:architecture-boundaries",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:build",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:ci-baseline",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:dependencies",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:design-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:design-tokens",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:documentation-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:foundational-controls",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:html-safety",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:icons",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:network-callsites",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:persistence",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.check:telemetry",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:architecture-boundaries",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:design-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:design-tokens",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:documentation-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:html-safety",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:icons",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:network-callsites",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:persistence",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.generate:telemetry",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.lint:js:baseline",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.manage:translations",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.prepare:twemoji",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:architecture-boundaries",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:browser-accessibility",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:build-baseline",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:ci-baseline",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:dependency-inventory",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:design-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:design-tokens",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:documentation-authority",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:foundational-controls",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:governance",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:html-safety",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:icons",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:network-callsites",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:persistence",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:telemetry",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:worker",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.typecheck",
+          "context": "build"
+        }
+      ],
+      "version": "16.18.11"
     },
     {
       "classification": "build-transitive",
@@ -16923,16 +16581,13 @@
       "version": "2.7.3"
     },
     {
-      "classification": "runtime-transitive",
+      "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
         "@types/prop-types@npm:*"
       ],
       "direct": false,
-      "executionContexts": [
-        "browser",
-        "test"
-      ],
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -16949,10 +16604,10 @@
         "author": null,
         "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
       },
-      "purpose": "Transitive dependency required by: react-intl.",
+      "purpose": "Transitive dependency required by: @types/react.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "react-intl"
+        "@types/react"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -17194,15 +16849,13 @@
       "version": "4.19.6"
     },
     {
-      "classification": "test-transitive",
-      "declaredSection": null,
+      "classification": "build-only",
+      "declaredSection": "devDependencies",
       "descriptors": [
-        "@types/react-dom@npm:<18.0.0"
+        "@types/react-dom@npm:17.0.18"
       ],
-      "direct": false,
-      "executionContexts": [
-        "test"
-      ],
+      "direct": true,
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -17211,18 +16864,18 @@
         ],
         "status": "declared"
       },
-      "locator": "@types/react-dom@npm:17.0.26",
+      "locator": "@types/react-dom@npm:17.0.18",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "@types/react-dom",
-      "owner": "dependency-governance-maintainers",
+      "owner": "build-and-release-maintainers",
       "upstream": {
         "author": null,
         "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
       },
-      "purpose": "Transitive dependency required by: @testing-library/react.",
+      "purpose": "TypeScript definitions for React (react-dom)",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@testing-library/react"
+        "@types/react-dom"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -17237,7 +16890,7 @@
         "scripts": {}
       },
       "usageEvidence": [],
-      "version": "17.0.26"
+      "version": "17.0.18"
     },
     {
       "classification": "build-only",
@@ -17595,16 +17248,13 @@
       "version": "4.0.5"
     },
     {
-      "classification": "runtime-transitive",
-      "declaredSection": null,
+      "classification": "build-only",
+      "declaredSection": "devDependencies",
       "descriptors": [
-        "@types/react@npm:16 || 17 || 18"
+        "@types/react@npm:17.0.52"
       ],
-      "direct": false,
-      "executionContexts": [
-        "browser",
-        "test"
-      ],
+      "direct": true,
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -17613,18 +17263,18 @@
         ],
         "status": "declared"
       },
-      "locator": "@types/react@npm:18.3.28",
+      "locator": "@types/react@npm:17.0.52",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "@types/react",
-      "owner": "dependency-governance-maintainers",
+      "owner": "build-and-release-maintainers",
       "upstream": {
         "author": null,
         "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
       },
-      "purpose": "Transitive dependency required by: react-intl.",
+      "purpose": "TypeScript definitions for React",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "react-intl"
+        "@types/react"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -17639,62 +17289,7 @@
         "scripts": {}
       },
       "usageEvidence": [],
-      "version": "18.3.28"
-    },
-    {
-      "classification": "runtime-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "@types/react@npm:*"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "browser",
-        "test"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "@types/react@npm:19.2.14",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "@types/react",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": null,
-        "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
-      },
-      "purpose": "Transitive dependency required by: @types/qrcode.react, @types/react-datepicker, @types/react-helmet, @types/react-motion, @types/react-router-dom, @types/react-sparklines, @types/react-swipeable-views, @types/react-toggle, react-redux.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@types/qrcode.react",
-        "@types/react-datepicker",
-        "@types/react-helmet",
-        "@types/react-motion",
-        "@types/react-router-dom",
-        "@types/react-sparklines",
-        "@types/react-swipeable-views",
-        "@types/react-toggle",
-        "react-redux"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "19.2.14"
+      "version": "17.0.52"
     },
     {
       "classification": "build-transitive",
@@ -17875,6 +17470,50 @@
       },
       "usageEvidence": [],
       "version": "0.12.0"
+    },
+    {
+      "classification": "build-transitive",
+      "declaredSection": null,
+      "descriptors": [
+        "@types/scheduler@npm:*"
+      ],
+      "direct": false,
+      "executionContexts": [],
+      "license": {
+        "evidence": "Installed package.json metadata.",
+        "expression": "MIT",
+        "obligations": [
+          "retain-applicable-copyright-license-and-notice-text"
+        ],
+        "status": "declared"
+      },
+      "locator": "@types/scheduler@npm:0.26.0",
+      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
+      "name": "@types/scheduler",
+      "owner": "dependency-governance-maintainers",
+      "upstream": {
+        "author": null,
+        "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+      },
+      "purpose": "Transitive dependency required by: @types/react.",
+      "replacementRelevance": "none-recorded",
+      "rootDependencies": [
+        "@types/react"
+      ],
+      "installBehavior": {
+        "hasInstallScript": false,
+        "hasInstallTimeNetworkIndicator": false,
+        "hasPackageScriptNetworkIndicator": false,
+        "hasCodeGenerationIndicator": false,
+        "hasNativeBinding": false,
+        "platformConstraints": {
+          "cpu": [],
+          "os": []
+        },
+        "scripts": {}
+      },
+      "usageEvidence": [],
+      "version": "0.26.0"
     },
     {
       "classification": "unverified-transitive",
@@ -18390,8 +18029,7 @@
       ],
       "direct": false,
       "executionContexts": [
-        "browser",
-        "build"
+        "browser"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -20368,52 +20006,6 @@
       "version": "7.2.0"
     },
     {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "acorn-walk@npm:^8.0.0"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "acorn-walk@npm:8.3.5",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "acorn-walk",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": null,
-        "repository": "https://github.com/acornjs/acorn.git"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": true,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "8.3.5"
-    },
-    {
       "classification": "runtime-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -20512,8 +20104,6 @@
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "acorn@npm:^8.0.4",
-        "acorn@npm:^8.11.0",
         "acorn@npm:^8.15.0",
         "acorn@npm:^8.16.0",
         "acorn@npm:^8.5.0"
@@ -20538,15 +20128,14 @@
         "author": null,
         "repository": "git+https://github.com/acornjs/acorn.git"
       },
-      "purpose": "Transitive dependency required by: eslint-plugin-jsdoc, html-webpack-plugin, jest-environment-jsdom, terser-webpack-plugin, webpack, webpack-bundle-analyzer.",
+      "purpose": "Transitive dependency required by: eslint-plugin-jsdoc, html-webpack-plugin, jest-environment-jsdom, terser-webpack-plugin, webpack.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
         "eslint-plugin-jsdoc",
         "html-webpack-plugin",
         "jest-environment-jsdom",
         "terser-webpack-plugin",
-        "webpack",
-        "webpack-bundle-analyzer"
+        "webpack"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -23724,7 +23313,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -27734,7 +27322,6 @@
       "executionContexts": [
         "browser",
         "build",
-        "node",
         "test"
       ],
       "license": {
@@ -29503,6 +29090,10 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/components/ui/chip/chip.tsx",
+          "context": "browser"
+        },
+        {
           "path": "app/soapbox/components/ui/emoji-selector/emoji-selector.tsx",
           "context": "browser"
         },
@@ -29523,11 +29114,19 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/components/ui/list-row/list-row.tsx",
+          "context": "browser"
+        },
+        {
           "path": "app/soapbox/components/ui/menu/menu.tsx",
           "context": "browser"
         },
         {
           "path": "app/soapbox/components/ui/modal/modal.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/segmented-control/segmented-control.tsx",
           "context": "browser"
         },
         {
@@ -30875,16 +30474,14 @@
       "version": "4.1.1"
     },
     {
-      "classification": "build-transitive",
+      "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
         "commander@npm:^7.0.0",
         "commander@npm:^7.2.0"
       ],
       "direct": false,
-      "executionContexts": [
-        "build"
-      ],
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -30901,11 +30498,10 @@
         "author": "TJ Holowaychuk <tj@vision-media.ca>",
         "repository": "https://github.com/tj/commander.js.git"
       },
-      "purpose": "Transitive dependency required by: cssnano, webpack-bundle-analyzer, webpack-cli.",
+      "purpose": "Transitive dependency required by: cssnano, webpack-cli.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
         "cssnano",
-        "webpack-bundle-analyzer",
         "webpack-cli"
       ],
       "installBehavior": {
@@ -34233,16 +33829,13 @@
       "version": "2.3.0"
     },
     {
-      "classification": "runtime-transitive",
+      "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "csstype@npm:^3.2.2"
+        "csstype@npm:^3.0.2"
       ],
       "direct": false,
-      "executionContexts": [
-        "browser",
-        "test"
-      ],
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -34259,19 +33852,10 @@
         "author": "Fredrik Nicol <fredrik.nicol@gmail.com>",
         "repository": "https://github.com/frenic/csstype"
       },
-      "purpose": "Transitive dependency required by: @types/qrcode.react, @types/react-datepicker, @types/react-helmet, @types/react-motion, @types/react-router-dom, @types/react-sparklines, @types/react-swipeable-views, @types/react-toggle, react-intl, react-redux.",
+      "purpose": "Transitive dependency required by: @types/react.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@types/qrcode.react",
-        "@types/react-datepicker",
-        "@types/react-helmet",
-        "@types/react-motion",
-        "@types/react-router-dom",
-        "@types/react-sparklines",
-        "@types/react-swipeable-views",
-        "@types/react-toggle",
-        "react-intl",
-        "react-redux"
+        "@types/react"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -34718,7 +34302,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -34801,52 +34384,6 @@
       },
       "usageEvidence": [],
       "version": "3.0.3"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "debounce@npm:^1.2.1"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "debounce@npm:1.2.1",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "debounce",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": null,
-        "repository": "git://github.com/component/debounce"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "1.2.1"
     },
     {
       "classification": "runtime-transitive",
@@ -35595,7 +35132,6 @@
       "executionContexts": [
         "browser",
         "build",
-        "node",
         "test"
       ],
       "license": {
@@ -37587,8 +37123,7 @@
       ],
       "direct": true,
       "executionContexts": [
-        "browser",
-        "build"
+        "browser"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -37628,10 +37163,6 @@
         {
           "path": "app/soapbox/utils/html-safety.ts",
           "context": "browser"
-        },
-        {
-          "path": "scripts/check-html-safety-authority-inventory.js",
-          "context": "build"
         }
       ],
       "version": "3.4.12"
@@ -38023,52 +37554,6 @@
       },
       "usageEvidence": [],
       "version": "1.0.1"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "duplexer@npm:^0.1.2"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "duplexer@npm:0.1.2",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "duplexer",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Raynos <raynos2@gmail.com>",
-        "repository": "git://github.com/Raynos/duplexer.git"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "0.1.2"
     },
     {
       "classification": "build-transitive",
@@ -40411,12 +39896,11 @@
         "author": "Sindre Sorhus",
         "repository": "sindresorhus/escape-string-regexp"
       },
-      "purpose": "Transitive dependency required by: eslint, eslint-plugin-jsdoc, webpack-bundle-analyzer.",
+      "purpose": "Transitive dependency required by: eslint, eslint-plugin-jsdoc.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
         "eslint",
-        "eslint-plugin-jsdoc",
-        "webpack-bundle-analyzer"
+        "eslint-plugin-jsdoc"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -44828,7 +44312,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -46011,8 +45494,7 @@
       ],
       "direct": false,
       "executionContexts": [
-        "browser",
-        "node"
+        "browser"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -48020,52 +47502,6 @@
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "gzip-size@npm:^6.0.0"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "gzip-size@npm:6.0.0",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "gzip-size",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Sindre Sorhus",
-        "repository": "sindresorhus/gzip-size"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "6.0.0"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
         "handle-thing@npm:^2.0.0"
       ],
       "direct": false,
@@ -48511,7 +47947,6 @@
       "executionContexts": [
         "browser",
         "build",
-        "node",
         "test"
       ],
       "license": {
@@ -49213,10 +48648,9 @@
         "author": "Michael Ridgway <mcridgway@gmail.com>",
         "repository": "git://github.com/mridgway/hoist-non-react-statics.git"
       },
-      "purpose": "Transitive dependency required by: @sentry/react, react-intl, react-redux, react-router-dom.",
+      "purpose": "Transitive dependency required by: react-intl, react-redux, react-router-dom.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@sentry/react",
         "react-intl",
         "react-redux",
         "react-router-dom"
@@ -49565,8 +48999,7 @@
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "html-escaper@npm:^2.0.0",
-        "html-escaper@npm:^2.0.2"
+        "html-escaper@npm:^2.0.0"
       ],
       "direct": false,
       "executionContexts": [
@@ -49588,11 +49021,10 @@
         "author": "Andrea Giammarchi",
         "repository": "https://github.com/WebReflection/html-escaper.git"
       },
-      "purpose": "Transitive dependency required by: jest, webpack-bundle-analyzer.",
+      "purpose": "Transitive dependency required by: jest.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "jest",
-        "webpack-bundle-analyzer"
+        "jest"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -50865,11 +50297,9 @@
         "author": null,
         "repository": "git://github.com/calvinmetcalf/immediate.git"
       },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, localforage.",
+      "purpose": "Transitive dependency required by: localforage.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
         "localforage"
       ],
       "installBehavior": {
@@ -51865,6 +51295,10 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/types/soapbox.ts",
+          "context": "browser"
+        },
+        {
           "path": "app/soapbox/utils/__tests__/config_db.test.ts",
           "context": "test"
         },
@@ -52319,7 +51753,6 @@
       "executionContexts": [
         "browser",
         "build",
-        "node",
         "test"
       ],
       "license": {
@@ -53213,7 +52646,7 @@
       "version": "1.0.4"
     },
     {
-      "classification": "build-transitive",
+      "classification": "test-transitive",
       "declaredSection": null,
       "descriptors": [
         "is-arguments@npm:^1.0.4",
@@ -53221,7 +52654,6 @@
       ],
       "direct": false,
       "executionContexts": [
-        "node",
         "test"
       ],
       "license": {
@@ -53719,7 +53151,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -54700,8 +54131,7 @@
       ],
       "direct": false,
       "executionContexts": [
-        "browser",
-        "node"
+        "browser"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -55779,7 +55209,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -56224,8 +55653,7 @@
       ],
       "direct": false,
       "executionContexts": [
-        "browser",
-        "node"
+        "browser"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -58966,11 +58394,19 @@
       },
       "usageEvidence": [
         {
+          "path": "package.json#scripts.test:browser-accessibility",
+          "context": "build"
+        },
+        {
           "path": "package.json#scripts.test",
           "context": "build"
         },
         {
           "path": "package.json#scripts.test:html-safety",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:telemetry",
           "context": "build"
         }
       ],
@@ -61730,11 +61166,9 @@
         "author": null,
         "repository": "https://github.com/calvinmetcalf/lie.git"
       },
-      "purpose": "Transitive dependency required by: @sentry/browser, @sentry/react, localforage.",
+      "purpose": "Transitive dependency required by: localforage.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
         "localforage"
       ],
       "installBehavior": {
@@ -62264,8 +61698,7 @@
       "classification": "runtime",
       "declaredSection": "dependencies",
       "descriptors": [
-        "localforage@npm:^1.10.0",
-        "localforage@npm:^1.8.1"
+        "localforage@npm:^1.10.0"
       ],
       "direct": true,
       "executionContexts": [
@@ -62290,8 +61723,6 @@
       "purpose": "Offline storage, improved.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
-        "@sentry/browser",
-        "@sentry/react",
         "localforage"
       ],
       "installBehavior": {
@@ -64327,7 +63758,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -67619,52 +67049,6 @@
       "version": "1.6.5"
     },
     {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "mrmime@npm:^2.0.0"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "mrmime@npm:2.0.1",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "mrmime",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Luke Edwards",
-        "repository": "lukeed/mrmime"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": true,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "2.0.1"
-    },
-    {
       "classification": "runtime-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -70407,52 +69791,6 @@
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "opener@npm:^1.5.2"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "(WTFPL OR MIT)",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "opener@npm:1.5.2",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "opener",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Domenic Denicola <d@domenic.me> (https://domenic.me/)",
-        "repository": "domenic/opener"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "1.5.2"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
         "optionator@npm:^0.9.1"
       ],
       "direct": false,
@@ -73067,7 +72405,7 @@
         "author": "Alexey Raspopov",
         "repository": "alexeyraspopov/picocolors"
       },
-      "purpose": "Transitive dependency required by: @babel/core, @babel/plugin-proposal-class-properties, @babel/plugin-proposal-decorators, @babel/plugin-proposal-object-rest-spread, @babel/plugin-transform-runtime, @babel/preset-env, @babel/preset-react, @babel/preset-typescript, @commitlint/cli, @jest/globals, @lcdp/offline-plugin, @testing-library/jest-dom, @testing-library/react, @types/jest, autoprefixer, babel-eslint, babel-jest, babel-plugin-lodash, babel-plugin-preval, babel-plugin-react-intl, babel-plugin-transform-require-context, browserslist, commit-and-tag-version, css-loader, cssnano, eslint, eslint-plugin-compat, eslint-plugin-react-hooks, fork-ts-checker-webpack-plugin, jest, jest-environment-jsdom, postcss, postcss-loader, stylelint, tailwindcss, webpack, webpack-bundle-analyzer.",
+      "purpose": "Transitive dependency required by: @babel/core, @babel/plugin-proposal-class-properties, @babel/plugin-proposal-decorators, @babel/plugin-proposal-object-rest-spread, @babel/plugin-transform-runtime, @babel/preset-env, @babel/preset-react, @babel/preset-typescript, @commitlint/cli, @jest/globals, @lcdp/offline-plugin, @testing-library/jest-dom, @testing-library/react, @types/jest, autoprefixer, babel-eslint, babel-jest, babel-plugin-lodash, babel-plugin-preval, babel-plugin-react-intl, babel-plugin-transform-require-context, browserslist, commit-and-tag-version, css-loader, cssnano, eslint, eslint-plugin-compat, eslint-plugin-react-hooks, fork-ts-checker-webpack-plugin, jest, jest-environment-jsdom, postcss, postcss-loader, stylelint, tailwindcss, webpack.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
         "@babel/core",
@@ -73105,8 +72443,7 @@
         "postcss-loader",
         "stylelint",
         "tailwindcss",
-        "webpack",
-        "webpack-bundle-analyzer"
+        "webpack"
       ],
       "installBehavior": {
         "hasInstallScript": false,
@@ -73539,7 +72876,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -77825,7 +77161,6 @@
       "direct": true,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -77873,10 +77208,6 @@
         {
           "path": "scripts/__tests__/check-bootstrap-provider-authority-inventory.test.js",
           "context": "test"
-        },
-        {
-          "path": "scripts/check-bootstrap-provider-authority-inventory.js",
-          "context": "build"
         }
       ],
       "version": "4.25.0"
@@ -78054,7 +77385,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -79860,7 +79190,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -79879,7 +79208,7 @@
         "author": null,
         "repository": "https://github.com/facebook/react.git"
       },
-      "purpose": "Transitive dependency required by: @reach/menu-button, @reach/popover, @reach/rect, @reach/tabs, @reach/tooltip, @sentry/react, eslint-plugin-react, prop-types, react-color, react-datepicker, react-helmet, react-hotkeys, react-intl, react-motion, react-overlays, react-redux, react-router-dom, react-sparklines, react-swipeable-views.",
+      "purpose": "Transitive dependency required by: @reach/menu-button, @reach/popover, @reach/rect, @reach/tabs, @reach/tooltip, eslint-plugin-react, prop-types, react-color, react-datepicker, react-helmet, react-hotkeys, react-intl, react-motion, react-overlays, react-redux, react-router-dom, react-sparklines, react-swipeable-views.",
       "replacementRelevance": "none-recorded",
       "rootDependencies": [
         "@reach/menu-button",
@@ -79887,7 +79216,6 @@
         "@reach/rect",
         "@reach/tabs",
         "@reach/tooltip",
-        "@sentry/react",
         "eslint-plugin-react",
         "prop-types",
         "react-color",
@@ -80164,7 +79492,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -80942,6 +80269,10 @@
         },
         {
           "path": "app/soapbox/components/ui/column/column.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/list-row/list-row.tsx",
           "context": "browser"
         },
         {
@@ -82377,6 +81708,10 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/components/ui/__tests__/foundational-controls.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/components/ui/avatar/__tests__/avatar.test.tsx",
           "context": "test"
         },
@@ -82406,6 +81741,10 @@
         },
         {
           "path": "app/soapbox/components/ui/checkbox/checkbox.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/chip/chip.tsx",
           "context": "browser"
         },
         {
@@ -82457,6 +81796,10 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/components/ui/focus/focus-utils.ts",
+          "context": "browser"
+        },
+        {
           "path": "app/soapbox/components/ui/form-actions/__tests__/form-actions.test.tsx",
           "context": "test"
         },
@@ -82489,11 +81832,19 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/components/ui/icon/__tests__/semantic-icon.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/components/ui/icon/__tests__/svg-icon.test.tsx",
           "context": "test"
         },
         {
           "path": "app/soapbox/components/ui/icon/icon.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/icon/semantic-icon.tsx",
           "context": "browser"
         },
         {
@@ -82506,6 +81857,10 @@
         },
         {
           "path": "app/soapbox/components/ui/layout/layout.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/list-row/list-row.tsx",
           "context": "browser"
         },
         {
@@ -82530,6 +81885,10 @@
         },
         {
           "path": "app/soapbox/components/ui/progress-bar/progress-bar.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/components/ui/segmented-control/segmented-control.tsx",
           "context": "browser"
         },
         {
@@ -83951,6 +83310,10 @@
         {
           "path": "app/soapbox/utils/redirect.ts",
           "context": "browser"
+        },
+        {
+          "path": "jest/phosphor-icon-mock.js",
+          "context": "test"
         }
       ],
       "version": "17.0.2"
@@ -85023,6 +84386,10 @@
         },
         {
           "path": "app/soapbox/reducers/history.ts",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/reducers/index.ts",
           "context": "browser"
         },
         {
@@ -87997,7 +87364,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -89043,7 +88409,6 @@
       "executionContexts": [
         "browser",
         "build",
-        "node",
         "test"
       ],
       "license": {
@@ -89937,52 +89302,6 @@
       },
       "usageEvidence": [],
       "version": "0.2.0"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "sirv@npm:^2.0.3"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "sirv@npm:2.0.4",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "sirv",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Luke Edwards",
-        "repository": "lukeed/sirv"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "2.0.4"
     },
     {
       "classification": "build-transitive",
@@ -95728,52 +95047,6 @@
       "version": "1.0.1"
     },
     {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "totalist@npm:^3.0.0"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "totalist@npm:3.0.1",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "totalist",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Luke Edwards",
-        "repository": "lukeed/totalist"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": true,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "3.0.1"
-    },
-    {
       "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -97685,68 +96958,6 @@
       "version": "1.13.8"
     },
     {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
-        "undici-types@npm:~7.19.0"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build",
-        "node",
-        "test"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "undici-types@npm:7.19.2",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "undici-types",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": null,
-        "repository": "git+https://github.com/nodejs/undici.git"
-      },
-      "purpose": "Transitive dependency required by: @commitlint/cli, @commitlint/config-conventional, @jest/globals, @testing-library/jest-dom, @types/http-link-header, @types/jest, babel-jest, babel-plugin-react-intl, danger, jest, jest-environment-jsdom, terser-webpack-plugin, ts-jest, webpack, webpack-dev-server.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "@commitlint/cli",
-        "@commitlint/config-conventional",
-        "@jest/globals",
-        "@testing-library/jest-dom",
-        "@types/http-link-header",
-        "@types/jest",
-        "babel-jest",
-        "babel-plugin-react-intl",
-        "danger",
-        "jest",
-        "jest-environment-jsdom",
-        "terser-webpack-plugin",
-        "ts-jest",
-        "webpack",
-        "webpack-dev-server"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.19.2"
-    },
-    {
       "classification": "runtime-transitive",
       "declaredSection": null,
       "descriptors": [
@@ -99201,15 +98412,13 @@
       "version": "1.0.2"
     },
     {
-      "classification": "build-only",
+      "classification": "unused-or-dynamically-referenced-unverified",
       "declaredSection": "dependencies",
       "descriptors": [
         "util@npm:^0.12.4"
       ],
       "direct": true,
-      "executionContexts": [
-        "node"
-      ],
+      "executionContexts": [],
       "license": {
         "evidence": "Installed package.json metadata.",
         "expression": "MIT",
@@ -99221,13 +98430,13 @@
       "locator": "util@npm:0.12.5",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "util",
-      "owner": "build-and-release-maintainers",
+      "owner": "dependency-governance-maintainers",
       "upstream": {
         "author": "Joyent",
         "repository": "git://github.com/browserify/node-util"
       },
       "purpose": "Node.js's util module for all engines",
-      "replacementRelevance": "none-recorded",
+      "replacementRelevance": "review-required",
       "rootDependencies": [
         "util"
       ],
@@ -99243,76 +98452,7 @@
         },
         "scripts": {}
       },
-      "usageEvidence": [
-        {
-          "path": "static/packs/js/application-06d1b088891fbf13a2bf.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-0bc867548dbc28286e17.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-45e535b7c925ac87abc7.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-4d2103e53de3a982b80f.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-4ec3b2bcdd081019c394.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-711109f02ca17137c3f9.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-78bba58997d7f4a06d3c.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-91cdcbf5892bcff97c21.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-bbd0cf055e30db4a30cc.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/application-d1999a8eb0e0579f7b68.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-11c483be3eed9286390f.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-3840954b324bfdfdd267.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-95361592f1f921d279c3.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-aca2d6296d01f6da8156.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-bd48adb24e0fe63642e3.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-e99471c8cc5e4f6bdde9.chunk.js",
-          "context": "node"
-        },
-        {
-          "path": "static/packs/js/features/soapbox_config-eaf8ada238636574439b.chunk.js",
-          "context": "node"
-        }
-      ],
+      "usageEvidence": [],
       "version": "0.12.5"
     },
     {
@@ -100006,7 +99146,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "build",
         "test"
       ],
       "license": {
@@ -100506,57 +99645,6 @@
         }
       ],
       "version": "5.2.1"
-    },
-    {
-      "classification": "build-only",
-      "declaredSection": "dependencies",
-      "descriptors": [
-        "webpack-bundle-analyzer@npm:^4.5.0"
-      ],
-      "direct": true,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "webpack-bundle-analyzer@npm:4.10.2",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "webpack-bundle-analyzer",
-      "owner": "build-and-release-maintainers",
-      "upstream": {
-        "author": "Yury Grunin <grunin.ya@ya.ru>",
-        "repository": "git+https://github.com/webpack-contrib/webpack-bundle-analyzer.git"
-      },
-      "purpose": "Webpack plugin and CLI utility that represents bundle content as convenient interactive zoomable treemap",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": true,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [
-        {
-          "path": "webpack/production.js",
-          "context": "build"
-        }
-      ],
-      "version": "4.10.2"
     },
     {
       "classification": "unused-or-dynamically-referenced-unverified",
@@ -101531,7 +100619,6 @@
       "direct": false,
       "executionContexts": [
         "browser",
-        "node",
         "test"
       ],
       "license": {
@@ -102252,52 +101339,6 @@
       "classification": "build-transitive",
       "declaredSection": null,
       "descriptors": [
-        "ws@npm:^7.3.1"
-      ],
-      "direct": false,
-      "executionContexts": [
-        "build"
-      ],
-      "license": {
-        "evidence": "Installed package.json metadata.",
-        "expression": "MIT",
-        "obligations": [
-          "retain-applicable-copyright-license-and-notice-text"
-        ],
-        "status": "declared"
-      },
-      "locator": "ws@npm:7.5.10",
-      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
-      "name": "ws",
-      "owner": "dependency-governance-maintainers",
-      "upstream": {
-        "author": "Einar Otto Stangvik <einaros@gmail.com> (http://2x.io)",
-        "repository": "websockets/ws"
-      },
-      "purpose": "Transitive dependency required by: webpack-bundle-analyzer.",
-      "replacementRelevance": "none-recorded",
-      "rootDependencies": [
-        "webpack-bundle-analyzer"
-      ],
-      "installBehavior": {
-        "hasInstallScript": false,
-        "hasInstallTimeNetworkIndicator": false,
-        "hasPackageScriptNetworkIndicator": false,
-        "hasCodeGenerationIndicator": false,
-        "hasNativeBinding": false,
-        "platformConstraints": {
-          "cpu": [],
-          "os": []
-        },
-        "scripts": {}
-      },
-      "usageEvidence": [],
-      "version": "7.5.10"
-    },
-    {
-      "classification": "build-transitive",
-      "declaredSection": null,
-      "descriptors": [
         "ws@npm:^8.2.3",
         "ws@npm:^8.4.2"
       ],
@@ -102965,6 +102006,10 @@
         "scripts": {}
       },
       "usageEvidence": [
+        {
+          "path": "scripts/check-ci-baseline.js",
+          "context": "build"
+        },
         {
           "path": "scripts/dependency-inventory-lib.js",
           "context": "build"
@@ -103829,29 +102874,6 @@
     },
     {
       "locators": [
-        "@types/react@npm:18.3.28",
-        "@types/react@npm:19.2.14"
-      ],
-      "name": "@types/react",
-      "rootDependencies": [
-        "@types/qrcode.react",
-        "@types/react-datepicker",
-        "@types/react-helmet",
-        "@types/react-motion",
-        "@types/react-router-dom",
-        "@types/react-sparklines",
-        "@types/react-swipeable-views",
-        "@types/react-toggle",
-        "react-intl",
-        "react-redux"
-      ],
-      "versions": [
-        "18.3.28",
-        "19.2.14"
-      ]
-    },
-    {
-      "locators": [
         "@types/send@npm:0.17.6",
         "@types/send@npm:1.2.1"
       ],
@@ -103892,28 +102914,12 @@
         "html-webpack-plugin",
         "jest-environment-jsdom",
         "terser-webpack-plugin",
-        "webpack",
-        "webpack-bundle-analyzer"
+        "webpack"
       ],
       "versions": [
         "5.7.4",
         "7.4.1",
         "8.16.0"
-      ]
-    },
-    {
-      "locators": [
-        "acorn-walk@npm:7.2.0",
-        "acorn-walk@npm:8.3.5"
-      ],
-      "name": "acorn-walk",
-      "rootDependencies": [
-        "jest-environment-jsdom",
-        "webpack-bundle-analyzer"
-      ],
-      "versions": [
-        "7.2.0",
-        "8.3.5"
       ]
     },
     {
@@ -104528,7 +103534,6 @@
         "tailwindcss",
         "terser-webpack-plugin",
         "webpack",
-        "webpack-bundle-analyzer",
         "webpack-cli"
       ],
       "versions": [
@@ -104977,8 +103982,7 @@
         "jest-environment-jsdom",
         "jsdoc",
         "postcss-object-fit-images",
-        "react-intl-translations-manager",
-        "webpack-bundle-analyzer"
+        "react-intl-translations-manager"
       ],
       "versions": [
         "1.0.5",
@@ -106825,8 +105829,7 @@
         "postcss-loader",
         "stylelint",
         "tailwindcss",
-        "webpack",
-        "webpack-bundle-analyzer"
+        "webpack"
       ],
       "versions": [
         "0.2.1",
@@ -106988,7 +105991,6 @@
         "@reach/rect",
         "@reach/tabs",
         "@reach/tooltip",
-        "@sentry/react",
         "@testing-library/jest-dom",
         "@testing-library/react",
         "@types/jest",
@@ -107972,22 +106974,6 @@
       "versions": [
         "3.0.3",
         "4.0.2"
-      ]
-    },
-    {
-      "locators": [
-        "ws@npm:7.5.10",
-        "ws@npm:8.20.0"
-      ],
-      "name": "ws",
-      "rootDependencies": [
-        "jest-environment-jsdom",
-        "webpack-bundle-analyzer",
-        "webpack-dev-server"
-      ],
-      "versions": [
-        "7.5.10",
-        "8.20.0"
       ]
     },
     {
@@ -111977,37 +110963,6 @@
         "transitiveDoesNotImplySafe": true
       },
       "key": "ws|1123259|high|8.20.0|webpack-dev-server@virtual:7164ea798f9571fc1b865cb7d0d9c01846e2d753187de3d62da2a5f8a296177ab8bd73b9a74ba4afcaca04d5d95f891258edc7172fd0bfc9a8a5b2b6b7863be4#npm:4.9.1|>=8.0.0 <8.21.0|https://github.com/advisories/GHSA-96hv-2xvq-fx4p"
-    },
-    {
-      "advisoryId": "1123260",
-      "dependents": [
-        "webpack-bundle-analyzer@npm:4.10.2"
-      ],
-      "issue": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
-      "package": "ws",
-      "severity": "high",
-      "treeVersions": [
-        "7.5.10"
-      ],
-      "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p",
-      "vulnerableVersions": ">=7.0.0 <7.5.11",
-      "disposition": {
-        "affectedLocators": [
-          "ws@npm:7.5.10"
-        ],
-        "executionContexts": [
-          "build"
-        ],
-        "owner": "build-and-release-maintainers",
-        "reachability": "build-or-development-time-reachable",
-        "requiredAction": "upgrade-or-remove-before-phase-0g-baseline",
-        "rootDependencies": [
-          "webpack-bundle-analyzer"
-        ],
-        "status": "remediation-required",
-        "transitiveDoesNotImplySafe": true
-      },
-      "key": "ws|1123260|high|7.5.10|webpack-bundle-analyzer@npm:4.10.2|>=7.0.0 <7.5.11|https://github.com/advisories/GHSA-96hv-2xvq-fx4p"
     }
   ],
   "githubActions": [
@@ -112018,6 +110973,22 @@
       "path": ".github/workflows/api-transport-authority.yml",
       "pinnedToCommit": false,
       "ref": "v4"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 66,
+      "local": false,
+      "path": ".github/workflows/architecture-boundaries.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 69,
+      "local": false,
+      "path": ".github/workflows/architecture-boundaries.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
     },
     {
       "action": "actions/checkout",
@@ -112064,6 +111035,38 @@
       "line": 55,
       "local": false,
       "path": ".github/workflows/dependency-authority.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 54,
+      "local": false,
+      "path": ".github/workflows/design-authority.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 55,
+      "local": false,
+      "path": ".github/workflows/design-authority.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 40,
+      "local": false,
+      "path": ".github/workflows/documentation-authority.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 43,
+      "local": false,
+      "path": ".github/workflows/documentation-authority.yml",
       "pinnedToCommit": true,
       "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
     },
@@ -112122,6 +111125,102 @@
       "path": ".github/workflows/pages.yml",
       "pinnedToCommit": false,
       "ref": "v4"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 25,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 28,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 44,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 47,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 61,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 64,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 76,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 79,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 93,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 96,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+    },
+    {
+      "action": "actions/checkout",
+      "line": 112,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "11bd71901bbe5b1630ceea73d27597364c9af683"
+    },
+    {
+      "action": "actions/setup-node",
+      "line": 115,
+      "local": false,
+      "path": ".github/workflows/phase-0g-quality.yml",
+      "pinnedToCommit": true,
+      "ref": "49933ea5288caeca8642d1e84afbd3f7d6820020"
     },
     {
       "action": "actions/checkout",
@@ -112361,30 +111460,6 @@
     },
     {
       "currentLocator": "@popperjs/core@npm:2.11.8",
-      "owner": "dependency-governance-maintainers",
-      "reason": [
-        "usage-or-security-review"
-      ],
-      "status": "queued"
-    },
-    {
-      "currentLocator": "@sentry/browser@npm:7.120.4",
-      "owner": "dependency-governance-maintainers",
-      "reason": [
-        "usage-or-security-review"
-      ],
-      "status": "queued"
-    },
-    {
-      "currentLocator": "@sentry/react@npm:7.120.4",
-      "owner": "dependency-governance-maintainers",
-      "reason": [
-        "usage-or-security-review"
-      ],
-      "status": "queued"
-    },
-    {
-      "currentLocator": "@sentry/tracing@npm:7.120.4",
       "owner": "dependency-governance-maintainers",
       "reason": [
         "usage-or-security-review"
@@ -112909,6 +111984,14 @@
     },
     {
       "currentLocator": "typescript@npm:4.9.5",
+      "owner": "dependency-governance-maintainers",
+      "reason": [
+        "usage-or-security-review"
+      ],
+      "status": "queued"
+    },
+    {
+      "currentLocator": "util@npm:0.12.5",
       "owner": "dependency-governance-maintainers",
       "reason": [
         "usage-or-security-review"

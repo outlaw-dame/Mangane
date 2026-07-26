@@ -1,5 +1,7 @@
 # Build Configuration
 
+> **Superseded documentation.** This inherited guide mixes current environment keys with stale Soapbox branding and OAuth examples. Use the verified [current-state authority](../architecture/CURRENT_STATE.md) and repository configuration as the source of truth.
+
 Soapbox supports compile-time customizations in the form of environment variables and a gitignored `custom/` directory.
 
 ## `custom/` directory
@@ -177,15 +179,6 @@ NODE_ENV="production" FE_SUBDIRECTORY="/soapbox" yarn build
 
 ### `SENTRY_DSN`
 
-[Sentry](https://sentry.io/) endpoint for this custom build.
-
-Sentry is an error monitoring service that may be optionally included.
-When an endpoint is not configured, it does nothing.
-
-Sentry's backend was FOSS until 2019 when it moved to source-available, but a BSD-3 fork called [GlitchTip](https://glitchtip.com/) may also be used.
-
-Options:
-
-- Endpoint URL, eg `"https://abcdefg@app.glitchtip.com/123"`
-
-Default: `""`
+Removed in Phase 0E. Mangane does not include remote telemetry or accept a
+Sentry DSN. Adding a provider requires the architecture consent, opt-out,
+redaction, sampling, retention, and deletion gate.

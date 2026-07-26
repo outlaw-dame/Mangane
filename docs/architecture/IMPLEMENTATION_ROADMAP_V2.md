@@ -2,9 +2,21 @@
 
 Status: **Canonical implementation sequence**
 
-Last updated: 2026-07-23
+Last updated: 2026-07-26
 
 This roadmap supersedes earlier informal phases when they conflict. It preserves the original direction—Framework7, adaptive PWA, local-first intelligence, hybrid search, semantic filtering, entity understanding, and editorial redesign—while adding the architectural, migration, privacy, testing, and drift-control work required to implement it safely.
+
+## Phase status
+
+This table is the canonical progress summary. The detailed phase sections remain
+authoritative for scope and exit criteria.
+
+| Phase | Status | Evidence / active plan |
+|---|---|---|
+| Phase 0 — Repository and documentation reconciliation | Complete | [`PHASE_0_CLOSURE_REPORT.md`](./PHASE_0_CLOSURE_REPORT.md) |
+| Phase 1 — Architecture seams and compatibility contracts | Complete | [`PHASE_1_ARCHITECTURE_CONTRACTS.md`](./PHASE_1_ARCHITECTURE_CONTRACTS.md) |
+| Phase 2 — Design tokens, semantic icons, and accessibility foundation | In progress | [`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md) |
+| Phases 3–31 | Queued | Begin only after the preceding phase satisfies its exit criteria |
 
 ## Global implementation rules
 
@@ -39,6 +51,8 @@ A phase is complete only when:
 
 ## Phase 0 — Repository and documentation reconciliation
 
+Status: **Complete; see [`PHASE_0_CLOSURE_REPORT.md`](./PHASE_0_CLOSURE_REPORT.md)**
+
 Goal: establish verified current state before architecture work.
 
 Deliverables:
@@ -58,7 +72,11 @@ Exit criteria:
 - all old roadmap documents are linked, superseded, or marked historical;
 - no implementation begins from assumptions about uninspected code.
 
+Closure evidence is enforced by the dependency, network, persistence, safety, telemetry, design, CI, and documentation authority workflows. Accepted modernization debt is carried explicitly into Phase 1 rather than represented as completed implementation.
+
 ## Phase 1 — Architecture seams and compatibility contracts
+
+Status: **Complete; see [`PHASE_1_ARCHITECTURE_CONTRACTS.md`](./PHASE_1_ARCHITECTURE_CONTRACTS.md).**
 
 Goal: create boundaries that allow incremental modernization.
 
@@ -81,6 +99,8 @@ Exit criteria:
 - rollback to current presentation is possible.
 
 ## Phase 2 — Design tokens, semantic icons, and accessibility foundation
+
+Status: **In progress; see [`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md).**
 
 Goal: establish the product language before broad UI migration.
 

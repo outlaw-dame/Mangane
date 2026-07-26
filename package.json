@@ -6,14 +6,14 @@
   "homepage": "https://bdx.town",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BDX-town/Mangane"
+    "url": "https://github.com/outlaw-dame/Mangane"
   },
   "keywords": [
     "fediverse",
     "pleroma"
   ],
   "bugs": {
-    "url": "https://github.com/BDX-town/Mangane/issues"
+    "url": "https://github.com/outlaw-dame/Mangane/issues"
   },
   "scripts": {
     "start": "npx webpack-dev-server",
@@ -26,7 +26,21 @@
     "test:all": "${npm_execpath} run test:coverage && ${npm_execpath} run lint",
     "lint": "${npm_execpath} run lint:js && ${npm_execpath} run lint:sass",
     "lint:js": "npx eslint --ext .js,.jsx,.ts,.tsx . --cache",
+    "lint:js:baseline": "node scripts/check-eslint-warning-baseline.js",
     "lint:sass": "npx stylelint app/styles/**/*.scss",
+    "typecheck": "node scripts/check-typecheck-baseline.js",
+    "typecheck:raw": "tsc -p tsconfig.typecheck.json --pretty false",
+    "generate:architecture-boundaries": "node scripts/generate-architecture-boundary-inventory.js",
+    "check:architecture-boundaries": "node scripts/check-architecture-boundaries.js",
+    "test:architecture-boundaries": "node --test scripts/__tests__/build-config-feature-flags.test.js scripts/__tests__/check-architecture-boundaries.test.js",
+    "check:build": "node scripts/check-build-baseline.js",
+    "test:build-baseline": "node --test scripts/__tests__/check-build-baseline.test.js",
+    "check:ci-baseline": "node scripts/check-ci-baseline.js",
+    "test:ci-baseline": "node --test scripts/__tests__/check-ci-baseline.test.js",
+    "test:governance": "node scripts/run-node-governance-tests.js",
+    "test:worker": "node --test scripts/__tests__/share-target-worker.test.js scripts/__tests__/check-share-target-authority-inventory.test.js scripts/__tests__/check-push-worker-authority-inventory.test.js scripts/__tests__/check-service-worker-cache-authority-inventory.test.js",
+    "test:browser-accessibility": "yarn jest app/soapbox/features/auth_login/components/__tests__/login_form.test.tsx app/soapbox/features/auth_login/components/__tests__/login_page.test.tsx app/soapbox/features/ui/__tests__/index.test.tsx app/soapbox/features/ui/components/__tests__/compose-button.test.tsx --runInBand --silent && node --test scripts/__tests__/check-design-component-authority-inventory.test.js",
+    "prepare:twemoji": "node scripts/download-twemoji-assets.js",
     "check:dependencies": "node scripts/check-dependency-authority-inventory.js",
     "test:dependency-inventory": "node --test scripts/__tests__/check-dependency-authority-inventory.test.js",
     "generate:network-callsites": "node scripts/generate-network-callsite-manifest.js",
@@ -38,7 +52,25 @@
     "generate:html-safety": "node scripts/generate-html-safety-authority-inventory.js",
     "check:html-safety": "node scripts/check-html-safety-authority-inventory.js",
     "test:html-safety": "node --test scripts/__tests__/check-html-safety-authority-inventory.test.js && yarn jest app/soapbox/utils/__tests__/html-safety.test.ts app/soapbox/utils/__tests__/url-policy.test.ts app/soapbox/utils/__tests__/navigation-policy.test.ts app/soapbox/utils/__tests__/html.test.ts --runInBand",
-    "postinstall": "node scripts/download-twemoji-assets.js",
+    "generate:telemetry": "node scripts/generate-telemetry-authority-inventory.js",
+    "check:telemetry": "node scripts/check-sentry-authority-inventory.js",
+    "test:telemetry": "node --test scripts/__tests__/check-sentry-authority-inventory.test.js && yarn jest app/soapbox/utils/__tests__/diagnostics.test.ts --runInBand",
+    "test:security-regression": "yarn test:html-safety && yarn test:telemetry && yarn test:persistence && yarn test:worker",
+    "generate:design-authority": "node scripts/generate-design-component-authority-inventory.js",
+    "check:design-authority": "node scripts/check-design-component-authority-inventory.js",
+    "test:design-authority": "node --test scripts/__tests__/check-design-component-authority-inventory.test.js",
+    "generate:design-tokens": "node scripts/generate-design-tokens.js",
+    "check:design-tokens": "node scripts/check-design-tokens.js",
+    "test:design-tokens": "node --test scripts/__tests__/design-token-foundation.test.js",
+    "generate:icons": "node scripts/generate-icon-migration-baseline.js",
+    "check:icons": "node scripts/check-icon-migration.js",
+    "test:icons": "node --test scripts/__tests__/icon-migration-foundation.test.js",
+    "check:foundational-controls": "node scripts/check-foundational-control-contracts.js",
+    "test:foundational-controls": "node --test scripts/__tests__/foundational-control-contracts.test.js",
+    "generate:documentation-authority": "node scripts/generate-documentation-authority-registry.js",
+    "check:documentation-authority": "node scripts/check-documentation-authority.js",
+    "test:documentation-authority": "node --test scripts/__tests__/check-documentation-authority.test.js",
+    "postinstall": "yarn prepare:twemoji",
     "prepare": "npx husky"
   },
   "license": "AGPL-3.0-or-later",
@@ -70,6 +102,7 @@
     "@jest/globals": "^28.1.2",
     "@lcdp/offline-plugin": "^5.1.0",
     "@metamask/providers": "^9.0.0",
+    "@phosphor-icons/react": "2.1.10",
     "@popperjs/core": "^2.11.5",
     "@reach/menu-button": "^0.16.2",
     "@reach/popover": "^0.16.2",
@@ -78,9 +111,6 @@
     "@reach/tabs": "^0.16.4",
     "@reach/tooltip": "^0.16.2",
     "@reduxjs/toolkit": "^1.8.1",
-    "@sentry/browser": "^7.2.0",
-    "@sentry/react": "^7.2.0",
-    "@sentry/tracing": "^7.2.0",
     "@tabler/icons": "^1.73.0",
     "@tailwindcss/forms": "^0.4.0",
     "@tailwindcss/typography": "^0.5.1",
@@ -214,7 +244,6 @@
     "uuid": "^8.3.2",
     "webpack": "^5.72.1",
     "webpack-assets-manifest": "^5.1.0",
-    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
     "webpack-deadcode-plugin": "^0.1.16",
     "webpack-merge": "^5.8.0",
@@ -227,6 +256,9 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.0.3",
+    "@types/node": "16.18.11",
+    "@types/react": "17.0.52",
+    "@types/react-dom": "17.0.18",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "babel-eslint": "^10.1.0",
@@ -258,5 +290,10 @@
     "yaml": "^2.8.2",
     "yargs": "^16.0.3"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "resolutions": {
+    "@types/node": "16.18.11",
+    "@types/react": "17.0.52",
+    "@types/react-dom": "17.0.18"
+  }
 }

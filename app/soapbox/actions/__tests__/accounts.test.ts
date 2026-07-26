@@ -1,8 +1,11 @@
 import { Map as ImmutableMap } from 'immutable';
 
 import { __stub } from 'soapbox/api';
+import { ApplicationError } from 'soapbox/domain/application-error';
+import { LegacyAccountRepository } from 'soapbox/infrastructure/protocol/legacy-account-repository';
 import { mockStore, rootState } from 'soapbox/jest/test-helpers';
 import { ListRecord, ReducerRecord } from 'soapbox/reducers/user_lists';
+import * as featureFlags from 'soapbox/runtime/feature-flags';
 
 import { normalizeAccount, normalizeInstance, normalizeRelationship } from '../../normalizers';
 import {
@@ -29,6 +32,13 @@ import {
 } from '../accounts';
 
 let store: ReturnType<typeof mockStore>;
+
+const expectedNetworkApplicationError = expect.objectContaining({
+  kind: 'transient',
+  message: 'The network request failed.',
+  name: 'ApplicationError',
+  retryable: true,
+});
 
 describe('createAccount()', () => {
   const params = {
@@ -213,6 +223,44 @@ describe('fetchAccountByUsername()', () => {
         expect(actions[1].type).toEqual('ACCOUNTS_IMPORT');
         expect(actions[2].type).toEqual('ACCOUNT_FETCH_SUCCESS');
       });
+
+      it('uses the legacy implementation when the rollback flag is disabled', async() => {
+        const flag = jest.spyOn(featureFlags, 'readFeatureFlag').mockReturnValue(false);
+        const adapter = jest.spyOn(LegacyAccountRepository.prototype, 'findByUsername');
+
+        try {
+          await store.dispatch(fetchAccountByUsername(username));
+
+          const actions = store.getActions();
+          expect(adapter).not.toHaveBeenCalled();
+          expect(actions.some(action => action.type === 'ACCOUNT_FETCH_SUCCESS')).toBe(true);
+          expect(actions.some(action => action.type === 'ACCOUNT_FETCH_FAIL')).toBe(false);
+        } finally {
+          adapter.mockRestore();
+          flag.mockRestore();
+        }
+      });
+
+      it.each([
+        ['a legacy placeholder', '_legacy', undefined],
+        ['a partially migrated ID', '123', 'https://social.example/users/tiger'],
+      ])('does not treat %s as a URL', async(_label, selectedAccount, storedUrl) => {
+        const authUser = ImmutableMap({
+          access_token: 'secret',
+          id: selectedAccount,
+          ...(storedUrl ? { url: storedUrl } : {}),
+        });
+        store = mockStore(store.getState().set('auth', ImmutableMap({
+          me: selectedAccount,
+          users: ImmutableMap({ [selectedAccount]: authUser }),
+        })));
+
+        await expect(store.dispatch(fetchAccountByUsername(username))).resolves.toBeUndefined();
+
+        const actions = store.getActions();
+        expect(actions.some(action => action.type === 'ACCOUNT_FETCH_SUCCESS')).toBe(true);
+        expect(actions.some(action => action.type === 'ACCOUNT_FETCH_FAIL')).toBe(false);
+      });
     });
 
     describe('with an unsuccessful API request', () => {
@@ -227,7 +275,7 @@ describe('fetchAccountByUsername()', () => {
           {
             type: 'ACCOUNT_FETCH_FAIL',
             id: null,
-            error: new Error('Network Error'),
+            error: expectedNetworkApplicationError,
             skipAlert: true,
           },
           { type: 'ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP', username: 'tiger' },
@@ -237,6 +285,7 @@ describe('fetchAccountByUsername()', () => {
         const actions = store.getActions();
 
         expect(actions).toEqual(expectedActions);
+        expect(actions[0].error).toBeInstanceOf(ApplicationError);
       });
     });
   });
@@ -292,7 +341,7 @@ describe('fetchAccountByUsername()', () => {
           {
             type: 'ACCOUNT_FETCH_FAIL',
             id: null,
-            error: new Error('Network Error'),
+            error: expectedNetworkApplicationError,
             skipAlert: true,
           },
           { type: 'ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP', username },
@@ -302,6 +351,7 @@ describe('fetchAccountByUsername()', () => {
         const actions = store.getActions();
 
         expect(actions).toEqual(expectedActions);
+        expect(actions[2].error).toBeInstanceOf(ApplicationError);
       });
     });
   });
@@ -355,7 +405,7 @@ describe('fetchAccountByUsername()', () => {
           {
             type: 'ACCOUNT_FETCH_FAIL',
             id: null,
-            error: new Error('Network Error'),
+            error: expectedNetworkApplicationError,
             skipAlert: true,
           },
           { type: 'ACCOUNT_FETCH_FAIL_FOR_USERNAME_LOOKUP', username },
@@ -365,6 +415,7 @@ describe('fetchAccountByUsername()', () => {
         const actions = store.getActions();
 
         expect(actions).toEqual(expectedActions);
+        expect(actions[2].error).toBeInstanceOf(ApplicationError);
       });
     });
   });

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Map as ImmutableMap } from 'immutable';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 
+import * as BuildConfig from './build_config';
 import errorsMiddleware from './middleware/errors';
 import soundsMiddleware from './middleware/sounds';
 import { installAccountPurgeListener } from './persistence/cross-tab';
@@ -9,6 +10,7 @@ import { needsAccountPurge } from './persistence/lifecycle';
 import { purgeAccountScope, resumePendingPurges } from './persistence/purge';
 import appReducer from './reducers';
 
+import type { RootState as ReducerRootState } from './reducers';
 import type { AnyAction } from 'redux';
 
 export const store = configureStore({
@@ -18,7 +20,7 @@ export const store = configureStore({
     errorsMiddleware(),
     soundsMiddleware(),
   ],
-  devTools: true,
+  devTools: BuildConfig.NODE_ENV !== 'production',
 });
 
 void resumePendingPurges(accountUrl => {
@@ -46,5 +48,5 @@ export type Store = typeof store;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 // https://redux.js.org/usage/usage-with-typescript
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReducerRootState;
 export type AppDispatch = ThunkDispatch<RootState, {}, AnyAction>;

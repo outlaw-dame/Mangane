@@ -1,8 +1,8 @@
 # Mangane Verified Current State
 
-Status: **Current / Phase 0 in progress**
+Status: **Canonical verified current state / Phases 0 and 1 complete / Phase 2 in progress**
 
-Last updated: 2026-07-23
+Last updated: 2026-07-26
 
 This document records verified repository behavior and known unknowns before modernization begins. It is intentionally distinct from accepted-target architecture. A claim belongs here only when supported by the current repository or a reproducible inspection.
 
@@ -62,25 +62,41 @@ The current Jest harness runs in jsdom and excludes the service-worker entry fro
 
 ## 4. Current versus target
 
-The current inherited application is the compatibility base. Framework7, Phosphor, local-first canonical storage, hybrid search, local intelligence, composer context and interpolation are accepted targets and must not be described as current implementation.
+The current inherited application is the compatibility base. The Phosphor
+dependency and semantic registry are now a bounded Phase 2 foundation, but
+broad Phosphor presentation migration remains a target. Framework7,
+local-first canonical storage, hybrid search, local intelligence, composer
+context, and interpolation are accepted targets and must not be described as
+current implementation.
 
 Existing functionality must not be removed merely because it is absent from target documents. Removal requires inventory, compatibility analysis, migration, rollback and an architectural decision.
 
 ## 5. Phase 0 status
 
-Substantial evidence now exists for bootstrap, routing, Redux, global query configuration, shared API behavior, authentication persistence, workers, shared HTML utilities and the Jest baseline.
+Phase 0 is closed. Bootstrap, routing, Redux, React Query, API/protocol, authentication, persistence, workers, HTML safety, telemetry, design, accessibility, tests, builds, dependencies, licensing, and documentation authority now have source-backed inventories and executable drift gates.
 
-Phase 0 remains incomplete. Blocking inventories include:
+The closure does not claim that inherited implementation debt is resolved. The exact Phase 1 and later constraints—including TypeScript diagnostics, transport scope, React Query scope, dependency remediation, cross-engine visual coverage, and external branch protection—are recorded in [`PHASE_0_CLOSURE_REPORT.md`](./PHASE_0_CLOSURE_REPORT.md).
 
-- complete repository tree and feature inventory;
-- React Query keys, mutations and invalidations;
-- state authority and duplication;
-- API call sites, streaming, uploads and feature detection;
-- all persistence, cache and object-URL call sites;
-- all rendering sinks, sanitizers, redirects, previews and embeds;
-- Sentry initialization, consent and redaction;
-- icon, style and shared-component call sites;
-- exact CI workflow and baseline command outcomes;
-- dependency advisories, reachability and transitive licenses;
-- historical documentation and prior-requirement mapping;
-- backend capability and route manifests.
+## 6. Phase 1 implementation state
+
+Account lookup is the first representative feature routed through domain, application, protocol-adapter, runtime-environment, typed-error, feature-flag, and account-scope contracts. Its prior Redux/API behavior remains available behind the owned rollback flag.
+
+The repository TypeScript authority baseline is now zero diagnostics. A presentation-boundary inventory makes inherited direct backend coupling explicit and rejects new coupling. Detailed behavior, migration, rollback, risks, and verification requirements are recorded in [`PHASE_1_ARCHITECTURE_CONTRACTS.md`](./PHASE_1_ARCHITECTURE_CONTRACTS.md).
+
+## 7. Phase 2 implementation state
+
+Phase 2 is active. Slice 2A established a canonical semantic token source,
+deterministic generated CSS, Tailwind consumption, display-mode behavior, core
+contrast checks, and bounded Framework7 compatibility aliases. Slice 2B adds
+the pinned Phosphor dependency, typed semantic registry, safe icon adapter,
+exhaustive provider migration baseline, and a CI gate that rejects new raw icon
+imports. Broad icon migration has not occurred; inherited renderers and
+providers remain available while the reviewed baseline shrinks. Slice 2C adds
+the nine shared foundational controls, native interaction and state contracts,
+safe focus return, token-backed focus/reduced-motion/forced-colors behavior,
+and an executable inventory gate. Cross-engine visual baselines and the broader
+accessibility harness remain slice 2D work.
+
+The staged plan, current behavior, target behavior, migration, rollback, risks,
+security properties, and completion checklist are recorded in
+[`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md).
