@@ -66,7 +66,7 @@ The inherited application remains the compatibility base. Phase 2's design
 foundation and Phase 3's flagged Framework7 shell are current, but broad
 presentation migration remains a target. Phase 4's PWA hardening and Phase 5's
 account-scoped canonical-store foundation are current. Durable synchronization,
-feed-neutral application boundaries, For You/Following separation, Custom
+feed-neutral application boundaries, Home/For You separation, Custom
 Feeds, hybrid search, local intelligence, composer context, and interpolation
 remain accepted targets and must not be described as current implementation.
 
@@ -138,13 +138,16 @@ criterion is not complete. The required gap contract is recorded in
 
 ## 11. Feed roadmap state
 
-For You, Following, and Custom Feeds are accepted targets, not current
+Home relationship filtering, For You, and Custom Feeds are accepted targets,
+not current
 features:
 
-- Phase 8 makes Home a destination containing deterministic For You and
-  Following built-in feeds.
-- Initial For You is the latest-first union of outbound-follow content and
-  explicitly followed hashtags; it is not an opaque algorithmic feed.
+- Phase 8 makes Home and For You separate timelines and does not add a
+  Following feed.
+- Home contains mutual, two-way relationship content.
+- Initial For You is the latest-first union of outbound-only, one-way
+  relationship content and explicitly followed hashtags; it is not an opaque
+  algorithmic feed.
 - Future personalization belongs to the account-scoped, inspectable work in
   Phases 19 and 25.
 - Custom Feeds are Phase 23A because their full publication, subscription,

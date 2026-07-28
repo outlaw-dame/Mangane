@@ -212,7 +212,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical ADR index",
-      "contentSha256": "7e63873fb13a8ab76de3309dc4e55b760102e87d575eace0bbd1d8c1b84f30c1"
+      "contentSha256": "178bff7f4bc71c483c79e7703c54719269ae57dc249ab807a17d1848b8a800d8"
     },
     {
       "path": "docs/architecture/AUTH_PERSISTENCE_INVENTORY.md",
@@ -322,7 +322,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical verified current state / Phases 0–4 complete / Phase 5 in progress",
-      "contentSha256": "58d6832980d41bdbb0fd32825553f228e1005f3f0118627ccf4ded3cedc4a0bf"
+      "contentSha256": "484e71866a7eaf25d4ae48b42c69dc7476c6b587badaba9f594c1db542fdf056"
     },
     {
       "path": "docs/architecture/DATA_PRIVACY_AND_RESILIENCE.md",
@@ -472,7 +472,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "2d926ff577f53618df5e6dfd397addfe200430e9447841da8514276f3c28a3e4"
+      "contentSha256": "aabfd0192e75fa73ed4cd74c19adb512fb6b9458dd19da0035104155f932ce48"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -562,7 +562,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Accepted target / queued",
-      "contentSha256": "9ab0f32634b20bb6d1652147499d73812003da6f0708defc2859b36e85b9205a"
+      "contentSha256": "03db8e5e1fd136a46f22dc5459d153a974566c321b1b5b1739c5f342173c6bd2"
     },
     {
       "path": "docs/architecture/PHASE_2_DESIGN_FOUNDATION.md",
@@ -602,7 +602,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 1,
       "statusHeader": "Accepted target / blocked on Phase 5–7 exit criteria",
-      "contentSha256": "f083fe118fb2b6a024def603af60e15f5e6a8515ebf198ca397675531e2682dc"
+      "contentSha256": "5800ec1787ce7664c6f90640830f208c7996c90e029f8f6884acdf514f936d36"
     },
     {
       "path": "docs/architecture/PREVIEW_AND_EMBED_INVENTORY.md",
@@ -662,7 +662,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 1,
       "statusHeader": "Canonical architecture index / Phase 0 closed",
-      "contentSha256": "3d829bd0e3f1babd1244ccec4ffdb689c8e955b3290f10c29e8a6f74cfb3eeaa"
+      "contentSha256": "104ab798314f3f71ecdcd0e27aefedae2e7934a92fb2642c5193c2636d49d670"
     },
     {
       "path": "docs/architecture/REDUX_AUTHORITY_DRIFT_GATE.md",

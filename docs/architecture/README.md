@@ -23,7 +23,7 @@ Every implementation agent and contributor must read these documents in order be
 ## Active and accepted phase plans
 
 - [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md)
-  defines the For You/Following source contracts, Phase 5–7 prerequisites,
+  defines the Home/For You source contracts, Phase 5–7 prerequisites,
   editorial migration slices, and safe scroll-restoration requirements.
 - [`PHASE_23A_CUSTOM_FEEDS.md`](./PHASE_23A_CUSTOM_FEEDS.md) defines the
   staged Custom Feeds program, including trusted publication authority,

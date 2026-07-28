@@ -156,35 +156,36 @@ Security/privacy impact: Repositories bind to exact account and instance scope; 
 
 Migration/rollback: `architecture.accountLookupAdapter` defaults to the new account-lookup path. Its registered rollback value restores the prior path. The flag is removed only after Phase 7 equivalence evidence.
 
-## ADR-020 — Home is a destination with distinct For You and Following feeds
+## ADR-020 — Home and For You are distinct relationship-aware timelines
 
 Status: Accepted
 
 Date: 2026-07-28
 
-Decision: Home is the route and destination, not an ambiguous third timeline.
-It contains distinct built-in For You and Following feeds. Following is based
-on one-way outbound-follow provenance and never requires a reciprocal follow.
-Initial For You is the latest-first, deduplicated union of Following candidates
-and posts from explicitly followed hashtags.
+Decision: Home and For You are separate built-in timelines. Home is based on
+mutual, two-way follow provenance. Initial For You is the latest-first,
+deduplicated union of outbound-only, one-way follow provenance and posts from
+explicitly followed hashtags. There is no separate Following feed.
 
 Context: The inherited `home` timeline combines server behavior behind one
-label and does not provide independent feed identity or scroll state. Mangane
-needs a clean place for followed accounts and hashtags now without prematurely
+label and does not provide relationship-classified membership or independent
+For You state. Mangane needs a clean mutual-relationship Home and a separate
+place for one-way follows and followed hashtags without prematurely
 introducing opaque ranking.
 
-Alternatives considered: retain Home as a feed beside For You; put followed
-hashtags into Following; launch engagement ranking immediately; merge future
-Custom Feeds into one Home stream.
+Alternatives considered: add a separate Following feed; put all followed
+accounts into Home regardless of reciprocity; launch engagement ranking
+immediately; merge future Custom Feeds into one Home stream.
 
 Rationale: Distinct source contracts are understandable, testable, and
 portable across protocol adapters. A deterministic baseline establishes
 observable behavior before personalization experiments.
 
 Consequences and tradeoffs: Phase 5 must store feed membership/order separately
-from statuses, and Phase 7 must expose a feed-neutral read model. Servers that
-cannot enumerate followed hashtags degrade For You honestly to Following
-rather than fabricating capability.
+from statuses, and Phase 7 must expose a feed-neutral read model. Relationship
+changes must move membership between Home and For You idempotently. Servers
+that cannot enumerate followed hashtags keep the outbound-only For You source
+available and report the degraded capability rather than fabricating results.
 
 Security/privacy impact: Feed records, checkpoints, and view state are bound to
 account and instance scope. Initial For You does not infer sensitive interests

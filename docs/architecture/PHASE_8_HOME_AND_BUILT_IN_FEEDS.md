@@ -6,17 +6,17 @@ Last updated: 2026-07-28
 
 ## Outcome
 
-Phase 8 turns Home into a timeline destination with two distinct built-in
-feeds:
+Phase 8 delivers two distinct built-in timelines:
 
-- **For You** combines posts attributable to accounts the viewer follows with
-  posts from hashtags the viewer follows.
-- **Following** contains posts attributable to outbound follows. Reciprocity
-  is not required.
+- **Home** contains posts attributable to mutual, two-way follow
+  relationships.
+- **For You** contains posts attributable to outbound-only, one-way follows
+  plus eligible posts from hashtags the viewer follows.
 
-Home is the destination and route, not a third ambiguous feed. Future pinned
-Custom Feeds may appear beside these built-in feeds, but they remain separate
-subscriptions and must not be blended into Following.
+There is no separate Following feed. Home and For You have separate timeline,
+pagination, update, and restoration state. Future pinned Custom Feeds may
+appear beside them, but remain separate subscriptions and are not blended into
+either built-in timeline.
 
 The first For You release is deterministic and chronological. It does not use
 opaque engagement ranking, inferred interests, or cloud profiling. Later
@@ -49,27 +49,28 @@ local records, so Phase 5 remains in progress.
 
 ## Product contract
 
-### Home destination
+### Timeline navigation
 
-The Home route presents a semantic tab list:
+The primary timeline surface presents a semantic tab list:
 
 ```text
-For You | Following | [future pinned feeds]
+Home | For You | [future pinned feeds]
 ```
 
 Each tab owns independent load, error, stale, queued-update, anchor, and scroll
 state. Switching tabs must not reset or merge another feed's state.
 
-### Following
+### Home
 
-Following includes an eligible status when its inclusion is attributable to an
-outbound-follow relationship:
+Home includes an eligible status when the account relationship that qualifies
+the status is mutual: the viewer follows that account and that account follows
+the viewer.
 
-- the author is followed by the viewer; or
-- a followed account performed the boost/repost that introduced the status.
+For an original post, the qualifying relationship account is the author. For a
+boost/repost, the account that introduced the boost is also qualifying
+provenance. Repost attribution remains visible.
 
-A mutual follow is never required. A post included only because it matched a
-followed hashtag does not belong in Following.
+One-way outbound follows and hashtag-only candidates do not belong in Home.
 
 Backend-specific Home behavior must be normalized behind a timeline source
 adapter. Presentation components must not infer relationship or capability
@@ -79,11 +80,15 @@ rules from raw API payloads.
 
 The initial For You feed is the chronological, deduplicated union of:
 
-1. the Following candidate stream; and
+1. eligible posts attributable to accounts the viewer follows that do not
+   follow the viewer back; and
 2. eligible posts from hashtags the viewer explicitly follows.
 
 Rules:
 
+- mutual-relationship provenance takes precedence and routes the status to
+  Home, preventing the same candidate from remaining in For You merely because
+  it also matches a followed hashtag;
 - subscriber blocks, mutes, filters, language settings, content warnings,
   visibility, and server policy are applied before display;
 - canonical object URI is the preferred deduplication key, with a scoped
@@ -92,10 +97,16 @@ Rules:
 - source provenance is retained for reconciliation but is not shown as a
   persistent “recommended because” label;
 - partial hashtag-source failure leaves successful and cached content visible;
-- unsupported followed-hashtag capability degrades to Following with a clear,
-  non-fatal status;
+- unsupported followed-hashtag capability leaves the outbound-only source
+  available and shows a clear, non-fatal degraded status;
 - ordering is latest-first with a deterministic tie-breaker;
 - no hidden interest inference or engagement score is used.
+
+Relationship changes must reconcile both feeds idempotently. When an
+outbound-only relationship becomes mutual, affected membership moves from For
+You to Home. When a mutual relationship becomes outbound-only, affected
+membership moves from Home to For You. Stale checkpoints or retries must not
+leave the same relationship-qualified entry in both feeds.
 
 The client must not claim global completeness. Remote content remains limited
 to what the connected server can resolve and authorize.
@@ -105,7 +116,7 @@ to what the connected server can resolve and authorize.
 Phase 7 must expose a feed-neutral read model. A representative contract is:
 
 ```ts
-type BuiltInFeedId = 'for-you' | 'following';
+type BuiltInFeedId = 'home' | 'for-you';
 
 type TimelineEntry = {
   accountScopeId: string;
@@ -113,7 +124,11 @@ type TimelineEntry = {
   statusId: string;
   canonicalUri?: string;
   sortKey: string;
-  sourceKinds: Array<'followed-account' | 'followed-hashtag'>;
+  sourceKinds: Array<
+    'mutual-relationship'
+    | 'outbound-only-relationship'
+    | 'followed-hashtag'
+  >;
 };
 ```
 
@@ -154,7 +169,7 @@ Restoration state must:
 - fall back safely to the newest loaded position rather than looping;
 - purge on logout, account removal, relevant instance change, Custom Feed
   unpin/unsubscribe, and schema incompatibility;
-- preserve independent state for For You, Following, and every pinned feed;
+- preserve independent state for Home, For You, and every pinned feed;
 - avoid animated corrective scrolling when reduced motion is requested.
 
 Index and raw pixel restoration alone are insufficient because media loading,
@@ -185,7 +200,8 @@ insertions change item height and order.
 - enumerate current Home behaviors and backend-specific actions;
 - create editorial status/media/conversation projections;
 - add Akkoma, Pleroma, and Mastodon fixtures;
-- define Following and For You inclusion, ordering, deduplication, and degraded
+- define Home and For You inclusion, relationship precedence, ordering,
+  deduplication, transition reconciliation, and degraded
   behavior;
 - prove moderation and visibility parity.
 
@@ -206,7 +222,7 @@ insertions change item height and order.
 
 ### 8D — Timeline states and restoration
 
-- implement independent For You and Following state;
+- implement independent Home and For You state;
 - implement anchor-based, scoped restoration;
 - cover queued insertions, gaps, stale/offline data, cache eviction, account
   switching, and missing anchors;
@@ -221,7 +237,9 @@ insertions change item height and order.
 
 ## Tests required
 
-- one-way follow inclusion and non-reciprocal relationships;
+- mutual relationship inclusion in Home;
+- outbound-only relationship inclusion in For You;
+- one-way-to-mutual and mutual-to-one-way reconciliation;
 - followed-hashtag inclusion and unsupported-capability degradation;
 - canonical-URI deduplication across both sources;
 - block, mute, filter, visibility, CW, and language enforcement;
@@ -240,9 +258,10 @@ insertions change item height and order.
 
 Phase 8 is complete only when:
 
-1. Home exposes distinct For You and Following built-in feeds.
-2. For You uses the documented deterministic union and Following uses
-   outbound-follow provenance.
+1. Home and For You are distinct built-in timelines and no Following feed is
+   introduced.
+2. Home uses mutual-relationship provenance; For You uses outbound-only
+   relationship and followed-hashtag provenance.
 3. Each feed has account-scoped membership, ordering, checkpoints, state, and
    anchor-based restoration.
 4. Existing moderation, visibility, CW, media, quote, poll, reaction,

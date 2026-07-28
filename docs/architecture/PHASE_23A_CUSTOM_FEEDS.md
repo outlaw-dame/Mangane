@@ -89,7 +89,7 @@ A feed has:
 - public, unlisted, or private visibility;
 - draft or published state;
 - people, copied/synchronized lists, hashtags, keywords, topics, exclusions,
-  and optional Following/local candidates;
+  and optional followed-account or local candidates;
 - original/reply/repost/media/language controls;
 - disclosure settings that never reveal private examples or hidden members;
 - latest-first ordering for the initial release.
@@ -136,7 +136,7 @@ Protocol-aware source adapters cover:
 - native list timelines;
 - synchronized list membership;
 - hashtag timelines;
-- Following and local candidates;
+- followed-account and local candidates;
 - future native Custom Feed endpoints.
 
 Mastodon-compatible servers generally require followed accounts for native

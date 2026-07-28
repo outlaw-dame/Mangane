@@ -20,7 +20,7 @@ authoritative for scope and exit criteria.
 | Phase 4 — PWA, service worker, and offline hardening | Complete | [`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md) |
 | Phase 5 — Canonical local data store | In progress | Slices A–D are merged; timeline/order and conversation-hydration exit criteria remain open |
 | Phases 6–7 | Queued | Required before Phase 8 runtime migration |
-| Phase 8 — Home and built-in feed editorial migration | Queued | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md) |
+| Phase 8 — Home and For You editorial migration | Queued | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md) |
 | Phases 9–23 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
 | Phase 23A — Custom Feeds | Queued | [`PHASE_23A_CUSTOM_FEEDS.md`](./PHASE_23A_CUSTOM_FEEDS.md) |
 | Phases 24–31 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
@@ -252,22 +252,22 @@ Exit criteria:
 - at least Home and one secondary module use stable application boundaries;
 - duplicate state sources have defined authority and retirement plan.
 
-## Phase 8 — Home and built-in feed editorial migration
+## Phase 8 — Home and For You editorial migration
 
 Status: **Queued; see
 [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md).**
 
-Goal: deliver the first complete Paper-influenced content surface while
-separating the Home destination into deterministic For You and Following
-built-in feeds.
+Goal: deliver the first complete Paper-influenced content surface with
+separate Home and For You timelines.
 
 Deliverables:
 
-- Home route with independent For You and Following tabs;
-- Following sourced from one-way outbound-follow provenance, with no
-  reciprocity requirement;
-- initial For You as a latest-first, deduplicated union of Following candidates
-  and explicitly followed hashtags;
+- Home sourced from mutual, two-way relationship provenance;
+- For You sourced from outbound-only, one-way relationship provenance and
+  explicitly followed hashtags;
+- no separate Following feed;
+- deterministic relationship-transition reconciliation so entries move safely
+  when a relationship becomes mutual or ceases to be mutual;
 - account-scoped feed membership/order, source provenance, cursors,
   checkpoints, and independent state;
 - post card anatomy using design-system components;
@@ -283,7 +283,7 @@ Deliverables:
 
 Exit criteria:
 
-- For You and Following obey their documented source contracts and degrade
+- Home and For You obey their documented source contracts and For You degrades
   honestly when followed-hashtag capability is unavailable;
 - timeline behavior matches existing capabilities;
 - no regression in moderation, visibility, media, CW, or backend-specific actions;
