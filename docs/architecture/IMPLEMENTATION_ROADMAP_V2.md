@@ -804,14 +804,13 @@ Exit criteria:
 ```text
 0 → 1 → 2 → 3
         ├→ 4
-        ├→ 5 → 6 → 7
-        └→ 8 → 9 → 10 → 11
+        └→ 5 → 6 → 7 → 8 → 9 → 10 → 11
 
 5 + 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18
                                       ├→ 19 → 20
                                       └→ 21 → 22
 
-5 + 6 + 7 + 8 + 12–20 + 23 → 23A
+5 + 6 + 7 + 8 + 12–17 + 19–20 + 23 → 23A
 
 Design/application migrations continue through 23–24. Custom Feeds are added
 as Phase 23A without renumbering the established roadmap.

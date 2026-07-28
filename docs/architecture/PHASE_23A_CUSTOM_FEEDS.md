@@ -20,6 +20,9 @@ The complete feature depends on:
 - Phases 19–20 local personalization and semantic-filter controls;
 - Phase 23 lists, profiles, settings, and remaining high-use migrations.
 
+Phase 18 Gist synthesis is completed earlier in the canonical sequence but is
+not a direct Custom Feeds dependency.
+
 Some contracts and private local prototypes may be developed earlier, but the
 phase cannot be called complete until its dependencies and exit criteria are
 met.
@@ -280,4 +283,3 @@ Phase 23A is complete only when:
    budgets pass;
 10. documentation distinguishes current, degraded, unsupported, and deferred
     behavior, and CI/review are clean.
-

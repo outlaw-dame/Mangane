@@ -472,7 +472,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "7674d6025d604700bffca680e2528b867e8ca029d5c2db89919dab5577f55d2c"
+      "contentSha256": "2d926ff577f53618df5e6dfd397addfe200430e9447841da8514276f3c28a3e4"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -562,7 +562,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Accepted target / queued",
-      "contentSha256": "00e33b6c6a0dceb5adfa9e88161734fb3e3347e03aa3cbd6456dc07cecda73e3"
+      "contentSha256": "9ab0f32634b20bb6d1652147499d73812003da6f0708defc2859b36e85b9205a"
     },
     {
       "path": "docs/architecture/PHASE_2_DESIGN_FOUNDATION.md",
