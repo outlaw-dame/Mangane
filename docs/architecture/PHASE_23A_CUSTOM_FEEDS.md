@@ -62,17 +62,23 @@ server authority for global feed publication, discovery, subscriber counts, or
 revision distribution. Those capabilities must not be simulated with
 client-only trust.
 
-Before public/unlisted feeds ship, adopt and document one of:
+Before stateful public/unlisted publication or any private-feed operation
+ships, adopt and document one of:
 
 1. a versioned server protocol exposed by the connected instance;
 2. a separately operated, authenticated feed registry with explicit privacy,
-   moderation, abuse, retention, and availability policies; or
-3. a portable signed recipe format whose trust and discovery limitations are
-   clearly stated.
+   moderation, abuse, retention, and availability policies.
 
 The chosen authority must authenticate the acting account and authorize every
 create, edit, publish, delete, subscribe, and private-read operation. A
 client-supplied creator ID or account-context ID is never sufficient.
+
+A portable signed recipe may supplement either authority for transporting a
+public feed definition and verifying its authorship and integrity. A recipe
+alone cannot authenticate subscribers, enforce private access, revoke a
+published feed, distribute revisions authoritatively, or authorize stateful
+operations. It is therefore never a substitute for the server or registry
+authority required above.
 
 Private local feeds can precede that authority, but the UI must label them
 accurately and must not claim community publication or cross-device

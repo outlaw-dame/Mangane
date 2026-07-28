@@ -212,7 +212,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical ADR index",
-      "contentSha256": "178bff7f4bc71c483c79e7703c54719269ae57dc249ab807a17d1848b8a800d8"
+      "contentSha256": "b7effabb271c20b0ab6ffdea7dae3f2ccae31529a30c4e9b2495ee511ec36fe7"
     },
     {
       "path": "docs/architecture/AUTH_PERSISTENCE_INVENTORY.md",
@@ -562,7 +562,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Accepted target / queued",
-      "contentSha256": "03db8e5e1fd136a46f22dc5459d153a974566c321b1b5b1739c5f342173c6bd2"
+      "contentSha256": "4cdad1be8a36f1504cc6f77817990321e0aeebbc2615f909b3f673892d792748"
     },
     {
       "path": "docs/architecture/PHASE_2_DESIGN_FOUNDATION.md",

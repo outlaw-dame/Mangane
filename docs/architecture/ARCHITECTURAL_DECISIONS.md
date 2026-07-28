@@ -205,8 +205,10 @@ Date: 2026-07-28
 Decision: Custom Feeds are Phase 23A, with private local feeds allowed before
 public publication. Public/unlisted publication, discovery, revision
 distribution, subscriber counts, and private-feed access require a documented
-server, registry, or portable signed-recipe authority. Client-supplied creator
-identity is never authorization.
+server protocol or authenticated registry authority. A portable signed recipe
+may transport a public definition and prove authorship/integrity, but cannot
+authorize stateful or private operations. Client-supplied creator identity is
+never authorization.
 
 Context: The requested feature spans non-followed accounts, list
 synchronization, keywords, semantic topics, publication, subscription,
