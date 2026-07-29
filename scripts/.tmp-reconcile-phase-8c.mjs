@@ -6,6 +6,7 @@ const INDEX = 'docs/architecture/README.md';
 const ADR = 'docs/architecture/ARCHITECTURAL_DECISIONS.md';
 const SELF = 'scripts/.tmp-reconcile-phase-8c.mjs';
 const WORKFLOW = '.github/workflows/.tmp-phase-8c-reconcile.yml';
+const PHASE_FILE = 'PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -28,13 +29,13 @@ if (!roadmap.includes('| Phase 8C — Shared Activity Aggregation and Shared She
   if (!roadmap.includes(statusAnchor)) throw new Error('Missing Phase 8B status-table anchor');
   roadmap = roadmap.replace(
     statusAnchor,
-    `${statusAnchor}| Phase 8C — Shared Activity Aggregation and Shared Shelf | Queued | [\`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md\`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md) |\n`,
+    `${statusAnchor}| Phase 8C — Shared Activity Aggregation and Shared Shelf | Queued | [\`${PHASE_FILE}\`](./${PHASE_FILE}) |\n`,
   );
 }
 
 const phaseSection = `## Phase 8C — Shared Activity Aggregation and Shared Shelf
 
-Status: **Queued; see [\`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md\`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md).**
+Status: **Queued; see [\`${PHASE_FILE}\`](./${PHASE_FILE}).**
 
 Goal: preserve every legitimate share event while presenting repeated shares of the same canonical post as one safe, stable group and compacting dense runs of distinct shared posts into an accessible responsive Shared Shelf.
 
@@ -75,7 +76,7 @@ roadmap = insertOnce(roadmap, '## Phase 9 — Conversation and reading experienc
 write(ROADMAP, roadmap);
 
 let index = read(INDEX);
-const indexInsertion = '- [`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHARED_SHELF.md) defines event-preserving shared-activity deduplication, canonical-original grouping, bounded safe attribution, the responsive Shared Shelf, deterministic resurfacing, Share/Shared product terminology, and pagination, moderation, accessibility, account-isolation, migration, repair, and rollback gates.\n';
+const indexInsertion = `- [\`${PHASE_FILE}\`](./${PHASE_FILE}) defines event-preserving shared-activity deduplication, canonical-original grouping, bounded safe attribution, the responsive Shared Shelf, deterministic resurfacing, Share/Shared product terminology, and pagination, moderation, accessibility, account-isolation, migration, repair, and rollback gates.\n`;
 index = insertOnce(index, '- [`PHASE_23B_SUBSCRIBED_POST_STORIES.md`]', indexInsertion, 'active-plan index');
 write(INDEX, index);
 
@@ -104,13 +105,8 @@ Migration/rollback: Phase 8C is additive and feature-flagged. A generated termin
 adr = insertOnce(adr, '## ADR template', adrInsertion, 'ADR template');
 write(ADR, adr);
 
-// Remove temporary automation before generating exhaustive documentation hashes.
 unlinkSync(SELF);
 unlinkSync(WORKFLOW);
 
-execFileSync(process.execPath, ['scripts/generate-documentation-authority-registry.js'], {
-  stdio: 'inherit',
-});
-execFileSync(process.execPath, ['scripts/check-documentation-authority.js'], {
-  stdio: 'inherit',
-});
+execFileSync(process.execPath, ['scripts/generate-documentation-authority-registry.js'], { stdio: 'inherit' });
+execFileSync(process.execPath, ['scripts/check-documentation-authority.js'], { stdio: 'inherit' });
