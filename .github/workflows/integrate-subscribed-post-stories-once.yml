@@ -1,0 +1,75 @@
+name: Integrate subscribed post stories once
+
+on:
+  push:
+    branches:
+      - agent/document-subscribed-post-stories
+
+permissions:
+  contents: write
+
+concurrency:
+  group: integrate-subscribed-post-stories-once
+  cancel-in-progress: true
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: agent/document-subscribed-post-stories
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 18.20.8
+      - name: Integrate canonical documents
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const adrPath = 'docs/architecture/ARCHITECTURAL_DECISIONS.md';
+          let adr = fs.readFileSync(adrPath, 'utf8');
+          const decision = `## ADR-027 — Subscribed post Stories are a shared read-state presentation of ordinary statuses\n\nStatus: Accepted\n\nDate: 2026-07-29\n\nDecision: Add Phase 23B for an optional story-shaped tray and viewer over public-post notifications from accounts whose profile notification bell the user enabled. The canonical status remains an ordinary federated post. Mangane stores only account-scoped subscription generations, queue identity/provenance, shared notification projection, view receipts, grouping, and viewer position. Stories and Notifications share one unread obligation and must not double count.\n\nContext: The existing profile bell expresses an explicit account-post subscription. Presenting those notifications as Stories provides a focused reading experience across compatible Fediverse servers without inventing ephemeral objects, requiring Pixelfed Story support, or changing source-post lifetime. Multiple delivery paths can observe the same status, so canonical URI deduplication and one transactional upsert authority are mandatory.\n\nAlternatives considered: implement Pixelfed Stories; create Mangane-hosted ephemeral objects; duplicate statuses into a Story store; independently track unread state in Stories and Notifications; use notification ID as canonical identity; require Durable Streams for the first release.\n\nRationale: Reusing explicit subscription intent and canonical statuses adds product value while preserving protocol truth, moderation, actions, origin reconciliation, local-first continuity, and reversible notification fallback.\n\nConsequences and tradeoffs: The feature requires verified backend capability inventory, subscription-generation boundaries, cross-source deduplication, meaningful-view semantics, bounded queues, multi-tab coordination, reconciliation, and careful accessibility for text-rich posts. Cross-device completion is deferred.\n\nSecurity/privacy impact: Every record and command is account/instance scoped. Push and URLs are untrusted hints. Visibility, authorization, blocks, filters, and content warnings are rechecked before rendering. Prefetch cannot create view receipts. Content and identifiers are excluded from diagnostics.\n\nMigration/rollback: Phase 23B is additive and feature-flagged. Rollback stops Story ingestion/view writes and routes subscribed-post notifications back to ordinary Notifications while preserving server bell subscriptions, canonical statuses, notification history, and compatible read receipts.\n\n`;
+          if (!adr.includes('## ADR-027 —')) {
+            adr = adr.replace('## ADR template', decision + '## ADR template');
+            fs.writeFileSync(adrPath, adr);
+          }
+
+          const readmePath = 'docs/architecture/README.md';
+          let readme = fs.readFileSync(readmePath, 'utf8');
+          const marker = '## Active and accepted phase plans\n\n';
+          const bullet = '- [`PHASE_23B_SUBSCRIBED_POST_STORIES.md`](./PHASE_23B_SUBSCRIBED_POST_STORIES.md) defines the optional story-shaped presentation of profile-bell subscribed public-post notifications, including canonical-status reuse, subscription generations, cross-source deduplication, shared notification read state, bounded queues, meaningful-view receipts, reconciliation, accessibility, rollback, and optional later Durable Streams continuity.\n';
+          if (!readme.includes('PHASE_23B_SUBSCRIBED_POST_STORIES.md')) {
+            readme = readme.replace(marker, marker + bullet);
+            fs.writeFileSync(readmePath, readme);
+          }
+
+          const roadmapPath = 'docs/architecture/IMPLEMENTATION_ROADMAP_V2.md';
+          let roadmap = fs.readFileSync(roadmapPath, 'utf8');
+          const tableMarker = '| Phase 23A — Custom Feeds | Queued | [`PHASE_23A_CUSTOM_FEEDS.md`](./PHASE_23A_CUSTOM_FEEDS.md) |\n';
+          const tableRow = '| Phase 23B — Subscribed Post Stories | Queued | [`PHASE_23B_SUBSCRIBED_POST_STORIES.md`](./PHASE_23B_SUBSCRIBED_POST_STORIES.md) |\n';
+          if (!roadmap.includes('| Phase 23B — Subscribed Post Stories |')) {
+            roadmap = roadmap.replace(tableMarker, tableMarker + tableRow);
+          }
+          const phase24 = '## Phase 24 —';
+          const phaseSection = `## Phase 23B — Subscribed Post Stories\n\nStatus: **Queued; see [\`PHASE_23B_SUBSCRIBED_POST_STORIES.md\`](./PHASE_23B_SUBSCRIBED_POST_STORIES.md).**\n\nGoal: present ordinary public-post notifications from explicitly bell-subscribed accounts through an optional story-shaped tray and viewer, with canonical-status reuse, one shared unread obligation, deterministic deduplication, and ordinary Notifications as the rollback path.\n\nDeliverables:\n\n- verified inventory of profile-bell relationship capabilities and notification/event behavior per backend;\n- account-scoped subscription generations and effective boundaries;\n- canonical-URI queue identity and one transactional cross-source upsert authority;\n- shared Stories/Notifications unread projection with no duplicate badges or obligations;\n- meaningful foreground view receipts, mark-unread behavior, grouping, bounded queues, and deterministic ordering;\n- accessible Framework7 tray/viewer reusing canonical status, media, moderation, sanitization, and action implementations;\n- stream, push-hint, and bounded polling reconciliation with backoff, jitter, cancellation, multi-tab leases, edits, deletes, moves, and origin refresh;\n- local PWA continuation through Phase 5E and optional later Phase 6A Durable Streams integration;\n- feature flags, migration, corruption repair, account purge, rollback, security, accessibility, and performance proof.\n\nExit criteria:\n\n- one logical subscribed post produces one item across notification, stream, push, poll, hydration, and future durable delivery;\n- Stories and Notifications always agree on one unread obligation;\n- viewing does not alter or expire the ordinary source status;\n- account isolation, authorization, moderation, meaningful-view, overflow, offline, relaunch, multi-tab, and rollback tests pass;\n- unsupported server capabilities degrade honestly to ordinary Notifications.\n\n`;
+          if (!roadmap.includes('## Phase 23B — Subscribed Post Stories')) {
+            roadmap = roadmap.replace(phase24, phaseSection + phase24);
+          }
+          fs.writeFileSync(roadmapPath, roadmap);
+          NODE
+      - run: node scripts/generate-documentation-authority-registry.js
+      - run: node scripts/check-documentation-authority.js
+      - run: node --test scripts/__tests__/check-documentation-authority.test.js
+      - name: Commit integrated documentation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/ARCHITECTURAL_DECISIONS.md docs/architecture/README.md docs/architecture/IMPLEMENTATION_ROADMAP_V2.md config/documentation-authority-registry.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Integrate subscribed post stories phase'
+          git push origin HEAD:agent/document-subscribed-post-stories
