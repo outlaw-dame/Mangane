@@ -405,16 +405,6 @@
       "contentSha256": "e33e9fe6d0c0d6cd05c068849960c1caedd038b7b2498cd01c63eef37084160b"
     },
     {
-      "path": "docs/architecture/ENTITY_RESOLUTION_INTEGRATION_TRIGGER.md",
-      "title": "Entity resolution integration trigger",
-      "authorityId": "entity-resolution-integration-trigger",
-      "classification": "current-supporting-evidence",
-      "replacement": null,
-      "inheritedBrandingReferences": 0,
-      "statusHeader": null,
-      "contentSha256": "5a65c7d3ee525be483e25683ef5e5db7b7b59e566b26cf6d1675d8d4743d1605"
-    },
-    {
       "path": "docs/architecture/ERROR_RECOVERY_AUTHORITY_DRIFT_GATE.md",
       "title": "Error Boundary and Emergency Recovery Authority Drift Gate",
       "authorityId": "error-boundary-and-emergency-recovery-authority-drift-gate",
