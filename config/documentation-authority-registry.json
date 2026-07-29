@@ -305,16 +305,6 @@
       "contentSha256": "4053f1618ebc263a80efa89723b3a0c7ebd8d60ae27ddbbdf20ebb73fb07b919"
     },
     {
-      "path": "docs/architecture/CREATOR_ATTRIBUTION_RESEARCH_SOURCES.md",
-      "title": "Creator Attribution Research Sources",
-      "authorityId": "creator-attribution-research-sources",
-      "classification": "current-supporting-evidence",
-      "replacement": null,
-      "inheritedBrandingReferences": 0,
-      "statusHeader": "Supporting research / non-canonical source register",
-      "contentSha256": "fb86f1e1bcdfc3226be008e06f50c44bfeaaed762e96ee483a15a4c982e9d68c"
-    },
-    {
       "path": "docs/architecture/CSP_AND_TRUSTED_ADMIN_BOUNDARY.md",
       "title": "CSP and Trusted Administrator Boundary",
       "authorityId": "csp-and-trusted-administrator-boundary",
