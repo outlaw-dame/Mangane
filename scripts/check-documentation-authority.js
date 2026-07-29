@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 
 const { validateDocumentation } = require('./documentation-authority-lib');
 
@@ -11,7 +12,12 @@ const registry = JSON.parse(fs.readFileSync(path.join(root, 'config', 'documenta
 const requirements = JSON.parse(fs.readFileSync(path.join(root, 'config', 'historical-requirement-traceability.json'), 'utf8'));
 const { errors, actual } = validateDocumentation({ root, registry, requirements });
 if (errors.length) {
-  process.stdout.write(`EXPECTED_DOCUMENTATION_AUTHORITY_REGISTRY_BEGIN\n${JSON.stringify(actual, null, 2)}\nEXPECTED_DOCUMENTATION_AUTHORITY_REGISTRY_END\n`);
+  const encoded = zlib.gzipSync(Buffer.from(`${JSON.stringify(actual, null, 2)}\n`, 'utf8')).toString('base64');
+  process.stdout.write('EXPECTED_REGISTRY_GZIP_BASE64_BEGIN\n');
+  for (let index = 0; index < encoded.length; index += 3000) {
+    process.stdout.write(`EXPECTED_REGISTRY_CHUNK_${String(index / 3000).padStart(3, '0')}=${encoded.slice(index, index + 3000)}\n`);
+  }
+  process.stdout.write('EXPECTED_REGISTRY_GZIP_BASE64_END\n');
   throw new Error(`documentation-authority:\n- ${errors.join('\n- ')}`);
 }
 
