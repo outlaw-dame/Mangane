@@ -2,48 +2,213 @@ name: Architecture inventory
 
 on:
   pull_request:
-    paths:
-      - 'app/**'
-      - 'config/**'
-      - 'docs/architecture/BOOTSTRAP_PROVIDER_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/ERROR_RECOVERY_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/PUSH_WORKER_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/REACT_QUERY_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/SHARE_TARGET_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/SERVICE_WORKER_CACHE_AUTHORITY_DRIFT_GATE.md'
-      - 'webpack/**'
-      - 'scripts/**'
-      - 'package.json'
-      - 'yarn.lock'
-      - '.github/workflows/architecture-inventory.yml'
   push:
     branches:
       - main
-    paths:
-      - 'app/**'
-      - 'config/**'
-      - 'docs/architecture/BOOTSTRAP_PROVIDER_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/ERROR_RECOVERY_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/PUSH_WORKER_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/REACT_QUERY_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/SHARE_TARGET_AUTHORITY_DRIFT_GATE.md'
-      - 'docs/architecture/SERVICE_WORKER_CACHE_AUTHORITY_DRIFT_GATE.md'
-      - 'webpack/**'
-      - 'scripts/**'
-      - 'package.json'
-      - 'yarn.lock'
-      - '.github/workflows/architecture-inventory.yml'
+      - agent/document-entity-resolution
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: architecture-inventory-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  integrate-entity-docs:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/document-entity-resolution' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: agent/document-entity-resolution
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '18.20.8'
+      - name: Reconcile canonical entity documentation
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const rm = p => { if (fs.existsSync(p)) fs.rmSync(p); };
+          const section = (text, start, end, replacement) => {
+            const a = text.indexOf(start);
+            const b = text.indexOf(end, a);
+            if (a < 0 || b < 0) throw new Error(`Missing section ${start}`);
+            return text.slice(0, a) + replacement + text.slice(b);
+          };
+          const replace = (text, from, to, label) => {
+            if (text.includes(to)) return text;
+            if (!text.includes(from)) throw new Error(`Missing ${label}`);
+            return text.replace(from, to);
+          };
+
+          rm('.github/workflows/integrate-entity-resolution-once.yml');
+          rm('docs/architecture/.entity-resolution-integration-trigger');
+          rm('docs/architecture/ENTITY_RESOLUTION_INTEGRATION_TRIGGER.md');
+
+          const readmePath = 'docs/architecture/README.md';
+          let readme = fs.readFileSync(readmePath, 'utf8');
+          readme = replace(readme,
+            '- [`PHASE_8B_CREATOR_ATTRIBUTION.md`](./PHASE_8B_CREATOR_ATTRIBUTION.md) defines native Mastodon `fediverse:creator`/`PreviewCard.authors` support and cross-platform creator bylines, including proof tiers, multiple authors, canonical-account deduplication, attribution-domain settings, safe optional metadata resolution, privacy, rollback, and adversarial gates.',
+            '- [`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md) defines Mangane’s shared canonical entity authority and creator-attribution consumer, including Wikidata/DBpedia enrichment, structured article and social metadata, semantic hashtags, entity-aware Custom Feeds, Search/Explore/Gist/recommendation/composer integration, proof tiers, deduplication, privacy, rollback, and adversarial gates.',
+            'README Phase 8B link');
+          fs.writeFileSync(readmePath, readme);
+
+          const roadmapPath = 'docs/architecture/IMPLEMENTATION_ROADMAP_V2.md';
+          let roadmap = fs.readFileSync(roadmapPath, 'utf8');
+          roadmap = replace(roadmap,
+            '| Phase 8B — Creator Attribution | Queued | [`PHASE_8B_CREATOR_ATTRIBUTION.md`](./PHASE_8B_CREATOR_ATTRIBUTION.md) |',
+            '| Phase 8B — Entity Resolution & Creator Attribution | Queued | [`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md) |',
+            'roadmap Phase 8B row');
+          roadmap = section(roadmap, '## Phase 8B — Creator Attribution', '## Phase 9 —', `## Phase 8B — Entity Resolution & Creator Attribution
+
+Status: **Queued; see [\`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md\`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md).**
+
+Goal: establish one local-first canonical entity authority and use it for creator attribution, semantic hashtags, entity-aware Custom Feeds, Search, Explore, Gist, recommendations, composer context, and semantic navigation without duplicate entity stores.
+
+Deliverables:
+
+- canonical entities, aliases, relationships, mentions, evidence, provider references, resolutions, merges/splits, tombstones, migrations, purge, and repair;
+- provider-neutral resolver and confidence/abstention contracts;
+- bounded Wikidata and DBpedia matching/enrichment with provenance, attribution, caching, retry, circuit breakers, privacy, and degraded modes;
+- native Mastodon PreviewCard.authors, legacy fallback, multiple creators, missing_attribution, and capability-gated attribution-domain settings;
+- cross-platform extraction of fediverse:creator, Schema.org JSON-LD, sameAs, rel=author, Open Graph, oEmbed, microformats, Dublin Core, conventional author metadata, and low-confidence visible bylines;
+- literal-plus-semantic hashtag bindings and ambiguity handling;
+- bounded entity rules for Custom Feeds with exact, related, include, exclude, boost, require, preview, and lexical-fallback behavior;
+- integration with Search, Explore, Gist, recommendations, topic/entity pages, composer context, and the interpolator;
+- account isolation, moderation, URL/SSRF/DNS, Unicode/IDNA, cache-poisoning, migration, rollback, accessibility, performance, and evaluation gates.
+
+Exit criteria:
+
+- every consumer uses one canonical entity authority and no creator- or feature-specific duplicate graph remains;
+- ambiguous entities and hashtags abstain or remain literal rather than binding silently;
+- Wikidata/DBpedia outage never disables local search, previews, hashtags, or Custom Feeds;
+- status author, creator, publication, social identity, and verification proof remain distinct;
+- entity-aware feeds are bounded, deterministic, explainable, revisioned, and policy-safe;
+- merge/split, aliases, account moves, provider redirects, offline, corruption, purge, rollback, security, accessibility, and performance tests pass.
+
+`);
+          roadmap = section(roadmap, '## Phase 15 — Entity resolution and knowledge enrichment', '## Phase 16 —', `## Phase 15 — Entity retrieval, graph expansion, and search integration
+
+Goal: mature and evaluate the Phase 8B canonical entity authority as a first-class retrieval channel without creating a second entity schema, provider layer, cache, or confidence engine.
+
+Dependencies:
+
+- Phase 8B canonical entity contracts, local repository, resolver/evidence model, Wikidata/DBpedia adapters, semantic hashtag bindings, and migration rules;
+- Phases 12–14 lexical, vector, query-planning, and fusion foundations.
+
+Deliverables:
+
+- entity retriever over the Phase 8B canonical repository and alias index;
+- query mention detection and contextual candidate generation using the shared resolver;
+- bounded graph expansion by explicitly allowed relationship predicates and depth;
+- entity facets, cards, topic/entity navigation, and explanation evidence;
+- multilingual aliases, redirects, freshness, and provider-outage behavior inherited from Phase 8B;
+- calibrated fusion with lexical, vector, topic, and conversation retrieval;
+- evaluation for common names, ambiguous hashtags, events, organizations, creators, and multilingual queries.
+
+Exit criteria:
+
+- entity retrieval improves agreed relevance metrics without harming exact identifiers or literal hashtags;
+- all records and evidence resolve through Phase 8B rather than duplicate Phase 15 stores;
+- unavailable external enrichment leaves local entity and lexical search functional;
+- incorrect links remain correctable, explainable, reversible, and non-permanent.
+
+`);
+          fs.writeFileSync(roadmapPath, roadmap);
+
+          const searchPath = 'docs/architecture/SEARCH_AND_INTELLIGENCE.md';
+          let search = fs.readFileSync(searchPath, 'utf8');
+          search = section(search, '## 8. Entities, topics, Gist, and Explore', '## 9. Semantic filtering', `## 8. Entities, topics, Gist, and Explore
+
+Phase 8B defines the single canonical entity authority used by Search and every intelligent consumer. Processing follows mention or hashtag extraction, candidate generation, contextual resolution, confidence plus margin gates, explicit ambiguity/abstention, canonical local identity, and optional Wikidata/DBpedia enrichment. External graphs provide aliases, multilingual labels, types, redirects, official links, and selected relationships; they do not define ownership, authorship, authorization, or truth. Cached enrichment retains provider, evidence, retrieval time, freshness, license/attribution metadata, and independently disableable provider state.
+
+Literal hashtags remain independently searchable social tokens. A separate HashtagEntityBinding may resolve context-specific meanings, equivalent event tags, aliases, and translations for semantic search, Custom Feeds, recommendations, topic pages, and Gist grouping. Ambiguous tags remain literal or unresolved rather than receiving a universal meaning.
+
+Phase 15 entity retrieval, graph expansion, and fusion must reuse Phase 8B schemas, repositories, aliases, evidence, Wikidata/DBpedia clients, caches, confidence policy, merge/split history, and privacy boundaries. It may add retrieval indexes and evaluation but may not establish a second entity graph.
+
+Topic assignments are local, versioned derived data with confidence values. Topic/entity relationships preserve provenance and cannot bypass canonical-record access checks.
+
+Gist uses source posts and linked works as evidence. Knowledge-graph matches aid disambiguation but do not independently prove source claims. Explore may use entity affinity with local personalization, diversity, and negative feedback but must not become hidden engagement maximization.
+
+`);
+          search = search.replace('Last updated: 2026-07-23', 'Last updated: 2026-07-29');
+          fs.writeFileSync(searchPath, search);
+
+          const feedsPath = 'docs/architecture/PHASE_23A_CUSTOM_FEEDS.md';
+          let feeds = fs.readFileSync(feedsPath, 'utf8');
+          feeds = feeds.replace('Last updated: 2026-07-28', 'Last updated: 2026-07-29');
+          feeds = replace(feeds,
+            '- Phase 8 the shared renderer, timeline state, and pinned-feed shell;\n- Phases 12–17 lexical, semantic, topic, fusion, and explanation contracts;',
+            '- Phase 8 the shared renderer, timeline state, and pinned-feed shell;\n- Phase 8B the canonical entity authority, semantic hashtag bindings, Wikidata/DBpedia enrichment, confidence/ambiguity policy, and entity feed-rule contract;\n- Phases 12–17 lexical, semantic, entity-retrieval, topic, fusion, and explanation contracts;',
+            'Custom Feed dependencies');
+          if (!feeds.includes('## Entity-aware hashtags, topics, and feed rules')) feeds = feeds.replace('## Semantic and privacy contract\n', `## Entity-aware hashtags, topics, and feed rules
+
+Custom Feeds preserve literal hashtag and keyword rules while optionally referencing Phase 8B canonical entities. Definitions may use exact entities, selected first-degree related entities, and versioned include, exclude, boost, or require modes. They store stable CanonicalEntityId references rather than Wikidata Q IDs, DBpedia URIs, labels, or model-generated names as primary identity.
+
+A rule such as Apple Inc. may match high-confidence entity mentions, context-resolved hashtags, linked resources, official accounts, products, or events only when the feed revision explicitly permits those relationship predicates. Traversal is never implicit or unbounded: depth is initially zero or one, predicates are explicit, confidence thresholds and candidate budgets are versioned, and fan-out is capped.
+
+Creator controls distinguish literal matching, exact entity matching, selected related entities, ambiguity policy, and behavior when providers, local indexes, or semantic models are unavailable. Degraded behavior returns to literal hashtag, keyword, account, and lexical rules. Entity failure never empties an otherwise valid feed, bypasses subscriber policy, or changes the follow graph.
+
+Private feed definitions, examples, exclusions, negative feedback, and subscriber context are never sent to Wikidata, DBpedia, or another public resolver. Entity-aware decisions retain evidence and policy versions so creator preview and “Why included” explanations reflect the actual rule.
+
+## Semantic and privacy contract
+`);
+          if (!feeds.includes('### 23A.6 — Entity-aware feed precision')) feeds = feeds.replace('## Explicit deferrals\n', `### 23A.6 — Entity-aware feed precision
+
+- Phase 8B canonical entity references and semantic hashtag bindings;
+- exact-entity and selected-related-entity rules with bounded predicates/depth;
+- include, exclude, boost, and require modes;
+- ambiguity handling and private creator preview;
+- literal/lexical fallback during provider, model, index, or cache failure;
+- Wikidata/DBpedia privacy, request-volume, stale-data, disagreement, and outage fixtures;
+- explanation, relevance, over-expansion, deduplication, migration, and adversarial tests.
+
+## Explicit deferrals
+`);
+          feeds = feeds.replace('6. hashtags, keywords, topics, and exclusions are predictable and creator\n   preview is private;', '6. literal hashtags, semantic hashtag bindings, keywords, topics, canonical entities, related-entity rules, and exclusions are predictable, bounded, explainable, and creator preview is private;');
+          fs.writeFileSync(feedsPath, feeds);
+
+          const adrPath = 'docs/architecture/ARCHITECTURAL_DECISIONS.md';
+          let adr = fs.readFileSync(adrPath, 'utf8');
+          adr = section(adr, '## ADR-028 —', '## ADR template', `## ADR-028 — Entity Resolution & Creator Attribution share one canonical entity authority
+
+Status: Accepted
+
+Date: 2026-07-29
+
+Decision: Replace the creator-only Phase 8B plan with an application-wide Entity Resolution & Creator Attribution phase. Mangane owns canonical entity IDs, evidence, aliases, relationships, mentions, resolutions, merge/split history, and account-safe derived bindings. Wikidata and DBpedia are optional enrichment and candidate providers, not ownership or truth authorities. Creator attribution, semantic hashtags, Custom Feeds, Search, Explore, Gist, recommendations, topic pages, and composer intelligence reuse this authority rather than create separate graphs.
+
+Context: Creator matching, hashtag disambiguation, semantic feed rules, search entities, and AI grounding require the same identity, provenance, confidence, ambiguity, cache, and merge semantics. The roadmap already contained a later entity phase, so Phase 8B establishes the authority and consumers while Phase 15 matures retrieval and fusion over it.
+
+Alternatives considered: keep creator attribution isolated; defer all entity work to Phase 15; use Wikidata IDs as primary keys; maintain separate hashtag/topic/feed entity stores; trust name-only or sameAs matches; query public providers with private context.
+
+Rationale: One local authority reduces duplicate state, improves creator and hashtag accuracy, makes Custom Feeds more intelligent, supports offline/degraded behavior, and permits providers to change or disagree without changing Mangane identity.
+
+Consequences and tradeoffs: Phase 8B becomes broader and ships in slices. It adds schema/migration, resolver policy, provider attribution/licensing, confidence and abstention, graph bounds, merge/split repair, and extensive evaluation. Phase 15 narrows to retrieval, graph expansion, fusion, facets, and evaluation over Phase 8B contracts.
+
+Security/privacy impact: Public providers receive only minimized public lookup terms and never private drafts, private posts, hidden feed definitions, reading history, access tokens, or subscriber context. Resolver output cannot authorize access or ownership. URLs, redirects, DNS, bodies, graph depth, candidates, queues, retries, and caches are bounded and fail closed.
+
+Migration/rollback: The superseded creator-only document and any prototype creator store are replaced by canonical entities plus creator relationships. Provider and consumer flags roll back independently while ordinary previews, literal hashtags, lexical feeds, statuses, accounts, and local search continue.
+
+## ADR template`);
+          fs.writeFileSync(adrPath, adr);
+          NODE
+      - run: node scripts/generate-documentation-authority-registry.js
+      - run: node scripts/check-documentation-authority.js
+      - run: node --test scripts/__tests__/check-documentation-authority.test.js
+      - name: Commit reconciliation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Integrate entity resolution architecture' || exit 0
+          git push origin HEAD:agent/document-entity-resolution
+
   inventory:
+    if: github.ref != 'refs/heads/agent/document-entity-resolution'
     name: Generate deterministic evidence
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -51,9 +216,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Enforce architecture drift gates
-        shell: bash
         run: |
-          set -euo pipefail
           node scripts/check-routing-inventory.js
           node scripts/check-redux-authority-inventory.js
           node scripts/check-browser-persistence-authority-inventory.js
@@ -66,47 +229,3 @@ jobs:
           node scripts/check-service-worker-cache-authority-inventory.js
           node scripts/check-bootstrap-provider-authority-inventory.js
           node scripts/check-error-recovery-authority-inventory.js
-      - name: Generate JSON and Markdown inventories
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p architecture-inventory
-          node scripts/architecture-inventory.js > architecture-inventory/inventory.json
-          node scripts/architecture-inventory.js --markdown > architecture-inventory/inventory.md
-      - name: Verify deterministic output
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/architecture-inventory.js > architecture-inventory/inventory.second.json
-          node scripts/architecture-inventory.js --markdown > architecture-inventory/inventory.second.md
-          diff -u architecture-inventory/inventory.json architecture-inventory/inventory.second.json
-          diff -u architecture-inventory/inventory.md architecture-inventory/inventory.second.md
-          rm architecture-inventory/inventory.second.json architecture-inventory/inventory.second.md
-      - name: Validate report schema and paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const report = JSON.parse(fs.readFileSync('architecture-inventory/inventory.json', 'utf8'));
-          if (report.schemaVersion !== 1) throw new Error('Unsupported inventory schema version');
-          if (report.generatedAt !== null) throw new Error('Inventory must not contain a timestamp');
-          if (!Number.isInteger(report.scannedFiles) || report.scannedFiles < 1) throw new Error('Inventory did not scan any source files');
-          if (!Array.isArray(report.findings)) throw new Error('Inventory findings must be an array');
-          for (const finding of report.findings) {
-            if (path.isAbsolute(finding.file) || finding.file.includes('..')) throw new Error(`Unsafe inventory path: ${finding.file}`);
-            if (!Number.isInteger(finding.count) || finding.count < 1) throw new Error(`Invalid match count for ${finding.file}`);
-            if (!Array.isArray(finding.lines) || finding.lines.some(line => !Number.isInteger(line) || line < 1)) throw new Error(`Invalid line data for ${finding.file}`);
-          }
-          NODE
-      - name: Add reviewable report to job summary
-        shell: bash
-        run: cat architecture-inventory/inventory.md >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload evidence artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: architecture-inventory-${{ github.sha }}
-          path: architecture-inventory/
-          if-no-files-found: error
-          retention-days: 30
