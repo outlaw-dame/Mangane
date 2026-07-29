@@ -10,7 +10,10 @@ const root = path.resolve(process.env.DOCUMENTATION_AUTHORITY_ROOT || path.resol
 const registry = JSON.parse(fs.readFileSync(path.join(root, 'config', 'documentation-authority-registry.json'), 'utf8'));
 const requirements = JSON.parse(fs.readFileSync(path.join(root, 'config', 'historical-requirement-traceability.json'), 'utf8'));
 const { errors, actual } = validateDocumentation({ root, registry, requirements });
-if (errors.length) throw new Error(`documentation-authority:\n- ${errors.join('\n- ')}`);
+if (errors.length) {
+  process.stdout.write(`EXPECTED_DOCUMENTATION_AUTHORITY_REGISTRY_BEGIN\n${JSON.stringify(actual, null, 2)}\nEXPECTED_DOCUMENTATION_AUTHORITY_REGISTRY_END\n`);
+  throw new Error(`documentation-authority:\n- ${errors.join('\n- ')}`);
+}
 
 process.stdout.write(`${JSON.stringify({
   documents: actual.documents.length,
