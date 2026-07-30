@@ -1,0 +1,51 @@
+name: Temporary Phase 3E reconcile
+
+on:
+  push:
+    branches:
+      - phase-3e/framework7-icon-parity-and-closure
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-phase-3e-reconcile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --immutable --mode=skip-build
+      - name: Regenerate governed inventories
+        run: |
+          yarn generate:icons
+          yarn generate:design-authority
+          yarn generate:documentation-authority
+          yarn generate:architecture-boundaries
+      - name: Verify focused authority
+        run: |
+          node --test scripts/__tests__/f7-shell-icon-authority.test.js
+          yarn check:icons
+          yarn check:design-authority
+          yarn check:documentation-authority
+          yarn check:architecture-boundaries
+      - name: Commit generated output and remove this workflow
+        run: |
+          rm -f .github/workflows/temporary-phase-3e-reconcile.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "chore(shell): reconcile Phase 3E authorities"
+          git push
