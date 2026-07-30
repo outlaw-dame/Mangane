@@ -26,9 +26,16 @@ export interface TimelineWindow {
   readonly gaps: TimelineGap[];
 }
 
+function containsControlCharacter(value: string): boolean {
+  return Array.from(value).some(character => {
+    const codePoint = character.codePointAt(0);
+    return codePoint !== undefined && (codePoint <= 0x1f || codePoint === 0x7f);
+  });
+}
+
 function validateIdentifier(value: string, label: string, maxLength = MAX_TIMELINE_ID_LENGTH): string {
   const normalized = value.trim();
-  if (!normalized || normalized.length > maxLength || /[\u0000-\u001f\u007f]/u.test(normalized)) {
+  if (!normalized || normalized.length > maxLength || containsControlCharacter(normalized)) {
     throw new RangeError(`${label} must be a non-empty bounded identifier without control characters`);
   }
   return normalized;
