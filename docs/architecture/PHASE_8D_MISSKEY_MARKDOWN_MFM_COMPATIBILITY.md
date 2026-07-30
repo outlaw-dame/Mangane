@@ -1,4 +1,4 @@
-# Phase 8C — Misskey post, Markdown, and MFM compatibility
+# Phase 8D — Misskey post, Markdown, and MFM compatibility
 
 ## Status
 
@@ -30,15 +30,14 @@ The phase is not complete merely because a Misskey-origin ActivityPub object can
 
 ### Capability-driven classification
 
-Mangane must classify content using authoritative evidence, in descending order of preference:
+Mangane must classify each individual payload using evidence tied to that payload, in descending order of preference:
 
-1. explicit source/content-type metadata returned by the authenticated server API;
-2. an instance capability advertised by the connected server;
-3. a documented endpoint contract whose response shape identifies the source format;
-4. sanitized server-rendered HTML when no source format is available;
-5. plain-text fallback.
+1. explicit source/content-type metadata attached to the specific payload field returned by the authenticated server API;
+2. a documented endpoint contract that defines the format of that specific response field;
+3. sanitized server-rendered HTML when no authoritative source field is available;
+4. plain-text fallback.
 
-Server software names may be used as advisory evidence for compatibility diagnostics, but must not be the sole runtime authority when capability or payload evidence is available.
+Instance-wide capabilities may gate parser availability, authoring controls, preview, and submission behavior, but they must never classify a particular timeline payload as Markdown or MFM. A server can support a format while returning an individual status only as rendered HTML or plain text. Server software names remain advisory diagnostics only and must not select a parser.
 
 The normalized status model should distinguish at least:
 
@@ -336,7 +335,7 @@ This phase is complete only when all of the following are true:
 
 Before beginning another Mangane implementation phase, inspect this document and either:
 
-- implement Phase 8C in dependency-ordered subphases; or
+- implement Phase 8D in dependency-ordered subphases; or
 - explicitly document why another prerequisite must precede it without losing this requirement.
 
 Do not mark Misskey compatibility complete based solely on generic ActivityPub rendering or a single happy-path fixture.
