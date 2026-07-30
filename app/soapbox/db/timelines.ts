@@ -4,19 +4,7 @@
  * Timelines (feeds) are separate from status records. A timeline is an ordered
  * list of status IDs with provenance metadata — who owns the feed, where the
  * cursor is, what gaps exist, and what source produced each entry.
- *
- * Design principles:
- * - Feed identity is explicit: "home", "notifications", "local:instance.tld",
- *   "list:123", "hashtag:fediverse" — each is a distinct timeline
- * - Ordering is preserved as received from the server, not reconstructed
- *   from status timestamps
- * - Gaps are first-class: a gap means "the server has items here we haven't
- *   fetched" and carries the cursor needed to fill it
- * - Source provenance: each entry knows whether it came from streaming,
- *   pagination, or cache hydration
- * - Account-scoped: compound key [accountUrl+timelineId+statusId]
  */
-
 
 import db from './instance';
 
@@ -70,6 +58,12 @@ export const TIMELINE_SCHEMA = {
   timelineGaps: '[accountUrl+timelineId+gapId], [accountUrl+timelineId], accountUrl, detectedAt',
 };
 
+function compareTimelineMembers(a: TimelineMember, b: TimelineMember): number {
+  return (b.position - a.position)
+    || (a.insertedAt - b.insertedAt)
+    || a.statusId.localeCompare(b.statusId);
+}
+
 export class TimelineRepository {
 
   async addMembers(
@@ -106,18 +100,49 @@ export class TimelineRepository {
     options: { limit?: number; afterPosition?: number } = {},
   ): Promise<TimelineMember[]> {
     const { limit = 40, afterPosition } = options;
-
-    const collection = db.table('timelineMembers')
+    const all = await db.table('timelineMembers')
       .where('[accountUrl+timelineId]')
-      .equals([scope.accountUrl, timelineId]);
-
-    const all = await collection.toArray();
+      .equals([scope.accountUrl, timelineId])
+      .toArray() as TimelineMember[];
     const filtered = afterPosition !== undefined
-      ? all.filter(m => m.position < afterPosition)
+      ? all.filter(member => member.position < afterPosition)
       : all;
-
-    filtered.sort((a: TimelineMember, b: TimelineMember) => b.position - a.position);
+    filtered.sort(compareTimelineMembers);
     return filtered.slice(0, limit);
+  }
+
+  async getWindowByRank(
+    scope: AccountScope,
+    timelineId: string,
+    options: { anchorStatusId?: string; anchorPosition?: number; before: number; after: number },
+  ): Promise<{ members: TimelineMember[]; anchorIndex: number | null }> {
+    const all = await db.table('timelineMembers')
+      .where('[accountUrl+timelineId]')
+      .equals([scope.accountUrl, timelineId])
+      .toArray() as TimelineMember[];
+    all.sort(compareTimelineMembers);
+
+    if (all.length === 0) return { members: [], anchorIndex: null };
+
+    let anchorRank = 0;
+    if (options.anchorStatusId !== undefined) {
+      const statusRank = all.findIndex(member => member.statusId === options.anchorStatusId);
+      if (statusRank >= 0) anchorRank = statusRank;
+      else if (options.anchorPosition !== undefined) {
+        const positionRank = all.findIndex(member => member.position <= options.anchorPosition!);
+        anchorRank = positionRank >= 0 ? positionRank : all.length - 1;
+      }
+    } else if (options.anchorPosition !== undefined) {
+      const positionRank = all.findIndex(member => member.position <= options.anchorPosition!);
+      anchorRank = positionRank >= 0 ? positionRank : all.length - 1;
+    }
+
+    const start = Math.max(0, anchorRank - options.before);
+    const end = Math.min(all.length, anchorRank + options.after + 1);
+    return {
+      members: all.slice(start, end),
+      anchorIndex: anchorRank - start,
+    };
   }
 
   async saveCursor(scope: AccountScope, cursor: Omit<TimelineCursor, 'accountUrl'>): Promise<void> {
@@ -126,8 +151,7 @@ export class TimelineRepository {
 
   async getCursor(scope: AccountScope, timelineId: string): Promise<TimelineCursor | undefined> {
     const record = await db.table('timelineCursors').get([scope.accountUrl, timelineId]);
-    if (!record) return undefined;
-    if (record.accountUrl !== scope.accountUrl) return undefined;
+    if (!record || record.accountUrl !== scope.accountUrl) return undefined;
     return record;
   }
 
@@ -140,7 +164,7 @@ export class TimelineRepository {
       .where('[accountUrl+timelineId]')
       .equals([scope.accountUrl, timelineId])
       .toArray();
-    return all.filter((g: TimelineGap) => !g.filled && g.accountUrl === scope.accountUrl);
+    return all.filter((gap: TimelineGap) => !gap.filled && gap.accountUrl === scope.accountUrl);
   }
 
   async markGapFilled(scope: AccountScope, timelineId: string, gapId: string): Promise<void> {
@@ -157,7 +181,6 @@ export class TimelineRepository {
     total += await db.table('timelineGaps').where('accountUrl').equals(scope.accountUrl).delete();
     return total;
   }
-
 }
 
 export const timelineRepo = new TimelineRepository();
