@@ -64,6 +64,11 @@ function compareTimelineMembers(a: TimelineMember, b: TimelineMember): number {
     || a.statusId.localeCompare(b.statusId);
 }
 
+function findPositionRank(members: TimelineMember[], anchorPosition: number): number {
+  const rank = members.findIndex(member => member.position <= anchorPosition);
+  return rank >= 0 ? rank : members.length - 1;
+}
+
 export class TimelineRepository {
 
   async addMembers(
@@ -129,12 +134,10 @@ export class TimelineRepository {
       const statusRank = all.findIndex(member => member.statusId === options.anchorStatusId);
       if (statusRank >= 0) anchorRank = statusRank;
       else if (options.anchorPosition !== undefined) {
-        const positionRank = all.findIndex(member => member.position <= options.anchorPosition!);
-        anchorRank = positionRank >= 0 ? positionRank : all.length - 1;
+        anchorRank = findPositionRank(all, options.anchorPosition);
       }
     } else if (options.anchorPosition !== undefined) {
-      const positionRank = all.findIndex(member => member.position <= options.anchorPosition!);
-      anchorRank = positionRank >= 0 ? positionRank : all.length - 1;
+      anchorRank = findPositionRank(all, options.anchorPosition);
     }
 
     const start = Math.max(0, anchorRank - options.before);
