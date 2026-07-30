@@ -6,29 +6,15 @@ on:
     branches: [develop]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   inventory:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Regenerate and reconcile manifest
-        run: |
-          set -euo pipefail
-          node scripts/generate-network-callsite-manifest.js
-          git show origin/main:.github/workflows/network-callsite-authority.yml > .github/workflows/network-callsite-authority.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add config/network-callsite-manifest.json .github/workflows/network-callsite-authority.yml
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m "Regenerate network callsite manifest"
-          git push origin HEAD:${{ github.head_ref }}
+      - run: node scripts/check-network-callsite-manifest.js
+      - run: node --test scripts/__tests__/check-network-callsite-manifest.test.js

@@ -5018,9 +5018,9 @@
       "degradedBehavior": "error-path-or-cached-ui"
     },
     {
-      "id": "9ff72c31bd7f3cc4",
+      "id": "2dfdf1ecbcdf316f",
       "file": "app/soapbox/actions/statuses.ts",
-      "line": 272,
+      "line": 271,
       "kind": "axios",
       "method": "POST",
       "route": "/api/v1/statuses/${id}/mute",
@@ -5044,9 +5044,9 @@
       "degradedBehavior": "error-path-or-cached-ui"
     },
     {
-      "id": "05b517f40e30ab99",
+      "id": "10f6b04d7244febc",
       "file": "app/soapbox/actions/statuses.ts",
-      "line": 284,
+      "line": 283,
       "kind": "axios",
       "method": "POST",
       "route": "/api/v1/statuses/${id}/unmute",
