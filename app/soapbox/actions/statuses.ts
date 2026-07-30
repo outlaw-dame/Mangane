@@ -1,5 +1,4 @@
 import { isLoggedIn } from 'soapbox/utils/auth';
-import { repairAncestorContext } from 'soapbox/utils/ancestor-context';
 import { getFeatures } from 'soapbox/utils/features';
 import { shouldHaveCard } from 'soapbox/utils/status';
 
@@ -49,6 +48,16 @@ const STATUS_REVEAL = 'STATUS_REVEAL';
 const STATUS_HIDE   = 'STATUS_HIDE';
 
 const STATUS_APPLY_FILTERS = 'STATUS_APPLY_FILTERS';
+const MAX_ANCESTOR_REPAIR_DEPTH = 40;
+const MAX_STATUS_ID_LENGTH = 512;
+
+type ContextStatus = APIEntity & {
+  id: string,
+  in_reply_to_id?: string | null,
+};
+
+const isUsableStatusId = (value: unknown): value is string =>
+  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
 
 const statusExists = (getState: () => RootState, statusId: string) => {
   return (getState().statuses.get(statusId) || null) !== null;
@@ -238,26 +247,36 @@ const fetchDescendants = (id: string) =>
 
 const repairMissingAncestors = async(
   dispatch: AppDispatch,
-  getState: () => RootState,
-  status: APIEntity | undefined,
-  ancestors: APIEntity[],
-): Promise<APIEntity[]> => {
-  if (!status?.in_reply_to_id) return ancestors;
+  status: ContextStatus | undefined,
+  knownAncestors: ContextStatus[],
+): Promise<ContextStatus[]> => {
+  if (!status || !isUsableStatusId(status.id)) return knownAncestors;
 
-  const repair = await repairAncestorContext(
-    status,
-    ancestors,
-    async(parentId: string) => {
-      const response = await api(getState).get(`/api/v1/statuses/${parentId}`);
-      return response.data;
-    },
-  );
+  const knownById = new Map<string, ContextStatus>();
+  knownAncestors.forEach(ancestor => {
+    if (isUsableStatusId(ancestor.id)) knownById.set(ancestor.id, ancestor);
+  });
 
-  if (repair.fetched.length > 0) {
-    dispatch(importFetchedStatuses(repair.fetched));
+  const visited = new Set<string>([status.id]);
+  const nearestFirst: ContextStatus[] = [];
+  let parentId = status.in_reply_to_id;
+
+  for (let depth = 0; depth < MAX_ANCESTOR_REPAIR_DEPTH; depth += 1) {
+    if (!isUsableStatusId(parentId) || visited.has(parentId)) break;
+    visited.add(parentId);
+
+    let parent = knownById.get(parentId);
+    if (!parent) {
+      const candidate = await dispatch(fetchStatus(parentId));
+      if (!candidate || candidate.id !== parentId) break;
+      parent = candidate;
+    }
+
+    nearestFirst.push(parent);
+    parentId = parent.in_reply_to_id;
   }
 
-  return repair.ancestors;
+  return nearestFirst.reverse();
 };
 
 const fetchStatusWithContext = (id: string) =>
@@ -272,7 +291,7 @@ const fetchStatusWithContext = (id: string) =>
       ]);
       const ancestors = responses[0]?.data || [];
       const descendants = responses[1]?.data || [];
-      const repairedAncestors = await repairMissingAncestors(dispatch, getState, status, ancestors);
+      const repairedAncestors = await repairMissingAncestors(dispatch, status, ancestors);
 
       dispatch({
         type: CONTEXT_FETCH_SUCCESS,
@@ -294,7 +313,7 @@ const fetchStatusWithContext = (id: string) =>
       const descendants = !Array.isArray(context) && typeof context === 'object' && context
         ? context.descendants || []
         : [];
-      const repairedAncestors = await repairMissingAncestors(dispatch, getState, status, ancestors);
+      const repairedAncestors = await repairMissingAncestors(dispatch, status, ancestors);
 
       if (status?.in_reply_to_id) {
         dispatch({
