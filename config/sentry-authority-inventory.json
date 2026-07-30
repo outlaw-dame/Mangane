@@ -46,14 +46,6 @@
       "classification": "ci-controlled-artifact"
     },
     {
-      "id": "artifact-upload:.github/workflows/architecture-inventory.yml:107",
-      "kind": "artifact-upload",
-      "path": ".github/workflows/architecture-inventory.yml",
-      "line": 107,
-      "expression": "uses: actions/upload-artifact@v4",
-      "classification": "ci-controlled-artifact"
-    },
-    {
       "id": "console:app/application.ts:22",
       "kind": "console",
       "path": "app/application.ts",
@@ -182,10 +174,10 @@
       "classification": "startup-guarded-local-diagnostic"
     },
     {
-      "id": "console:app/soapbox/actions/statuses.ts:102",
+      "id": "console:app/soapbox/actions/statuses.ts:106",
       "kind": "console",
       "path": "app/soapbox/actions/statuses.ts",
-      "line": 102,
+      "line": 106,
       "expression": "}).catch(console.error);",
       "classification": "startup-guarded-local-diagnostic"
     },
@@ -1351,7 +1343,7 @@
     }
   ],
   "counts": {
-    "artifact-upload": 3,
+    "artifact-upload": 2,
     "console": 74,
     "notification-payload": 13,
     "environment-read": 67,
