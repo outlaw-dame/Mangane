@@ -41,8 +41,11 @@ function main() {
       const registerServiceWorker = async() => {
         if ('serviceWorker' in navigator) {
           try {
-            const registration = await navigator.serviceWorker.register('/share_target.js', {
-              scope: '/',
+            const scope = BuildConfig.FE_SUBDIRECTORY === '/'
+              ? '/'
+              : `${BuildConfig.FE_SUBDIRECTORY.replace(/\/+$/, '')}/`;
+            const registration = await navigator.serviceWorker.register(`${scope}share_target.js`, {
+              scope,
             });
             if (registration.installing) {
               console.debug('Service worker installing');

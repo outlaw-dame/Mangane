@@ -3495,6 +3495,16 @@
       ]
     },
     {
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "kind": "component",
+      "owner": "feature:pwa-install",
+      "scope": "feature",
+      "classifications": [
+        "feature-specific",
+        "accessibility-critical"
+      ]
+    },
+    {
       "path": "app/soapbox/features/register_invite/index.tsx",
       "kind": "component",
       "owner": "feature:register_invite",
@@ -5013,6 +5023,11 @@
     },
     {
       "path": "app/styles/components/profile_hover_card.scss",
+      "authority": "shared-component-style",
+      "disposition": "retain-and-tokenize"
+    },
+    {
+      "path": "app/styles/components/pwa-install.scss",
       "authority": "shared-component-style",
       "disposition": "retain-and-tokenize"
     },
@@ -8569,9 +8584,9 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/ui/index.tsx:656:pencil-plus.svg",
+      "id": "svg-module:app/soapbox/features/ui/index.tsx:658:pencil-plus.svg",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 656,
+      "line": 658,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "pencil-plus.svg",
@@ -21338,6 +21353,69 @@
       "classification": "accessibility-critical"
     },
     {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:2",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 2,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:96",
+      "kind": "label",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 96,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "live-region:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:97",
+      "kind": "live-region",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 97,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:101",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 101,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:105",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 105,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:110",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 110,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:118",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 118,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:128",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 128,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/pwa-install/components/pwa-install-banner.tsx:132",
+      "kind": "localization",
+      "path": "app/soapbox/features/pwa-install/components/pwa-install-banner.tsx",
+      "line": 132,
+      "classification": "compatibility-critical"
+    },
+    {
       "id": "localization:app/soapbox/features/register_invite/index.tsx:2",
       "kind": "localization",
       "path": "app/soapbox/features/register_invite/index.tsx",
@@ -25370,66 +25448,66 @@
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/ui/index.tsx:129",
+      "id": "localization:app/soapbox/features/ui/index.tsx:130",
       "kind": "localization",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 129,
+      "line": 130,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/ui/index.tsx:322",
+      "id": "localization:app/soapbox/features/ui/index.tsx:323",
       "kind": "localization",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 322,
+      "line": 323,
       "classification": "compatibility-critical"
     },
     {
-      "id": "focus:app/soapbox/features/ui/index.tsx:512",
+      "id": "focus:app/soapbox/features/ui/index.tsx:513",
       "kind": "focus",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 512,
+      "line": 513,
       "classification": "accessibility-critical"
     },
     {
-      "id": "focus:app/soapbox/features/ui/index.tsx:523",
+      "id": "focus:app/soapbox/features/ui/index.tsx:524",
       "kind": "focus",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 523,
+      "line": 524,
       "classification": "accessibility-critical"
     },
     {
-      "id": "keyboard:app/soapbox/features/ui/index.tsx:540",
+      "id": "keyboard:app/soapbox/features/ui/index.tsx:541",
       "kind": "keyboard",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 540,
+      "line": 541,
       "classification": "accessibility-critical"
     },
     {
-      "id": "keyboard:app/soapbox/features/ui/index.tsx:626",
+      "id": "keyboard:app/soapbox/features/ui/index.tsx:627",
       "kind": "keyboard",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 626,
+      "line": 627,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/ui/index.tsx:654",
+      "id": "label:app/soapbox/features/ui/index.tsx:656",
       "kind": "label",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 654,
+      "line": 656,
       "classification": "accessibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/ui/index.tsx:654",
+      "id": "localization:app/soapbox/features/ui/index.tsx:656",
       "kind": "localization",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 654,
+      "line": 656,
       "classification": "compatibility-critical"
     },
     {
-      "id": "keyboard:app/soapbox/features/ui/index.tsx:682",
+      "id": "keyboard:app/soapbox/features/ui/index.tsx:684",
       "kind": "keyboard",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 682,
+      "line": 684,
       "classification": "accessibility-critical"
     },
     {
@@ -26265,19 +26343,19 @@
     "screenshotPlan": "docs/architecture/SCREENSHOT_AND_INTERACTION_BASELINE_PLAN.md"
   },
   "counts": {
-    "components": 488,
-    "styles": 75,
+    "components": 489,
+    "styles": 76,
     "icons": 392,
     "behaviors": {
-      "localization": 1980,
+      "localization": 1987,
       "focus": 140,
       "inline-style": 75,
       "keyboard": 90,
-      "label": 90,
+      "label": 91,
       "motion": 70,
       "gesture": 37,
       "rtl": 13,
-      "live-region": 2
+      "live-region": 3
     },
     "iconProviders": {
       "tabler": 370,
@@ -26355,6 +26433,7 @@
       "feature:profile_fields": 1,
       "feature:public_layout": 4,
       "feature:public_timeline": 2,
+      "feature:pwa-install": 1,
       "feature:register_invite": 1,
       "feature:remote_timeline": 2,
       "feature:reply_mentions": 1,

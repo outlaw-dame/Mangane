@@ -26,6 +26,7 @@ import SidebarNavigation from 'soapbox/components/sidebar-navigation';
 import ThumbNavigation from 'soapbox/components/thumb_navigation';
 import { Layout } from 'soapbox/components/ui';
 import F7Shell from 'soapbox/features/f7-shell';
+import PWAInstallBanner from 'soapbox/features/pwa-install/components/pwa-install-banner';
 import { useAppSelector, useOwnAccount, useSoapboxConfig, useFeatures } from 'soapbox/hooks';
 import { useSettings } from 'soapbox/hooks/useSettings';
 import AdminPage from 'soapbox/pages/admin_page';
@@ -628,6 +629,7 @@ const UI: React.FC = ({ children }: { children: ReactNode}) => {
         <BackgroundShapes />
 
         <div className='z-10 flex flex-col'>
+          <PWAInstallBanner />
           {useF7Shell ? (
             <F7Shell>
               <SwitchingColumnsArea>

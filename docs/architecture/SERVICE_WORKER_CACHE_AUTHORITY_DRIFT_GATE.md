@@ -11,7 +11,9 @@ It verifies that the production build:
 - assigns compiled `:rest:`, external files, icons, locale chunks, polyfills, fonts, and images to reviewed build-asset groups;
 - uses `FE_SUBDIRECTORY` for the app shell;
 - limits the cache-map rule to navigation requests;
-- bypasses the app-shell rewrite for the recorded backend route prefixes and `/embed`;
+- derives the deployment prefix from the active worker scope;
+- bypasses the app-shell rewrite for the recorded backend route prefixes and `/embed`
+  at both root and subdirectory deployments;
 - builds the worker entry with push and share-target handlers.
 
 Phase 0C classifies the configured cache inputs as public application shell and build assets. Backend/API navigation routes bypass the shell rule. No application callsite writes authenticated API responses to Cache Storage.

@@ -13,6 +13,11 @@ installability: `name`, `short_name`, `description`, `id`, `scope`,
 `theme_color`, `background_color`, proper icon `sizes` format, and
 `display: standalone`. The `share_target` configuration is preserved.
 
+Phase 4B makes identity, scope, launch, icons, and the share target relative to
+the manifest deployment directory, bundles exact-size 192 and 512 PNG icons,
+and verifies root/subdirectory production behavior. See
+[`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md).
+
 Instance operators may override `name`, `short_name`, `theme_color`, and
 `background_color` through the instance branding system at deploy time.
 
@@ -187,6 +192,9 @@ Mangane is installable as a PWA on supported platforms:
 
 The manifest provides `display: standalone` for full-screen app experience
 with system navigation controls.
+
+Mangane also presents a dismissible Install action when the browser exposes
+`beforeinstallprompt`, and accessible Add to Home Screen guidance on iOS.
 
 ### Update behavior
 
