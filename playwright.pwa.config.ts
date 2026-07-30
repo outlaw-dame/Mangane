@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './e2e/pwa',
-  outputDir: './e2e/pwa-results',
+  testDir: './pwa-e2e',
+  outputDir: './e2e/test-results/pwa',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
