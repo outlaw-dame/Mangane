@@ -235,96 +235,31 @@ const fetchDescendants = (id: string) =>
     return response;
   };
 
-const MAX_ANCESTOR_REPAIR_DEPTH = 40;
-const MAX_STATUS_ID_LENGTH = 512;
-
-type ContextStatus = APIEntity & {
-  id: string,
-  in_reply_to_id?: string | null,
-};
-
-const isUsableStatusId = (value: unknown): value is string =>
-  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
-
-const repairMissingAncestors = async(
-  dispatch: AppDispatch,
-  status: ContextStatus | undefined,
-  knownAncestors: ContextStatus[],
-): Promise<ContextStatus[]> => {
-  if (!status || !isUsableStatusId(status.id)) return knownAncestors;
-
-  const knownById = new Map<string, ContextStatus>();
-  knownAncestors.forEach(ancestor => {
-    if (isUsableStatusId(ancestor.id)) knownById.set(ancestor.id, ancestor);
-  });
-
-  const visited = new Set<string>([status.id]);
-  const nearestFirst: ContextStatus[] = [];
-  let parentId = status.in_reply_to_id;
-
-  for (let depth = 0; depth < MAX_ANCESTOR_REPAIR_DEPTH; depth += 1) {
-    if (!isUsableStatusId(parentId) || visited.has(parentId)) break;
-    visited.add(parentId);
-
-    let parent = knownById.get(parentId);
-    if (!parent) {
-      const candidate = await dispatch(fetchStatus(parentId));
-      if (!candidate || candidate.id !== parentId) break;
-      parent = candidate;
-    }
-
-    nearestFirst.push(parent);
-    parentId = parent.in_reply_to_id;
-  }
-
-  return nearestFirst.reverse();
-};
-
 const fetchStatusWithContext = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
     const features = getFeatures(getState().instance);
 
     if (features.paginatedContext) {
-      const status = await dispatch(fetchStatus(id));
+      await dispatch(fetchStatus(id));
       const responses = await Promise.all([
-        dispatch(fetchAncestors(id)).catch(() => undefined),
-        dispatch(fetchDescendants(id)).catch(() => undefined),
+        dispatch(fetchAncestors(id)),
+        dispatch(fetchDescendants(id)),
       ]);
-      const ancestors = responses[0]?.data || [];
-      const descendants = responses[1]?.data || [];
-      const repairedAncestors = await repairMissingAncestors(dispatch, status, ancestors);
 
       dispatch({
         type: CONTEXT_FETCH_SUCCESS,
         id,
-        ancestors: repairedAncestors,
-        descendants,
+        ancestors: responses[0].data,
+        descendants: responses[1].data,
       });
 
-      const next = responses[1] ? getNextLink(responses[1]) : undefined;
+      const next = getNextLink(responses[1]);
       return { next };
     } else {
-      const [context, status] = await Promise.all([
+      await Promise.all([
         dispatch(fetchContext(id)),
         dispatch(fetchStatus(id)),
       ]);
-      const ancestors = !Array.isArray(context) && typeof context === 'object' && context
-        ? context.ancestors || []
-        : [];
-      const descendants = !Array.isArray(context) && typeof context === 'object' && context
-        ? context.descendants || []
-        : [];
-      const repairedAncestors = await repairMissingAncestors(dispatch, status, ancestors);
-
-      if (status?.in_reply_to_id) {
-        dispatch({
-          type: CONTEXT_FETCH_SUCCESS,
-          id,
-          ancestors: repairedAncestors,
-          descendants,
-        });
-      }
-
       return { next: undefined };
     }
   };
@@ -390,6 +325,50 @@ const toggleStatusHidden = (status: Status) => {
   }
 };
 
+const MAX_ANCESTOR_REPAIR_DEPTH = 40;
+const MAX_STATUS_ID_LENGTH = 512;
+
+type ContextStatus = APIEntity & {
+  id: string,
+  in_reply_to_id?: string | null,
+};
+
+const isUsableStatusId = (value: unknown): value is string =>
+  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
+
+const repairStatusAncestors = (id: string) =>
+  async(dispatch: AppDispatch, getState: () => RootState) => {
+    const focusedStatus = getState().statuses.get(id) as ContextStatus | undefined;
+    if (!focusedStatus || !isUsableStatusId(focusedStatus.id)) return [];
+
+    const visited = new Set<string>([focusedStatus.id]);
+    const nearestFirst: ContextStatus[] = [];
+    let parentId = focusedStatus.in_reply_to_id;
+
+    for (let depth = 0; depth < MAX_ANCESTOR_REPAIR_DEPTH; depth += 1) {
+      if (!isUsableStatusId(parentId) || visited.has(parentId)) break;
+      visited.add(parentId);
+
+      const parent = await dispatch(fetchStatus(parentId));
+      if (!parent || parent.id !== parentId) break;
+
+      nearestFirst.push(parent);
+      parentId = parent.in_reply_to_id;
+    }
+
+    const ancestors = nearestFirst.reverse();
+    if (ancestors.length > 0) {
+      dispatch({
+        type: CONTEXT_FETCH_SUCCESS,
+        id,
+        ancestors,
+        descendants: [],
+      });
+    }
+
+    return ancestors;
+  };
+
 export {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_SUCCESS,
@@ -428,6 +407,7 @@ export {
   fetchAncestors,
   fetchDescendants,
   fetchStatusWithContext,
+  repairStatusAncestors,
   muteStatus,
   unmuteStatus,
   toggleMuteStatus,
