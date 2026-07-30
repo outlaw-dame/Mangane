@@ -254,13 +254,13 @@ const fetchStatusWithContext = (id: string) =>
       });
 
       const next = getNextLink(responses[1]);
-      return { next };
+      return dispatch(repairStatusAncestors(id)).then(() => ({ next }));
     } else {
       await Promise.all([
         dispatch(fetchContext(id)),
         dispatch(fetchStatus(id)),
       ]);
-      return { next: undefined };
+      return dispatch(repairStatusAncestors(id)).then(() => ({ next: undefined }));
     }
   };
 
@@ -338,7 +338,7 @@ const isUsableStatusId = (value: unknown): value is string =>
 
 const repairStatusAncestors = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
-    const focusedStatus = getState().statuses.get(id) as ContextStatus | undefined;
+    const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
     if (!focusedStatus || !isUsableStatusId(focusedStatus.id)) return [];
 
     const visited = new Set<string>([focusedStatus.id]);
