@@ -10,6 +10,7 @@ type ContextStatus = APIEntity & {
 
 type FetchStatusById = (id: string) => Promise<ContextStatus>;
 
+/** Stable outcomes consumed by thread presentation and future recovery policy. */
 export type ContextRecoveryOutcome =
   | 'complete'
   | 'repaired'
