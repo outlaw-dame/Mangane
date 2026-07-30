@@ -1,0 +1,100 @@
+name: Apply subscribed-post notification fix
+
+on:
+  push:
+    branches:
+      - fix/subscribed-post-notification-copy
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-subscribed-post-fix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Clone branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch "$BRANCH" "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git" repo
+      - name: Apply implementation and tests
+        working-directory: repo
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const { readFileSync, writeFileSync } = require('node:fs');
+
+          const componentPath = 'app/soapbox/features/notifications/components/notification.tsx';
+          const testPath = 'app/soapbox/features/notifications/components/__tests__/notification.test.tsx';
+
+          let component = readFileSync(componentPath, 'utf8');
+          component = component.replace(
+            "    defaultMessage: '{name} just posted',",
+            "    defaultMessage: '{name} posted',",
+          );
+
+          const helperAnchor = 'const getNotification = makeGetNotification();\n\n';
+          const helper = `const getPresentationType = (notification: NotificationEntity, me: string | null): NotificationType | string => {\n  if (notification.type !== 'mention' || !me) return notification.type;\n\n  const status = notification.status;\n  if (!status || typeof status !== 'object') return notification.type;\n\n  const mentionsMe = status.mentions.some(mention => mention.id === me);\n\n  // Akkoma/Pleroma profile-bell subscriptions can arrive as mention notifications\n  // even when the subscriber was not mentioned. Never claim a mention the payload\n  // does not contain; present the event as a subscribed public post instead.\n  return mentionsMe ? notification.type : 'status';\n};\n\n`;
+          if (!component.includes('const getPresentationType =')) {
+            if (!component.includes(helperAnchor)) throw new Error('Missing notification helper anchor');
+            component = component.replace(helperAnchor, helperAnchor + helper);
+          }
+
+          const typeAnchor = "  const instance = useAppSelector((state) => state.instance);\n\n  const type = notification.type;";
+          const typeReplacement = "  const instance = useAppSelector((state) => state.instance);\n  const me = useAppSelector((state) => state.me);\n\n  const type = getPresentationType(notification, me);";
+          if (!component.includes(typeReplacement)) {
+            if (!component.includes(typeAnchor)) throw new Error('Missing notification type anchor');
+            component = component.replace(typeAnchor, typeReplacement);
+          }
+          writeFileSync(componentPath, component);
+
+          let test = readFileSync(testPath, 'utf8');
+          const normalizeAnchor = "const normalize = (notification: any) => {\n  const store = createTestStore(rootState);";
+          const normalizeReplacement = "const normalize = (notification: any, me?: string) => {\n  const initialState = me ? rootState.set('me', me) : rootState;\n  const store = createTestStore(initialState);";
+          if (!test.includes(normalizeReplacement)) {
+            if (!test.includes(normalizeAnchor)) throw new Error('Missing test normalize anchor');
+            test = test.replace(normalizeAnchor, normalizeReplacement);
+          }
+
+          const testAnchor = "  it('renders a move notification', async() => {";
+          const insertedTests = `  it('renders a profile-bell subscription notification as posted when the viewer was not mentioned', async() => {\n    const source = require('soapbox/__fixtures__/notification-mention.json');\n    const { notification, state } = normalize({\n      ...source,\n      status: {\n        ...source.status,\n        mentions: [],\n      },\n    }, 'viewer-account-id');\n\n    render(<Notification notification={notification} />, undefined, state);\n\n    expect(screen.getByTestId('message')).toHaveTextContent('silverpill posted');\n    expect(screen.getByTestId('message')).not.toHaveTextContent('mentioned you');\n    expect(screen.getByTestId('notification')).toHaveAttribute(\n      'aria-label',\n      expect.stringContaining('silverpill@mitra.social posted'),\n    );\n  });\n\n  it('keeps a genuine mention as mentioned you', async() => {\n    const source = require('soapbox/__fixtures__/notification-mention.json');\n    const { notification, state } = normalize({\n      ...source,\n      status: {\n        ...source.status,\n        mentions: [{\n          id: 'viewer-account-id',\n          acct: 'viewer',\n          username: 'viewer',\n          url: 'https://example.com/@viewer',\n        }],\n      },\n    }, 'viewer-account-id');\n\n    render(<Notification notification={notification} />, undefined, state);\n\n    expect(screen.getByTestId('message')).toHaveTextContent('silverpill mentioned you');\n  });\n\n`;
+          if (!test.includes('renders a profile-bell subscription notification as posted')) {
+            if (!test.includes(testAnchor)) throw new Error('Missing test insertion anchor');
+            test = test.replace(testAnchor, insertedTests + testAnchor);
+          }
+          writeFileSync(testPath, test);
+          NODE
+      - name: Install dependencies
+        working-directory: repo
+        run: |
+          set -euo pipefail
+          corepack enable
+          yarn install --immutable --mode=skip-build
+      - name: Validate implementation
+        working-directory: repo
+        run: |
+          set -euo pipefail
+          yarn jest app/soapbox/features/notifications/components/__tests__/notification.test.tsx --runInBand --silent
+          yarn lint:js:baseline
+          yarn typecheck
+          yarn test:governance
+      - name: Commit implementation
+        working-directory: repo
+        run: |
+          set -euo pipefail
+          rm .github/workflows/.tmp-apply-subscribed-post-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix(notifications): distinguish subscribed posts from mentions"
+          git push origin HEAD:${{ github.ref_name }}
