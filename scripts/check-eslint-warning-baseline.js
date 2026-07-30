@@ -29,11 +29,6 @@ const reports = JSON.parse(result.stdout || '[]');
 const errors = reports.reduce((count, report) => count + report.errorCount, 0);
 const warnings = reports.reduce((count, report) => count + report.warningCount, 0);
 if (errors > 0 || warnings > warningBudget) {
-  for (const report of reports) {
-    for (const message of report.messages.filter(message => message.severity === 2)) {
-      process.stderr.write(`${path.relative(root, report.filePath)}:${message.line}:${message.column} ${message.ruleId || 'parse-error'} ${message.message}\n`);
-    }
-  }
   process.stderr.write(`ESLint baseline failed: ${errors} errors, ${warnings} warnings (budget ${warningBudget}).\n`);
   process.exit(1);
 }
