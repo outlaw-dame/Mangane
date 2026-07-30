@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const shellUrl = '/f7-shell/';
+const shellUrl = '/f7-shell/index.html';
 
 test.describe('Framework7 shell parity fixture', () => {
   test.beforeEach(async({ page }) => {
