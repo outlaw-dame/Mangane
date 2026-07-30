@@ -184,6 +184,7 @@ export class TimelineRepository {
     total += await db.table('timelineGaps').where('accountUrl').equals(scope.accountUrl).delete();
     return total;
   }
+
 }
 
 export const timelineRepo = new TimelineRepository();
