@@ -80,7 +80,6 @@ const createStatus = (params: Record<string, any>, idempotencyKey: string, statu
       data: params,
       headers: { 'Idempotency-Key': idempotencyKey },
     }).then(({ data: status }) => {
-      // The backend might still be processing the rich media attachment
       if (!status.card && shouldHaveCard(status)) {
         status.expectsCard = true;
       }
@@ -88,7 +87,6 @@ const createStatus = (params: Record<string, any>, idempotencyKey: string, statu
       dispatch(importFetchedStatus(status, idempotencyKey));
       dispatch({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey });
 
-      // Poll the backend for the updated card
       if (status.expectsCard) {
         const delay = 1000;
 
@@ -185,10 +183,8 @@ const fetchContext = (id: string) =>
 
     return api(getState).get(`/api/v1/statuses/${id}/context`).then(({ data: context }) => {
       if (Array.isArray(context)) {
-        // Mitra: returns a list of statuses
         dispatch(importFetchedStatuses(context));
       } else if (typeof context === 'object') {
-        // Standard Mastodon API returns a map with `ancestors` and `descendants`
         const { ancestors, descendants } = context;
         const statuses = ancestors.concat(descendants);
         dispatch(importFetchedStatuses(statuses));
@@ -260,6 +256,9 @@ const fetchStatusWithContext = (id: string) =>
     }
   };
 
+
+
+
 const muteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
@@ -292,114 +291,54 @@ const toggleMuteStatus = (status: Status) =>
   };
 
 const hideStatus = (ids: string[] | string) => {
-  if (!Array.isArray(ids)) {
-    ids = [ids];
-  }
-
-  return {
-    type: STATUS_HIDE,
-    ids,
-  };
+  if (!Array.isArray(ids)) ids = [ids];
+  return { type: STATUS_HIDE, ids };
 };
 
 const revealStatus = (ids: string[] | string) => {
-  if (!Array.isArray(ids)) {
-    ids = [ids];
-  }
+  if (!Array.isArray(ids)) ids = [ids];
+  return { type: STATUS_REVEAL, ids };
+};
 
-  return {
-    type: STATUS_REVEAL,
-    ids,
+const toggleStatusHidden = (status: Status) => status.hidden ? revealStatus(status.id) : hideStatus(status.id);
+
+type ContextStatus = APIEntity & { id: string, in_reply_to_id?: string | null };
+
+const coordinateStatusContext = (id: string, knownStatuses: ContextStatus[], descendants: ContextStatus[]) =>
+  async(dispatch: AppDispatch, getState: () => RootState) => {
+    const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
+    if (!focusedStatus) return { ancestors: [], fetched: [], outcome: 'partial-malformed' as const };
+
+    const recovery = await recoverAncestorContext({
+      focusedStatus,
+      knownStatuses,
+      fetchStatusById: async(parentId: string) => {
+        const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
+        if (cached) return cached;
+        const parent = await dispatch(fetchStatus(parentId, true));
+        if (!parent) throw new Error('Parent status fetch completed without an entity');
+        return parent;
+      },
+    });
+
+    dispatch({ type: CONTEXT_FETCH_SUCCESS, id, ancestors: recovery.ancestors, descendants });
+    return recovery;
   };
-};
-
-const toggleStatusHidden = (status: Status) => {
-  if (status.hidden) {
-    return revealStatus(status.id);
-  } else {
-    return hideStatus(status.id);
-  }
-};
-
-type ContextStatus = APIEntity & {
-  id: string,
-  in_reply_to_id?: string | null,
-};
-
-const coordinateStatusContext = (
-  id: string,
-  knownStatuses: ContextStatus[],
-  descendants: ContextStatus[],
-) => async(dispatch: AppDispatch, getState: () => RootState) => {
-  const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
-  if (!focusedStatus) return { ancestors: [], fetched: [], outcome: 'partial-malformed' as const };
-
-  const recovery = await recoverAncestorContext({
-    focusedStatus,
-    knownStatuses,
-    fetchStatusById: async(parentId: string) => {
-      const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
-      if (cached) return cached;
-      const parent = await dispatch(fetchStatus(parentId, true));
-      if (!parent) throw new Error('Parent status fetch completed without an entity');
-      return parent;
-    },
-  });
-
-  dispatch({
-    type: CONTEXT_FETCH_SUCCESS,
-    id,
-    ancestors: recovery.ancestors,
-    descendants,
-  });
-
-  return recovery;
-};
 
 export {
-  STATUS_CREATE_REQUEST,
-  STATUS_CREATE_SUCCESS,
-  STATUS_CREATE_FAIL,
-  STATUS_FETCH_SOURCE_REQUEST,
-  STATUS_FETCH_SOURCE_SUCCESS,
-  STATUS_FETCH_SOURCE_FAIL,
-  STATUS_FETCH_REQUEST,
-  STATUS_FETCH_SUCCESS,
-  STATUS_FETCH_FAIL,
-  STATUS_DELETE_REQUEST,
-  STATUS_DELETE_SUCCESS,
-  STATUS_DELETE_FAIL,
-  CONTEXT_FETCH_REQUEST,
-  CONTEXT_FETCH_SUCCESS,
-  CONTEXT_FETCH_FAIL,
-  STATUS_MUTE_REQUEST,
-  STATUS_MUTE_SUCCESS,
-  STATUS_MUTE_FAIL,
-  STATUS_UNMUTE_REQUEST,
-  STATUS_UNMUTE_SUCCESS,
-  STATUS_UNMUTE_FAIL,
-  STATUS_REVEAL,
-  STATUS_HIDE,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_FAIL,
+  STATUS_CREATE_REQUEST, STATUS_CREATE_SUCCESS, STATUS_CREATE_FAIL,
+  STATUS_FETCH_SOURCE_REQUEST, STATUS_FETCH_SOURCE_SUCCESS, STATUS_FETCH_SOURCE_FAIL,
+  STATUS_FETCH_REQUEST, STATUS_FETCH_SUCCESS, STATUS_FETCH_FAIL,
+  STATUS_DELETE_REQUEST, STATUS_DELETE_SUCCESS, STATUS_DELETE_FAIL,
+  CONTEXT_FETCH_REQUEST, CONTEXT_FETCH_SUCCESS, CONTEXT_FETCH_FAIL,
+  STATUS_MUTE_REQUEST, STATUS_MUTE_SUCCESS, STATUS_MUTE_FAIL,
+  STATUS_UNMUTE_REQUEST, STATUS_UNMUTE_SUCCESS, STATUS_UNMUTE_FAIL,
+  STATUS_REVEAL, STATUS_HIDE,
+  STATUS_TRANSLATE_REQUEST, STATUS_TRANSLATE_SUCCESS, STATUS_TRANSLATE_FAIL,
   STATUS_APPLY_FILTERS,
-  createStatus,
-  editStatus,
-  fetchStatus,
-  deleteStatus,
-  updateStatus,
-  fetchContext,
-  fetchNext,
-  fetchAncestors,
-  fetchDescendants,
-  fetchStatusWithContext,
-  coordinateStatusContext,
-  muteStatus,
-  unmuteStatus,
-  toggleMuteStatus,
-  hideStatus,
-  revealStatus,
-  toggleStatusHidden,
-  translateStatus,
+  createStatus, editStatus, fetchStatus, deleteStatus, updateStatus,
+  fetchContext, fetchNext, fetchAncestors, fetchDescendants,
+  fetchStatusWithContext, coordinateStatusContext,
+  muteStatus, unmuteStatus, toggleMuteStatus,
+  hideStatus, revealStatus, toggleStatusHidden, translateStatus,
 };
