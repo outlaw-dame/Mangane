@@ -266,6 +266,7 @@ const fetchStatusWithContext = (id: string) =>
 const muteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
+
     dispatch({ type: STATUS_MUTE_REQUEST, id });
     api(getState).post(`/api/v1/statuses/${id}/mute`).then(() => {
       dispatch({ type: STATUS_MUTE_SUCCESS, id });
@@ -277,6 +278,7 @@ const muteStatus = (id: string) =>
 const unmuteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
+
     dispatch({ type: STATUS_UNMUTE_REQUEST, id });
     api(getState).post(`/api/v1/statuses/${id}/unmute`).then(() => {
       dispatch({ type: STATUS_UNMUTE_SUCCESS, id });
