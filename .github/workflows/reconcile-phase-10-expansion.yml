@@ -1,0 +1,50 @@
+name: Reconcile Phase 10 expansion
+
+on:
+  push:
+    branches:
+      - docs/phase-10-threaded-post-composer
+    paths:
+      - scripts/expand-phase-10-long-form.py
+      - .github/workflows/reconcile-phase-10-expansion.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconcile-phase-10-expansion
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply expansion
+        run: python3 scripts/expand-phase-10-long-form.py
+      - name: Regenerate documentation authority
+        run: node scripts/generate-documentation-authority-registry.js
+      - name: Validate documentation
+        run: |
+          node scripts/check-documentation-authority.js
+          node --test scripts/__tests__/check-documentation-authority.test.js
+      - name: Remove temporary reconciler
+        run: |
+          rm scripts/expand-phase-10-long-form.py
+          rm .github/workflows/reconcile-phase-10-expansion.yml
+      - name: Commit reconciled docs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md docs/architecture/IMPLEMENTATION_ROADMAP_V2.md docs/architecture/ARCHITECTURAL_DECISIONS.md config/documentation-authority-registry.json scripts/expand-phase-10-long-form.py .github/workflows/reconcile-phase-10-expansion.yml
+          git diff --cached --check
+          git commit -m 'docs: expand Phase 10 for adaptive long-form presentation'
+          git push
