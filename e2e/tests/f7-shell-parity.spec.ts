@@ -1,14 +1,16 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+const shellUrl = '/f7-shell/';
+
 test.describe('Framework7 shell parity fixture', () => {
   test.beforeEach(async({ page }) => {
-    await page.goto('/f7-shell/');
+    await page.goto(shellUrl);
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.locator('.shell')).toBeVisible();
+    await expect(page.getByTestId('f7-shell')).toBeVisible();
   });
 
-  test('uses the correct responsive shell structure', async({ page }) => {
+  test('uses the correct responsive shell structure without horizontal overflow', async({ page }) => {
     const viewport = page.viewportSize();
     expect(viewport).not.toBeNull();
 
@@ -29,11 +31,28 @@ test.describe('Framework7 shell parity fixture', () => {
       await expect(tabs).toBeHidden();
       await expect(aside).toBeVisible();
     }
+
+    const dimensions = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+  });
+
+  test('exposes one visible named navigation with one current destination', async({ page }) => {
+    const visibleNavigationCount = await page.getByRole('navigation', { name: 'Primary navigation' }).evaluateAll((items) => (
+      items.filter((item) => item.getClientRects().length > 0).length
+    ));
+    expect(visibleNavigationCount).toBe(1);
+
+    const currentVisibleCount = await page.locator('[aria-current="page"]').evaluateAll((items) => (
+      items.filter((item) => item.getClientRects().length > 0).length
+    ));
+    expect(currentVisibleCount).toBe(1);
   });
 
   test('navigation preserves one selected destination and moves focus to content', async({ page }) => {
-    const search = page.getByRole('button', { name: 'Search' }).first();
-    await search.click();
+    await page.getByRole('button', { name: 'Search' }).first().click();
 
     await expect(page.locator('#route-title')).toHaveText('Search');
     await expect(page.locator('[data-route="search"][aria-current="page"]')).toHaveCount(2);
@@ -60,12 +79,29 @@ test.describe('Framework7 shell parity fixture', () => {
     await expect(page.locator('.card')).toBeVisible();
   });
 
-  test('legacy rollback control remains keyboard reachable', async({ page }) => {
+  test('hides phone tabs while the virtual keyboard is visible', async({ page }) => {
+    await page.goto(`${shellUrl}?keyboard=true`);
+    await expect(page.getByTestId('f7-shell')).toHaveAttribute('data-keyboard', 'true');
+    await expect(page.locator('.tabs')).toBeHidden();
+  });
+
+  test('provides named route recovery controls', async({ page }) => {
+    await page.goto(`${shellUrl}?error=true`);
+    const alert = page.getByRole('alert');
+    await expect(alert).toBeVisible();
+    await expect(alert.getByRole('heading', { name: 'This page could not be displayed' })).toBeVisible();
+    await expect(alert.getByRole('button', { name: 'Retry' })).toBeVisible();
+    await expect(alert.getByRole('button', { name: 'Go home' })).toBeVisible();
+  });
+
+  test('legacy rollback control remains keyboard reachable and independently addressable', async({ page }) => {
     const rollback = page.getByRole('button', { name: 'Use legacy shell' });
     await rollback.focus();
     await expect(rollback).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('body')).toHaveAttribute('data-shell', 'legacy');
+    await expect(page.getByTestId('legacy-shell')).toBeVisible();
+    await expect(page.getByTestId('f7-shell')).toBeHidden();
   });
 
   test('has no detectable WCAG 2.2 AA violations', async({ page, browserName }) => {
@@ -87,7 +123,7 @@ test.describe('Framework7 shell parity fixture', () => {
   test('reduced-motion project produces near-instant motion values', async({ page }) => {
     const reduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
     test.skip(!reduced, 'Only applicable to the reduced-motion project');
-    const duration = await page.locator('.shell').evaluate((element) => getComputedStyle(element).transitionDuration);
+    const duration = await page.getByTestId('f7-shell').evaluate((element) => getComputedStyle(element).transitionDuration);
     expect(['0s', '0.00001s']).toContain(duration);
   });
 });
