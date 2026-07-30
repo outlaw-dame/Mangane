@@ -48,16 +48,6 @@ const STATUS_REVEAL = 'STATUS_REVEAL';
 const STATUS_HIDE   = 'STATUS_HIDE';
 
 const STATUS_APPLY_FILTERS = 'STATUS_APPLY_FILTERS';
-const MAX_ANCESTOR_REPAIR_DEPTH = 40;
-const MAX_STATUS_ID_LENGTH = 512;
-
-type ContextStatus = APIEntity & {
-  id: string,
-  in_reply_to_id?: string | null,
-};
-
-const isUsableStatusId = (value: unknown): value is string =>
-  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
 
 const statusExists = (getState: () => RootState, statusId: string) => {
   return (getState().statuses.get(statusId) || null) !== null;
@@ -244,6 +234,17 @@ const fetchDescendants = (id: string) =>
     dispatch(importFetchedStatuses(response.data));
     return response;
   };
+
+const MAX_ANCESTOR_REPAIR_DEPTH = 40;
+const MAX_STATUS_ID_LENGTH = 512;
+
+type ContextStatus = APIEntity & {
+  id: string,
+  in_reply_to_id?: string | null,
+};
+
+const isUsableStatusId = (value: unknown): value is string =>
+  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
 
 const repairMissingAncestors = async(
   dispatch: AppDispatch,
