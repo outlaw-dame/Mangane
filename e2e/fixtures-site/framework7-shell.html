@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mangane Framework7 Shell Parity</title>
+<style>
+:root {
+  --canvas: #f6f7f9;
+  --surface: #fff;
+  --surface-secondary: #eceef2;
+  --text: #17181c;
+  --muted: #555a65;
+  --accent: #4338ca;
+  --selected: #e7e5ff;
+  --separator: #c9cdd6;
+  --focus: #1d4ed8;
+  --motion: 180ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #111216;
+    --surface: #191b20;
+    --surface-secondary: #23262d;
+    --text: #f7f7f8;
+    --muted: #c5c8d0;
+    --accent: #a5b4fc;
+    --selected: #2e325d;
+    --separator: #454a55;
+    --focus: #bfdbfe;
+    color-scheme: dark;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --motion: 0.01ms; } }
+@media (forced-colors: active) {
+  :root { --canvas: Canvas; --surface: Canvas; --surface-secondary: ButtonFace; --text: CanvasText; --muted: GrayText; --accent: Highlight; --selected: Highlight; --separator: CanvasText; --focus: Highlight; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; font-family: Inter, system-ui, sans-serif; color: var(--text); background: var(--canvas); }
+button, a { font: inherit; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.shell { min-height: 100vh; display: grid; transition: opacity var(--motion); }
+.shell[data-layout="desktop"] { grid-template-columns: 260px minmax(0, 680px) 240px; justify-content: center; gap: 24px; padding: 0 24px; }
+.shell[data-layout="tablet"] { grid-template-columns: 240px minmax(0, 1fr); }
+.shell[data-layout="phone"] { display: flex; flex-direction: column; }
+.sidebar, .aside { background: var(--surface); border-inline-end: 1px solid var(--separator); padding: 16px; }
+.aside { border-inline: 1px solid var(--separator); }
+.main { min-width: 0; padding: 20px; }
+.shell[data-layout="phone"] .main { flex: 1; padding-bottom: 76px; }
+.nav { display: flex; flex-direction: column; gap: 6px; }
+.nav a, .bottom-tabs a { color: var(--muted); text-decoration: none; min-height: 44px; display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 10px 12px; }
+.nav a[aria-current="page"], .bottom-tabs a[aria-current="page"] { color: var(--text); background: var(--selected); font-weight: 600; }
+.icon { width: 22px; height: 22px; display: inline-grid; place-items: center; border: 2px solid currentColor; border-radius: 7px; aria-hidden: true; }
+.bottom-tabs { position: fixed; inset-inline: 0; bottom: 0; min-height: 64px; padding-bottom: env(safe-area-inset-bottom, 0); display: none; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--separator); z-index: 5; }
+.bottom-tabs a { flex-direction: column; justify-content: center; gap: 2px; padding: 6px; font-size: 12px; border-radius: 0; }
+.shell[data-layout="phone"] .bottom-tabs { display: grid; }
+.shell[data-keyboard="true"] .bottom-tabs { display: none; }
+.shell[data-keyboard="true"] .main { padding-bottom: 20px; }
+.offline { display: none; position: sticky; top: 0; z-index: 10; padding: 10px 16px; text-align: center; background: var(--surface-secondary); border-bottom: 1px solid var(--separator); }
+.shell[data-offline="true"] .offline { display: block; }
+.card { max-width: 640px; padding: 20px; background: var(--surface); border: 1px solid var(--separator); border-radius: 16px; }
+.card h1 { margin-top: 0; }
+.error { display: none; min-height: 50vh; place-items: center; text-align: center; }
+.shell[data-error="true"] .content { display: none; }
+.shell[data-error="true"] .error { display: grid; }
+.actions { display: flex; justify-content: center; gap: 12px; }
+.actions button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--separator); border-radius: 10px; color: var(--text); background: var(--surface); }
+.badge { min-width: 20px; padding: 1px 6px; border-radius: 999px; color: white; background: #b42318; text-align: center; font-size: 12px; }
+[data-legacy="true"] .shell { display: none; }
+.legacy { display: none; min-height: 100vh; place-items: center; background: var(--surface); }
+[data-legacy="true"] .legacy { display: grid; }
+@media (max-width: 767px) { .sidebar, .aside { display: none; } }
+</style>
+</head>
+<body>
+<div id="fixture">
+  <div class="legacy" data-testid="legacy-shell"><p>Legacy shell rollback path</p></div>
+  <div class="shell" data-testid="f7-shell" data-layout="desktop" data-keyboard="false" data-offline="false" data-error="false">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <nav class="nav">
+        <a href="#home" aria-current="page"><span class="icon"></span>Home</a>
+        <a href="#local"><span class="icon"></span>Local</a>
+        <a href="#explore"><span class="icon"></span>Explore</a>
+        <a href="#notifications"><span class="icon"></span>Notifications <span class="badge" aria-label="3 unread">3</span></a>
+        <a href="#settings"><span class="icon"></span>Settings</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="offline" role="status" aria-live="polite">You are offline. Cached content remains available.</div>
+      <div class="content">
+        <article class="card">
+          <h1>Framework7 shell parity fixture</h1>
+          <p>This synthetic page validates adaptive shell behavior without depending on account or network data.</p>
+          <button id="focus-target">Focusable action</button>
+        </article>
+      </div>
+      <section class="error" role="alert" aria-labelledby="error-title">
+        <div>
+          <h1 id="error-title">This page could not be displayed</h1>
+          <p>The error boundary preserves a safe recovery path.</p>
+          <div class="actions"><button>Retry</button><button>Go home</button></div>
+        </div>
+      </section>
+    </main>
+    <aside class="aside" aria-label="Context panel"><p>Context panel</p></aside>
+    <nav class="bottom-tabs" aria-label="Primary navigation">
+      <a href="#home" aria-current="page"><span class="icon"></span>Home</a>
+      <a href="#search"><span class="icon"></span>Search</a>
+      <a href="#notifications"><span class="icon"></span>Alerts <span class="badge" aria-label="3 unread">3</span></a>
+      <a href="#settings"><span class="icon"></span>Settings</a>
+    </nav>
+  </div>
+</div>
+<script>
+const params = new URLSearchParams(location.search);
+const fixture = document.getElementById('fixture');
+const shell = document.querySelector('[data-testid="f7-shell"]');
+const width = window.innerWidth;
+const requested = params.get('layout');
+const layout = requested || (width < 768 ? 'phone' : width <= 1024 ? 'tablet' : 'desktop');
+shell.dataset.layout = layout;
+shell.dataset.keyboard = String(params.get('keyboard') === 'true');
+shell.dataset.offline = String(params.get('offline') === 'true');
+shell.dataset.error = String(params.get('error') === 'true');
+fixture.dataset.legacy = String(params.get('legacy') === 'true');
+</script>
+</body>
+</html>
