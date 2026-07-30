@@ -8,6 +8,7 @@ const test = require('node:test');
 const root = path.resolve(__dirname, '..', '..');
 const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf8');
 
+// Framework7 import ownership is enforced separately by the canonical architecture-boundary checker.
 const shellFiles = [
   'app/soapbox/features/f7-shell/components/bottom-tabs.tsx',
   'app/soapbox/features/f7-shell/components/sidebar-navigation.tsx',
