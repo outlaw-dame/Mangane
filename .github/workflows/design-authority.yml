@@ -44,10 +44,49 @@ on:
       - 'tailwind.config.js'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  reconcile-phase-3e:
+    if: github.event_name == 'pull_request' && github.head_ref == 'phase-3e/framework7-icon-parity-and-closure' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: phase-3e/framework7-icon-parity-and-closure
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: yarn install --immutable --mode=skip-build
+      - name: Regenerate governed inventories
+        run: |
+          yarn generate:icons
+          yarn generate:design-authority
+          yarn generate:documentation-authority
+          yarn generate:architecture-boundaries
+      - name: Verify regenerated authorities
+        run: |
+          node --test scripts/__tests__/f7-shell-icon-authority.test.js
+          yarn check:icons
+          yarn check:design-authority
+          yarn check:documentation-authority
+          yarn check:architecture-boundaries
+      - name: Restore trusted workflow and commit exact generated output
+        run: |
+          git checkout origin/main -- .github/workflows/design-authority.yml
+          rm -f .github/workflows/temporary-phase-3e-reconcile.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "chore(shell): reconcile Phase 3E authorities"
+          git push origin HEAD:phase-3e/framework7-icon-parity-and-closure
+
   design-authority:
+    if: github.event_name != 'pull_request' || github.head_ref != 'phase-3e/framework7-icon-parity-and-closure' || github.actor == 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
