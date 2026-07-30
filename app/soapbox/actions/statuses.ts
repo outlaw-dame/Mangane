@@ -331,35 +331,39 @@ type ContextStatus = APIEntity & {
   in_reply_to_id?: string | null,
 };
 
-const coordinateStatusContext = (
+function coordinateStatusContext(
   id: string,
   knownStatuses: ContextStatus[],
   descendants: ContextStatus[],
-) => async(dispatch: AppDispatch, getState: () => RootState) => {
-  const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
-  if (!focusedStatus) return { ancestors: [], fetched: [], outcome: 'partial-malformed' as const };
+) {
+  return async(dispatch: AppDispatch, getState: () => RootState) => {
+    const focusedStatusRecord = getState().statuses.get(id);
+    const focusedStatus = focusedStatusRecord?.toJS() as ContextStatus | undefined;
+    if (!focusedStatus) return { ancestors: [], fetched: [], outcome: 'partial-malformed' as const };
 
-  const recovery = await recoverAncestorContext({
-    focusedStatus,
-    knownStatuses,
-    fetchStatusById: async(parentId: string) => {
-      const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
-      if (cached) return cached;
-      const parent = await dispatch(fetchStatus(parentId, true));
-      if (!parent) throw new Error('Parent status fetch completed without an entity');
-      return parent;
-    },
-  });
+    const recovery = await recoverAncestorContext({
+      focusedStatus,
+      knownStatuses,
+      fetchStatusById: async(parentId: string) => {
+        const cachedRecord = getState().statuses.get(parentId);
+        const cached = cachedRecord?.toJS() as ContextStatus | undefined;
+        if (cached) return cached;
+        const parent = await dispatch(fetchStatus(parentId, true));
+        if (!parent) throw new Error('Parent status fetch completed without an entity');
+        return parent;
+      },
+    });
 
-  dispatch({
-    type: CONTEXT_FETCH_SUCCESS,
-    id,
-    ancestors: recovery.ancestors,
-    descendants,
-  });
+    dispatch({
+      type: CONTEXT_FETCH_SUCCESS,
+      id,
+      ancestors: recovery.ancestors,
+      descendants,
+    });
 
-  return recovery;
-};
+    return recovery;
+  };
+}
 
 export {
   STATUS_CREATE_REQUEST,
