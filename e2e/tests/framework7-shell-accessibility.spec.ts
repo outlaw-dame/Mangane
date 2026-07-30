@@ -2,19 +2,18 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 
 const shellUrl = '/framework7-shell.html';
-const isRendered = (element: Element): boolean => element.getClientRects().length > 0;
 
 test.describe('Framework7 shell accessibility and recovery', () => {
   test('exposes one visible named navigation with one current destination', async({ page }) => {
     await page.goto(shellUrl);
 
     const visibleNavigationCount = await page.getByRole('navigation', { name: 'Primary navigation' }).evaluateAll((items) => (
-      items.filter(isRendered).length
+      items.filter((item) => item.getClientRects().length > 0).length
     ));
     expect(visibleNavigationCount).toBe(1);
 
     const currentVisibleCount = await page.locator('[aria-current="page"]').evaluateAll((items) => (
-      items.filter(isRendered).length
+      items.filter((item) => item.getClientRects().length > 0).length
     ));
     expect(currentVisibleCount).toBe(1);
   });
