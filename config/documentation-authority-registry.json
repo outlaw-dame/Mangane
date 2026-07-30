@@ -212,7 +212,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical ADR index",
-      "contentSha256": "92f0c4028b2ec94ed1786bef978f84ea142372cd224f6a90d8cab4a2c2b36d72"
+      "contentSha256": "94c4ee7488b88452a8e9b9c95d04f91a177fd4c3f09c6ceb2e10cb08a110c52f"
     },
     {
       "path": "docs/architecture/AUTH_PERSISTENCE_INVENTORY.md",
@@ -482,7 +482,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "4df8ef9b36cec2ebfe6d70714ef54abf9f7feae793f0dbadfe033f7d58b1533c"
+      "contentSha256": "40db4a014a202a3cf24e92e8ec1ffe0dc3dbb96d701c38063e27bf65e8b20c15"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -556,13 +556,13 @@
     },
     {
       "path": "docs/architecture/PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md",
-      "title": "Phase 10 — Threaded Post Composer and Reliable Publishing",
-      "authorityId": "phase-10-threaded-post-composer-and-reliable-publishing",
+      "title": "Phase 10 — Adaptive Publishing, Articles, Formatted Notes, and Reliable Authored Sequences",
+      "authorityId": "phase-10-adaptive-publishing-articles-formatted-notes-and-reliable-authored-sequences",
       "classification": "current-supporting-evidence",
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Accepted target / queued after Phase 9 and required Phase 5–8D dependencies",
-      "contentSha256": "e789f6ff6b5998421286ecdf08c1f5e905a9cc7936a3cd88c8726db8523067db"
+      "contentSha256": "96e38486164b35cc650cade988e795246e449a52b7dfaff026d7f0c1ef031673"
     },
     {
       "path": "docs/architecture/PHASE_1_ARCHITECTURE_CONTRACTS.md",

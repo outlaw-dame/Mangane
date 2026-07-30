@@ -472,13 +472,13 @@ Security/privacy impact: Connected credentials never go to origin servers. Autho
 
 Migration/rollback: Phase 9 is additive and feature-flagged. Rollback restores the inherited flat conversation presentation while retaining Phase 8A reconciliation, the Context Recovery Coordinator, canonical statuses, reply edges, aliases, tombstones, viewer state, and pending replies. Optional conversation view-state projections may expire or be purged without social-data loss.
 
-## ADR-031 — Multi-post authored sequences use ordinary replies and the existing durable outbox
+## ADR-031 — Adaptive long-form publishing preserves canonical objects and uses one presentation classifier
 
 Status: Accepted
 
 Date: 2026-07-30
 
-Decision: Expand canonical Phase 10 into Threaded Post Composer and Reliable Publishing. Mangane may coordinate an unpublished multi-segment authored sequence locally, but each published segment remains an ordinary canonical status and replies to the immediately preceding confirmed segment. Phase 5 remains the draft/status authority, Phase 6 remains the durable outbox/retry authority, protocol adapters remain the capability and publication authority, and Phase 9 remains the conversation-reading authority.
+Decision: Expand canonical Phase 10 into Adaptive Publishing, Articles, Formatted Notes, and Reliable Authored Sequences. Preserve native article, note, linked-work and ordinary status identities; publish authored sequences as ordinary replies through the existing durable outbox; and derive feed cards and readers through one bounded presentation classifier that consumes Phase 8B creator attribution, Phase 8D source semantics and Phase 9 conversation truth. Mangane may coordinate an unpublished multi-segment authored sequence locally, but each published segment remains an ordinary canonical status and replies to the immediately preceding confirmed segment. Phase 5 remains the draft/status authority, Phase 6 remains the durable outbox/retry authority, protocol adapters remain the capability and publication authority, and Phase 9 remains the conversation-reading authority.
 
 Context: Meta Threads demonstrates the strongest user experience for preparing several connected posts before publication, including adding segments inside one composer and proposing splits for over-limit pasted text. Phanpy provides useful lightweight Continue thread and thread-identification cues. Mangane needs those benefits without pretending a sequence can publish atomically across ordinary Fediverse APIs, duplicating status data, inventing a proprietary ActivityPub thread object, or creating a second draft/outbox/publisher.
 
