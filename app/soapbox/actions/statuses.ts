@@ -1,4 +1,5 @@
 import { isLoggedIn } from 'soapbox/utils/auth';
+import { repairAncestorContext } from 'soapbox/utils/ancestor-context';
 import { getFeatures } from 'soapbox/utils/features';
 import { shouldHaveCard } from 'soapbox/utils/status';
 
@@ -235,31 +236,75 @@ const fetchDescendants = (id: string) =>
     return response;
   };
 
+const repairMissingAncestors = async(
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  status: APIEntity | undefined,
+  ancestors: APIEntity[],
+): Promise<APIEntity[]> => {
+  if (!status?.in_reply_to_id) return ancestors;
+
+  const repair = await repairAncestorContext(
+    status,
+    ancestors,
+    async(parentId: string) => {
+      const response = await api(getState).get(`/api/v1/statuses/${parentId}`);
+      return response.data;
+    },
+  );
+
+  if (repair.fetched.length > 0) {
+    dispatch(importFetchedStatuses(repair.fetched));
+  }
+
+  return repair.ancestors;
+};
+
 const fetchStatusWithContext = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
     const features = getFeatures(getState().instance);
 
     if (features.paginatedContext) {
-      await dispatch(fetchStatus(id));
+      const status = await dispatch(fetchStatus(id));
       const responses = await Promise.all([
-        dispatch(fetchAncestors(id)),
-        dispatch(fetchDescendants(id)),
+        dispatch(fetchAncestors(id)).catch(() => undefined),
+        dispatch(fetchDescendants(id)).catch(() => undefined),
       ]);
+      const ancestors = responses[0]?.data || [];
+      const descendants = responses[1]?.data || [];
+      const repairedAncestors = await repairMissingAncestors(dispatch, getState, status, ancestors);
 
       dispatch({
         type: CONTEXT_FETCH_SUCCESS,
         id,
-        ancestors: responses[0].data,
-        descendants: responses[1].data,
+        ancestors: repairedAncestors,
+        descendants,
       });
 
-      const next = getNextLink(responses[1]);
+      const next = responses[1] ? getNextLink(responses[1]) : undefined;
       return { next };
     } else {
-      await Promise.all([
+      const [context, status] = await Promise.all([
         dispatch(fetchContext(id)),
         dispatch(fetchStatus(id)),
       ]);
+      const ancestors = !Array.isArray(context) && typeof context === 'object' && context
+        ? context.ancestors || []
+        : [];
+      const descendants = !Array.isArray(context) && typeof context === 'object' && context
+        ? context.descendants || []
+        : [];
+      const repairedAncestors = await repairMissingAncestors(dispatch, getState, status, ancestors);
+
+      if (status?.in_reply_to_id) {
+        dispatch({
+          type: CONTEXT_FETCH_SUCCESS,
+          id,
+          ancestors: repairedAncestors,
+          descendants,
+        });
+      }
+
       return { next: undefined };
     }
   };
@@ -267,7 +312,6 @@ const fetchStatusWithContext = (id: string) =>
 const muteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-
     dispatch({ type: STATUS_MUTE_REQUEST, id });
     api(getState).post(`/api/v1/statuses/${id}/mute`).then(() => {
       dispatch({ type: STATUS_MUTE_SUCCESS, id });
@@ -279,7 +323,6 @@ const muteStatus = (id: string) =>
 const unmuteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-
     dispatch({ type: STATUS_UNMUTE_REQUEST, id });
     api(getState).post(`/api/v1/statuses/${id}/unmute`).then(() => {
       dispatch({ type: STATUS_UNMUTE_SUCCESS, id });
