@@ -406,18 +406,18 @@
       "classification": "startup-guarded-local-diagnostic"
     },
     {
-      "id": "console:app/soapbox/features/ui/index.tsx:413",
+      "id": "console:app/soapbox/features/ui/index.tsx:414",
       "kind": "console",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 413,
+      "line": 414,
       "expression": "console.warn('Unknown message type:', data.type);",
       "classification": "startup-guarded-local-diagnostic"
     },
     {
-      "id": "console:app/soapbox/features/ui/index.tsx:441",
+      "id": "console:app/soapbox/features/ui/index.tsx:442",
       "kind": "console",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 441,
+      "line": 442,
       "expression": ".catch(console.error);",
       "classification": "startup-guarded-local-diagnostic"
     },
@@ -446,27 +446,19 @@
       "classification": "startup-guarded-local-diagnostic"
     },
     {
-      "id": "console:app/soapbox/main.tsx:48",
+      "id": "console:app/soapbox/main.tsx:51",
       "kind": "console",
       "path": "app/soapbox/main.tsx",
-      "line": 48,
+      "line": 51,
       "expression": "console.debug('Service worker installing');",
       "classification": "startup-guarded-local-diagnostic"
     },
     {
-      "id": "console:app/soapbox/main.tsx:50",
+      "id": "console:app/soapbox/main.tsx:53",
       "kind": "console",
       "path": "app/soapbox/main.tsx",
-      "line": 50,
+      "line": 53,
       "expression": "console.debug('Service worker installed');",
-      "classification": "startup-guarded-local-diagnostic"
-    },
-    {
-      "id": "console:app/soapbox/main.tsx:52",
-      "kind": "console",
-      "path": "app/soapbox/main.tsx",
-      "line": 52,
-      "expression": "console.debug('Service worker active');",
       "classification": "startup-guarded-local-diagnostic"
     },
     {
@@ -474,6 +466,14 @@
       "kind": "console",
       "path": "app/soapbox/main.tsx",
       "line": 55,
+      "expression": "console.debug('Service worker active');",
+      "classification": "startup-guarded-local-diagnostic"
+    },
+    {
+      "id": "console:app/soapbox/main.tsx:58",
+      "kind": "console",
+      "path": "app/soapbox/main.tsx",
+      "line": 58,
       "expression": "console.error(`Registration failed with ${error}`);",
       "classification": "startup-guarded-local-diagnostic"
     },
@@ -1134,6 +1134,38 @@
       "classification": "repository-tooling"
     },
     {
+      "id": "environment-read:scripts/check-pwa-installability.js:7",
+      "kind": "environment-read",
+      "path": "scripts/check-pwa-installability.js",
+      "line": 7,
+      "expression": "const root = path.resolve(process.env.PWA_INSTALLABILITY_ROOT || path.resolve(__dirname, '..'));",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/check-pwa-installability.js:8",
+      "kind": "environment-read",
+      "path": "scripts/check-pwa-installability.js",
+      "line": 8,
+      "expression": "const result = process.env.PWA_BUILD_OUTPUT_ROOT",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/check-pwa-installability.js:9",
+      "kind": "environment-read",
+      "path": "scripts/check-pwa-installability.js",
+      "line": 9,
+      "expression": "? validateBuild(path.resolve(process.env.PWA_BUILD_OUTPUT_ROOT), process.env.PWA_BASE_PATH || '/')",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/check-pwa-installability.js:9",
+      "kind": "environment-read",
+      "path": "scripts/check-pwa-installability.js",
+      "line": 9,
+      "expression": "? validateBuild(path.resolve(process.env.PWA_BUILD_OUTPUT_ROOT), process.env.PWA_BASE_PATH || '/')",
+      "classification": "repository-tooling"
+    },
+    {
       "id": "environment-read:scripts/check-react-query-authority-inventory.js:6",
       "kind": "environment-read",
       "path": "scripts/check-react-query-authority-inventory.js",
@@ -1219,6 +1251,30 @@
       "path": "scripts/generate-icon-migration-baseline.js",
       "line": 12,
       "expression": "const root = path.resolve(process.env.ICON_MIGRATION_ROOT || path.resolve(__dirname, '..'));",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/serve-pwa-fixture.js:9",
+      "kind": "environment-read",
+      "path": "scripts/serve-pwa-fixture.js",
+      "line": 9,
+      "expression": "const root = path.resolve(process.env.PWA_FIXTURE_ROOT || path.resolve(__dirname, '..', 'static', 'Mangane'));",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/serve-pwa-fixture.js:10",
+      "kind": "environment-read",
+      "path": "scripts/serve-pwa-fixture.js",
+      "line": 10,
+      "expression": "const basePath = normalizeBasePath(process.env.PWA_FIXTURE_BASE_PATH || '/Mangane/');",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/serve-pwa-fixture.js:11",
+      "kind": "environment-read",
+      "path": "scripts/serve-pwa-fixture.js",
+      "line": 11,
+      "expression": "const port = Number(process.env.PWA_FIXTURE_PORT || 4174);",
       "classification": "repository-tooling"
     },
     {
@@ -1354,7 +1410,7 @@
     "artifact-upload": 3,
     "console": 74,
     "notification-payload": 13,
-    "environment-read": 67,
+    "environment-read": 74,
     "clipboard": 3,
     "error-boundary": 2,
     "devtools": 1,

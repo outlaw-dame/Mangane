@@ -5,6 +5,8 @@
     "path": "app/soapbox/service_worker/share_target.js",
     "requiredExecutableBindings": [
       "const MAX_DECLARED_FORM_BYTES=16*1024;",
+      "const scopeUrl=new URL(self.registration.scope);",
+      "const sharePath=new URL('share',scopeUrl).pathname;",
       "const boundedText=(value,maxLength)=>typeof value==='string'?value.replace(/\\0/g,'').slice(0,maxLength):'';",
       "const handleShareRequest=async(request)=>{",
       "if(!ACCEPTED_CONTENT_TYPES.some(type=>contentType.toLowerCase().startsWith(type))){",
@@ -15,23 +17,29 @@
       "const text=`${name}\\n${description}\\n\\n${link}`;",
       "const params=new URLSearchParams();",
       "params.append('text',text);",
-      "return Response.redirect(`/statuses/compose?${params.toString()}`,303);",
+      "const composeUrl=new URL('statuses/compose',scopeUrl);",
+      "composeUrl.search=params.toString();",
+      "return Response.redirect(composeUrl.href,303);",
       "return new Response('',{status:400});",
       "self.addEventListener('fetch',(event)=>{",
       "requestUrl.origin===self.location.origin",
-      "requestUrl.pathname==='/share'",
+      "requestUrl.pathname===sharePath",
       "event.respondWith(handleShareRequest(event.request));"
     ]
   },
   "developmentRegistration": {
     "path": "app/soapbox/main.tsx",
-    "requiredExecutableBinding": "navigator.serviceWorker.register('/share_target.js',{scope:'/',});"
+    "requiredExecutableBindings": [
+      "const scope=BuildConfig.FE_SUBDIRECTORY==='/'",
+      "navigator.serviceWorker.register(`${scope}share_target.js`,{scope,});"
+    ]
   },
   "canonicalDocumentation": {
     "path": "docs/architecture/SHARE_TARGET_AUTHORITY_DRIFT_GATE.md"
   },
   "invariants": {
     "routingRequiresExactSameOriginPath": true,
+    "routingUsesServiceWorkerScope": true,
     "acceptedTextFieldsAreExplicitlyBounded": true,
     "declaredOversizeAndMalformedFormsFailClosed": true,
     "acceptedFieldsAreCurrentlyNameDescriptionAndLink": true,
@@ -39,11 +47,10 @@
     "fileSharesRemainUnsupported": true
   },
   "explicitUnknowns": [
-    "Production service-worker bundling and manifest ownership for share_target.js remain incompletely enumerated.",
     "Browsers do not guarantee that Content-Length is exposed to service workers, so undeclared total multipart size remains platform-controlled even though accepted text fields and declared sizes are bounded.",
     "Redirect URL length is bounded indirectly by accepted field limits rather than by a separately measured deployment-proxy limit.",
     "Shared link scheme, preview-fetch behavior and downstream composer URL handling are not proven safe by this gate.",
     "File share fields and temporary storage are absent from the current text-only handler; any future addition requires quota and one-time cleanup reconciliation.",
-    "FE_SUBDIRECTORY and production deployment rewrite behavior for the share-target redirect require end-to-end verification."
+    "Production edge rewrite precedence for the scoped share-target path still requires deployment verification."
   ]
 }

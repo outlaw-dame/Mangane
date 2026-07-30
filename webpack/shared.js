@@ -15,6 +15,7 @@ const { env, settings, output } = require('./configuration');
 const rules = require('./rules');
 
 const { FE_SUBDIRECTORY, FE_INSTANCE_SOURCE_DIR } = require(join(__dirname, '..', 'app', 'soapbox', 'build_config'));
+const pwaBasePath = FE_SUBDIRECTORY === '/' ? '/' : `${FE_SUBDIRECTORY.replace(/\/+$/, '')}/`;
 
 // Return file as string, or return empty string
 const readFile = filename => {
@@ -40,6 +41,7 @@ const makeHtmlConfig = (params = {}) => {
       useShortDoctype: true,
     },
     templateParameters: {
+      pwaBasePath,
       snippets: readFile(resolve('custom/snippets.html')),
     },
   }, params);
@@ -119,6 +121,9 @@ module.exports = {
       patterns: [{
         from: join(__dirname, '../node_modules/twemoji/assets'),
         to: join(output.path, 'packs/emoji'),
+      }, {
+        from: join(__dirname, '..', 'app', 'pwa-icons'),
+        to: join(output.path, 'pwa-icons'),
       }, {
         from: join(__dirname, '..', 'app', FE_INSTANCE_SOURCE_DIR),
         to: join(output.path, 'instance'),

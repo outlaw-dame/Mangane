@@ -115,7 +115,10 @@ for (const fragment of [
   'requestTypes:[\'navigate\'],',
   'safeToUseOptionalCaches:true,',
   'appShell:join(FE_SUBDIRECTORY,\'/\'),',
-  'backendRoutes.some(path=>pathname.startsWith(path))||pathname.endsWith(\'/embed\')',
+  'const scopePath=new URL(self.registration.scope).pathname.replace(/\\/$/,\'\');',
+  'const relativePathname=scopePath&&pathname.startsWith(`${scopePath}/`)?pathname.slice(scopePath.length):pathname;',
+  'backendRoutes.some(path=>relativePathname===path||relativePathname.startsWith(`${path}/`))',
+  'relativePathname.endsWith(\'/embed\')',
 ]) requireExecutable(productionSource, fragment, production.path);
 for (const route of production.backendRoutePrefixes) requireExecutable(productionSource, `'${route}'`, production.path);
 
@@ -149,6 +152,7 @@ validateExactList(manifest.explicitUnknowns, expectedUnknowns, 'explicit unknown
 for (const invariant of [
   'productionNavigationUsesAppShellFallback',
   'backendRoutesBypassAppShellRewrite',
+  'backendRouteMatchingUsesWorkerScope',
   'cacheInputsAreBuildAssetsAndAppShell',
   'backendNavigationRoutesBypassAppShell',
   'accountPurgeDeletesOwnedCachePrefixes',

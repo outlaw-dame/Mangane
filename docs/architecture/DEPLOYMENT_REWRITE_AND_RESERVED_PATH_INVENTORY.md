@@ -67,7 +67,7 @@ The development server uses `historyApiFallback.disableDotRule: true` with fallb
 
 ## Verified production service-worker navigation exclusions
 
-`webpack/production.js` configures OfflinePlugin with app shell `join(FE_SUBDIRECTORY, '/')` and a navigation `cacheMaps` matcher. Navigations whose pathname starts with any listed backend prefix bypass app-shell substitution and return the original URL:
+`webpack/production.js` configures OfflinePlugin with app shell `join(FE_SUBDIRECTORY, '/')` and a navigation `cacheMaps` matcher. The matcher removes only the active service-worker scope before comparing exact backend path segments. Navigations whose scope-relative pathname matches any listed backend prefix bypass app-shell substitution and return the original URL:
 
 | Production exclusion | Ownership/risk |
 |---|---|
@@ -94,7 +94,7 @@ The development server uses `historyApiFallback.disableDotRule: true` with fallb
 | `/socket` | streaming/socket transport |
 | `/static` | backend static content |
 | `/unsubscribe` | backend unsubscribe flow |
-| any pathname ending `/embed` | backend/embed handling |
+| any scope-relative pathname ending `/embed` | backend/embed handling |
 
 This production list is materially broader than the development proxy list. Route conformance must therefore use the union of development, production-worker and externally verified edge reservations; one environment cannot be treated as authoritative for another.
 

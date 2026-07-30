@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react';
 import { Map as ImmutableMap } from 'immutable';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
@@ -34,6 +35,26 @@ describe('<UI />', () => {
         }),
       }),
     };
+  });
+
+  describe('while authentication is loading', () => {
+    it('captures the one-shot install prompt before the authenticated shell mounts', async() => {
+      localStorage.clear();
+      store.me = null;
+      const installEvent = new Event('beforeinstallprompt', { cancelable: true });
+      Object.assign(installEvent, {
+        prompt: jest.fn().mockResolvedValue(undefined),
+        userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+      });
+
+      render(<UI />, {}, store);
+      act(() => {
+        window.dispatchEvent(installEvent);
+      });
+
+      expect(installEvent.defaultPrevented).toBe(true);
+      expect(await screen.findByRole('button', { name: 'Install' })).toBeInTheDocument();
+    });
   });
 
   describe('when logged out', () => {
