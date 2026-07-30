@@ -3,8 +3,9 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Framework7 shell parity fixture', () => {
   test.beforeEach(async({ page }) => {
-    await page.goto('/f7-shell.html');
+    await page.goto('/f7-shell/');
     await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('.shell')).toBeVisible();
   });
 
   test('uses the correct responsive shell structure', async({ page }) => {
