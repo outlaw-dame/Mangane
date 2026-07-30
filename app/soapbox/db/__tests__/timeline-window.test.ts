@@ -69,7 +69,28 @@ describe('loadTimelineWindow', () => {
     expect(window.missingStatusIds).toEqual([]);
   });
 
-  it('resolves a deep status anchor before applying the bounded candidate limit', async() => {
+  it('selects neighboring members by rank when positions are sparse', async() => {
+    const scope = createAccountScope(ALICE);
+    const timelineRepo = new TimelineRepository();
+
+    await statusesRepo.putMany(scope, ['newer', 'anchor', 'older'].map(status));
+    await timelineRepo.addMembers(scope, 'home', [
+      { statusId: 'newer', position: 100, source: 'streaming' },
+      { statusId: 'anchor', position: 50, source: 'pagination' },
+      { statusId: 'older', position: -25, source: 'pagination' },
+    ]);
+
+    const window = await loadTimelineWindow(scope, 'home', {
+      anchorStatusId: 'anchor',
+      before: 1,
+      after: 1,
+    });
+
+    expect(window.members.map(member => member.statusId)).toEqual(['newer', 'anchor', 'older']);
+    expect(window.anchorIndex).toBe(1);
+  });
+
+  it('resolves a deep status anchor before applying bounded output limits', async() => {
     const scope = createAccountScope(ALICE);
     const timelineRepo = new TimelineRepository();
     const ids = Array.from({ length: 180 }, (_, index) => `s${index + 1}`);
