@@ -11,7 +11,6 @@ import { deleteFromTimelines } from './timelines';
 
 import type { AppDispatch, RootState } from 'soapbox/store';
 import type { APIEntity, Status } from 'soapbox/types/entities';
-import type { ContextRecoveryResult } from 'soapbox/utils/context-recovery';
 
 const STATUS_CREATE_REQUEST = 'STATUS_CREATE_REQUEST';
 const STATUS_CREATE_SUCCESS = 'STATUS_CREATE_SUCCESS';
@@ -132,7 +131,7 @@ const editStatus = (id: string) => (dispatch: AppDispatch, getState: () => RootS
   });
 };
 
-const fetchStatus = (id: string) => {
+const fetchStatus = (id: string, throwOnError = false) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     const skipLoading = statusExists(getState, id);
 
@@ -144,10 +143,10 @@ const fetchStatus = (id: string) => {
       return status;
     }).catch(error => {
       dispatch({ type: STATUS_FETCH_FAIL, id, error, skipLoading, skipAlert: true });
+      if (throwOnError) throw error;
     });
   };
 };
-
 const deleteStatus = (id: string, withRedraft = false) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return null;
@@ -236,45 +235,6 @@ const fetchDescendants = (id: string) =>
     return response;
   };
 
-type ContextStatus = APIEntity & {
-  id: string,
-  in_reply_to_id?: string | null,
-};
-
-const repairStatusAncestors = (id: string, knownStatuses: ContextStatus[] = []) =>
-  async(dispatch: AppDispatch, getState: () => RootState): Promise<ContextRecoveryResult> => {
-    const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
-
-    if (!focusedStatus) {
-      return { ancestors: [], fetched: [], outcome: 'partial-malformed' };
-    }
-
-    const recovery = await recoverAncestorContext({
-      focusedStatus,
-      knownStatuses,
-      fetchStatusById: async(parentId: string) => {
-        const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
-        if (cached) return cached;
-
-        const response = await api(getState).get(`/api/v1/statuses/${parentId}`);
-        const parent = response.data as ContextStatus;
-        dispatch(importFetchedStatus(parent));
-        return parent;
-      },
-    });
-
-    if (recovery.ancestors.length > 0) {
-      dispatch({
-        type: CONTEXT_FETCH_SUCCESS,
-        id,
-        ancestors: recovery.ancestors,
-        descendants: [],
-      });
-    }
-
-    return recovery;
-  };
-
 const fetchStatusWithContext = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
     const features = getFeatures(getState().instance);
@@ -287,28 +247,16 @@ const fetchStatusWithContext = (id: string) =>
       ]);
       const ancestors = responses[0].status === 'fulfilled' ? responses[0].value.data : [];
       const descendants = responses[1].status === 'fulfilled' ? responses[1].value.data : [];
-      const recovery = await dispatch(repairStatusAncestors(id, ancestors));
-
-      dispatch({
-        type: CONTEXT_FETCH_SUCCESS,
-        id,
-        ancestors: recovery.ancestors,
-        descendants,
-      });
-
       const next = responses[1].status === 'fulfilled' ? getNextLink(responses[1].value) : undefined;
-      return { next, recovery };
+      return dispatch(coordinateStatusContext(id, ancestors, descendants)).then(recovery => ({ next, recovery }));
     } else {
       const [context] = await Promise.all([
         dispatch(fetchContext(id)),
         dispatch(fetchStatus(id)),
       ]);
-      const knownStatuses = Array.isArray(context)
-        ? context
-        : (context && typeof context === 'object' ? context.ancestors || [] : []);
-      const recovery = await dispatch(repairStatusAncestors(id, knownStatuses));
-
-      return { next: undefined, recovery };
+      const known = Array.isArray(context) ? context : (context?.ancestors || []);
+      const descendants = Array.isArray(context) ? [] : (context?.descendants || []);
+      return dispatch(coordinateStatusContext(id, known, descendants)).then(recovery => ({ next: undefined, recovery }));
     }
   };
 
@@ -373,6 +321,41 @@ const toggleStatusHidden = (status: Status) => {
   }
 };
 
+type ContextStatus = APIEntity & {
+  id: string,
+  in_reply_to_id?: string | null,
+};
+
+const coordinateStatusContext = (
+  id: string,
+  knownStatuses: ContextStatus[],
+  descendants: ContextStatus[],
+) => async(dispatch: AppDispatch, getState: () => RootState) => {
+  const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
+  if (!focusedStatus) return { ancestors: [], fetched: [], outcome: 'partial-malformed' as const };
+
+  const recovery = await recoverAncestorContext({
+    focusedStatus,
+    knownStatuses,
+    fetchStatusById: async(parentId: string) => {
+      const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
+      if (cached) return cached;
+      const parent = await dispatch(fetchStatus(parentId, true));
+      if (!parent) throw new Error('Parent status fetch completed without an entity');
+      return parent;
+    },
+  });
+
+  dispatch({
+    type: CONTEXT_FETCH_SUCCESS,
+    id,
+    ancestors: recovery.ancestors,
+    descendants,
+  });
+
+  return recovery;
+};
+
 export {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_SUCCESS,
@@ -411,7 +394,7 @@ export {
   fetchAncestors,
   fetchDescendants,
   fetchStatusWithContext,
-  repairStatusAncestors,
+  coordinateStatusContext,
   muteStatus,
   unmuteStatus,
   toggleMuteStatus,
