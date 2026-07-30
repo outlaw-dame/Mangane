@@ -89,7 +89,7 @@ describe('fetchStatusWithContext()', () => {
       mock.onGet('/api/v1/statuses/parent').reply(200, parent);
     });
 
-    const store = mockStore(rootState);
+    const store = mockStore(rootState.setIn(['statuses', reply.id], normalizeStatus(reply)));
     await store.dispatch(fetchStatusWithContext('reply'));
 
     const repairedContext = store.getActions()
@@ -110,7 +110,7 @@ describe('fetchStatusWithContext()', () => {
       mock.onGet('/api/v1/statuses/parent').reply(200, parent);
     });
 
-    const store = mockStore(rootState);
+    const store = mockStore(rootState.setIn(['statuses', reply.id], normalizeStatus(reply)));
     await store.dispatch(fetchStatusWithContext('reply'));
 
     const repairedContext = store.getActions()
