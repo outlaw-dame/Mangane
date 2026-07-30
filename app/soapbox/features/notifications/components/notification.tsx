@@ -24,20 +24,6 @@ import type { Account, Status as StatusEntity, Notification as NotificationEntit
 
 const getNotification = makeGetNotification();
 
-const getPresentationType = (notification: NotificationEntity, me: string | null): string => {
-  if (notification.type !== 'mention' || !me) return notification.type;
-
-  const status = notification.status;
-  if (!status || typeof status !== 'object') return notification.type;
-
-  const mentionsMe = status.mentions.some(mention => mention.id === me);
-
-  // Akkoma/Pleroma profile-bell subscriptions can arrive as mention notifications
-  // even when the subscriber was not mentioned. Never claim a mention the payload
-  // does not contain; present the event as a subscribed public post instead.
-  return mentionsMe ? notification.type : 'status';
-};
-
 const notificationForScreenReader = (intl: IntlShape, message: string, timestamp: Date) => {
   const output = [message];
 
@@ -175,8 +161,7 @@ const Notification: React.FC<INotificaton> = (props) => {
   const intl = useIntl();
   const instance = useAppSelector((state) => state.instance);
   const me = useAppSelector((state) => state.me);
-
-  const type = getPresentationType(notification, me);
+  const type = notification.type === 'mention' && me && notification.status && typeof notification.status === 'object' && !notification.status.mentions.some(mention => mention.id === me) ? 'status' : notification.type;
   const { account, status } = notification;
 
   const getHandlers = () => ({
