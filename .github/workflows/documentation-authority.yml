@@ -6,6 +6,9 @@ on:
       - '**.md'
       - 'config/documentation-authority-registry.json'
       - '.github/workflows/documentation-authority.yml'
+  push:
+    branches:
+      - agent/document-misskey-markdown-mfm
 
 permissions:
   contents: write
@@ -17,14 +20,14 @@ concurrency:
 jobs:
   reconcile:
     name: Reconcile Misskey phase review
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Check out PR branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
           persist-credentials: true
           fetch-depth: 0
       - name: Restore workflow, update phase, regenerate registry, and commit
@@ -42,21 +45,21 @@ jobs:
           text = text.replace('Phase 8C', 'Phase 8D')
           old = '''Mangane must classify content using authoritative evidence, in descending order of preference:
 
-1. explicit source/content-type metadata returned by the authenticated server API;
-2. an instance capability advertised by the connected server;
-3. a documented endpoint contract whose response shape identifies the source format;
-4. sanitized server-rendered HTML when no source format is available;
-5. plain-text fallback.
+          1. explicit source/content-type metadata returned by the authenticated server API;
+          2. an instance capability advertised by the connected server;
+          3. a documented endpoint contract whose response shape identifies the source format;
+          4. sanitized server-rendered HTML when no source format is available;
+          5. plain-text fallback.
 
-Server software names may be used as advisory evidence for compatibility diagnostics, but must not be the sole runtime authority when capability or payload evidence is available.'''
+          Server software names may be used as advisory evidence for compatibility diagnostics, but must not be the sole runtime authority when capability or payload evidence is available.'''
           new = '''Mangane must classify each individual payload using evidence tied to that payload, in descending order of preference:
 
-1. explicit source/content-type metadata attached to the specific payload field returned by the authenticated server API;
-2. a documented endpoint contract that defines the format of that specific response field;
-3. sanitized server-rendered HTML when no authoritative source field is available;
-4. plain-text fallback.
+          1. explicit source/content-type metadata attached to the specific payload field returned by the authenticated server API;
+          2. a documented endpoint contract that defines the format of that specific response field;
+          3. sanitized server-rendered HTML when no authoritative source field is available;
+          4. plain-text fallback.
 
-Instance-wide capabilities may gate parser availability, authoring controls, preview, and submission behavior, but they must never classify a particular timeline payload as Markdown or MFM. A server can support a format while returning an individual status only as rendered HTML or plain text. Server software names remain advisory diagnostics only and must not select a parser.'''
+          Instance-wide capabilities may gate parser availability, authoring controls, preview, and submission behavior, but they must never classify a particular timeline payload as Markdown or MFM. A server can support a format while returning an individual status only as rendered HTML or plain text. Server software names remain advisory diagnostics only and must not select a parser.'''
           if old not in text:
               raise SystemExit('Expected capability classification block not found')
           phase.write_text(text.replace(old, new))
@@ -71,31 +74,31 @@ Instance-wide capabilities may gate parser availability, authoring controls, pre
           road = road.replace(row, addition, 1)
           section = '''
 
----
+          ---
 
-## Phase 8D — Misskey post, Markdown, and MFM compatibility
+          ## Phase 8D — Misskey post, Markdown, and MFM compatibility
 
-Status: **Queued and required before another implementation phase proceeds; see [`PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md`](./PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md).**
+          Status: **Queued and required before another implementation phase proceeds; see [`PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md`](./PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md).**
 
-Goal: establish tested, capability-aware, and safely degraded support for direct and federated Misskey-origin posts, standard Markdown, and Misskey Flavored Markdown without bypassing Mangane's normalization, sanitization, URL, accessibility, reduced-motion, or build authorities.
+          Goal: establish tested, capability-aware, and safely degraded support for direct and federated Misskey-origin posts, standard Markdown, and Misskey Flavored Markdown without bypassing Mangane's normalization, sanitization, URL, accessibility, reduced-motion, or build authorities.
 
-Deliverables:
+          Deliverables:
 
-- versioned direct and federated Misskey fixture suites with provenance and tested-version records;
-- per-payload content-format classification based on explicit field metadata or documented endpoint contracts;
-- standard Markdown and MFM support/degradation matrices;
-- bounded deterministic parsers and inert readable fallbacks;
-- composer, preview, edit, and redraft source preservation when the connected server proves support;
-- fuzz, adversarial, accessibility, reduced-motion, normalization, rendering, and end-to-end tests;
-- a dedicated Misskey compatibility CI contract that preserves all existing authority gates.
+          - versioned direct and federated Misskey fixture suites with provenance and tested-version records;
+          - per-payload content-format classification based on explicit field metadata or documented endpoint contracts;
+          - standard Markdown and MFM support/degradation matrices;
+          - bounded deterministic parsers and inert readable fallbacks;
+          - composer, preview, edit, and redraft source preservation when the connected server proves support;
+          - fuzz, adversarial, accessibility, reduced-motion, normalization, rendering, and end-to-end tests;
+          - a dedicated Misskey compatibility CI contract that preserves all existing authority gates.
 
-Exit criteria:
+          Exit criteria:
 
-- representative Misskey posts survive fetch, normalization, storage, and rendering without avoidable semantic loss;
-- instance capabilities gate availability and authoring but never misclassify individual payload fields;
-- unsupported or unsafe MFM remains readable and inert;
-- all new and existing CI checks pass on the final head.
-'''
+          - representative Misskey posts survive fetch, normalization, storage, and rendering without avoidable semantic loss;
+          - instance capabilities gate availability and authoring but never misclassify individual payload fields;
+          - unsupported or unsafe MFM remains readable and inert;
+          - all new and existing CI checks pass on the final head.
+          '''
           marker = '\n## Phase 9 — Search'
           if marker in road:
               road = road.replace(marker, section + marker, 1)
@@ -109,4 +112,4 @@ Exit criteria:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A .github/workflows/documentation-authority.yml docs/architecture config/documentation-authority-registry.json
           git commit -m 'Resolve Misskey phase roadmap and parser authority'
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ github.ref_name }}
