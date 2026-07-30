@@ -99,7 +99,7 @@ describe('<Notification />', () => {
 
     expect(screen.getByTestId('message')).toHaveTextContent('silverpill posted');
     expect(screen.getByTestId('message')).not.toHaveTextContent('mentioned you');
-    expect(screen.getByTestId('notification')).toHaveAttribute(
+    expect(screen.getByTestId('message').closest('.notification')).toHaveAttribute(
       'aria-label',
       expect.stringContaining('silverpill@mitra.social posted'),
     );
