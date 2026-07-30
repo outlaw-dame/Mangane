@@ -5,41 +5,43 @@ on:
     paths:
       - '**.md'
       - 'config/documentation-authority-registry.json'
+      - 'config/historical-requirement-traceability.json'
+      - 'scripts/documentation-authority-lib.js'
+      - 'scripts/generate-documentation-authority-registry.js'
+      - 'scripts/check-documentation-authority.js'
+      - 'scripts/__tests__/check-documentation-authority.test.js'
       - '.github/workflows/documentation-authority.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'config/documentation-authority-registry.json'
+      - 'config/historical-requirement-traceability.json'
+      - 'scripts/documentation-authority-lib.js'
+      - 'scripts/generate-documentation-authority-registry.js'
+      - 'scripts/check-documentation-authority.js'
+      - 'scripts/__tests__/check-documentation-authority.test.js'
+      - '.github/workflows/documentation-authority.yml'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: documentation-authority-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  reconcile:
-    name: Reconcile documentation authority
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  verify:
+    name: Documentation reconciliation / architecture-maintainers
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out PR branch
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: ${{ github.head_ref }}
-          persist-credentials: true
-          fetch-depth: 0
-      - name: Restore workflow, generate registry, and commit
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/documentation-authority.yml
-          node scripts/generate-documentation-authority-registry.js
-          node scripts/check-documentation-authority.js
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/workflows/documentation-authority.yml config/documentation-authority-registry.json
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m 'Reconcile documentation authority registry'
-          git push origin HEAD:${{ github.head_ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '18.20.8'
+      - run: node scripts/check-documentation-authority.js
+      - run: node --test scripts/__tests__/check-documentation-authority.test.js

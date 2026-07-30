@@ -665,6 +665,16 @@
       "contentSha256": "897d25ad4f25e350a148409405f3a860c18285826e21e5203b67e20e4649b9ea"
     },
     {
+      "path": "docs/architecture/PHASE_8C_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md",
+      "title": "Phase 8C — Misskey post, Markdown, and MFM compatibility",
+      "authorityId": "phase-8c-misskey-post-markdown-and-mfm-compatibility",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": null,
+      "contentSha256": "28b9e73c254a4f00ab5983493e274a600f03be7c4defc1ef690fcbc5247405ff"
+    },
+    {
       "path": "docs/architecture/PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md",
       "title": "Phase 8C — Shared Activity Aggregation and Shared Shelf",
       "authorityId": "phase-8c-shared-activity-aggregation-and-shared-shelf",
