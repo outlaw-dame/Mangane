@@ -1,7 +1,8 @@
 import { isLoggedIn } from 'soapbox/utils/auth';
+import { recoverAncestorContext } from 'soapbox/utils/context-recovery';
 import { getFeatures } from 'soapbox/utils/features';
 import { shouldHaveCard } from 'soapbox/utils/status';
-import { recoverAncestorContext } from 'soapbox/utils/context-recovery';
+
 import api, { getNextLink } from '../api';
 
 import { setComposeToStatus } from './compose';
