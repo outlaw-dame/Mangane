@@ -20,12 +20,13 @@ interface NavigationIconProps {
 }
 
 const NavigationIcon: React.FC<NavigationIconProps> = ({ active, name }) => (
-  <SemanticIcon
-    slot='media'
-    name={name}
-    size={22}
-    weight={active ? 'fill' : 'regular'}
-  />
+  <span slot='media' aria-hidden='true'>
+    <SemanticIcon
+      name={name}
+      size={22}
+      weight={active ? 'fill' : 'regular'}
+    />
+  </span>
 );
 
 const F7SidebarNavigation: React.FC = () => {
