@@ -50,6 +50,7 @@ const STATUS_HIDE   = 'STATUS_HIDE';
 
 const STATUS_APPLY_FILTERS = 'STATUS_APPLY_FILTERS';
 
+
 const statusExists = (getState: () => RootState, statusId: string) => {
   return (getState().statuses.get(statusId) || null) !== null;
 };
