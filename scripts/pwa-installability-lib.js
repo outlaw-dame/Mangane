@@ -129,7 +129,9 @@ const validateSource = root => {
     'yarn test:pwa-browser',
   ], 'PWA installability workflow');
   requireFragments(readText(root, 'docs/architecture/PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md'), [
-    'Status: **Implementation complete; merge verification pending**',
+    'Status: **Complete**',
+    'https://github.com/outlaw-dame/Mangane/pull/83',
+    '8ac96e7ed55d7e24ed2bc142d4b34a3093a4f0bc',
     'does not authorize authenticated API response caching',
     'calls `prompt()` only from the Install button handler',
   ], 'Phase 4B documentation');

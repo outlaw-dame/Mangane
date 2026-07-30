@@ -18,7 +18,7 @@ authoritative for scope and exit criteria.
 | Phase 2 — Design tokens, semantic icons, and accessibility foundation | Complete | [`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md) |
 | Phase 3 — Framework7 application shell | Complete | [`PHASE_3_FRAMEWORK7_SHELL.md`](./PHASE_3_FRAMEWORK7_SHELL.md) |
 | Phase 4 — PWA, service worker, and offline hardening | Complete | [`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md) |
-| Phase 4B — PWA installability and deployment closure | Implementation complete; merge verification pending | [`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md) |
+| Phase 4B — PWA installability and deployment closure | Complete | [`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md) |
 | Phase 5 — Canonical local data store | Complete | All slices merged including position continuity; [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md) |
 | Phases 6–7 | Queued | Required before Phase 8 runtime migration |
 | Phase 8 — Home and For You editorial migration | Queued | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md) |
