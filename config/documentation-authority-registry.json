@@ -482,7 +482,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "76ab27410368783beeffbf6a6d6215df09aed7d20d314685836e3da241c4f4a7"
+      "contentSha256": "bd8db4383e96af6e05dd21e610dc22d5b9b22e8f94cf9bb652dc2098df7154fe"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -621,8 +621,8 @@
       "classification": "current-supporting-evidence",
       "replacement": null,
       "inheritedBrandingReferences": 0,
-      "statusHeader": "Implementation complete; merge verification pending",
-      "contentSha256": "6e4c5b2546bcd71b2b6cc66d5eb34bb784028b3b641f7ee37b485cf4444134e0"
+      "statusHeader": "Complete",
+      "contentSha256": "75f87901f0129491700230a081420dbcff12474e262081c0c1b213b3be8f4ea6"
     },
     {
       "path": "docs/architecture/PHASE_4_PWA_OFFLINE_HARDENING.md",

@@ -1,6 +1,6 @@
 # Phase 4B PWA Installability and Deployment Closure
 
-Status: **Implementation complete; merge verification pending**
+Status: **Complete**
 
 Last updated: 2026-07-30
 
@@ -116,6 +116,18 @@ The browser gate verifies:
 - offline navigation reload under `/Mangane/`;
 - fail-closed offline API behavior rather than app-shell HTML substitution.
 
+## Closure evidence
+
+- Implementation pull request:
+  [`#83`](https://github.com/outlaw-dame/Mangane/pull/83)
+- Reviewed head:
+  `a3991957137b0568cd9423b4d4603afbde8de5a2`
+- Merge commit:
+  `8ac96e7ed55d7e24ed2bc142d4b34a3093a4f0bc`
+- Final-head result: all 23 reported pull-request checks passed.
+- Review audit: both actionable review threads were addressed with regression
+  coverage and explicitly resolved before merge.
+
 ## Exit criteria
 
 - [x] Required install icons are repository-owned and exact-size.
@@ -127,6 +139,6 @@ The browser gate verifies:
 - [x] A dedicated production PWA browser workflow is defined with read-only
       permissions, immutable script-free dependency installation, bounded
       runtime, no automatic retries, and a real offline navigation assertion.
-- [ ] Pull-request CI is green.
-- [ ] Actionable review threads are resolved.
-- [ ] The pull request is merged and the canonical roadmap head is reconciled.
+- [x] Pull-request CI is green.
+- [x] Actionable review threads are resolved.
+- [x] The pull request is merged and the canonical roadmap head is reconciled.
