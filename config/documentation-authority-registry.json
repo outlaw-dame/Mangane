@@ -212,7 +212,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical ADR index",
-      "contentSha256": "4b6b53748576f1bcfb5d28a68e757d8006e725f7df86da28f54b226aed1640f6"
+      "contentSha256": "92f0c4028b2ec94ed1786bef978f84ea142372cd224f6a90d8cab4a2c2b36d72"
     },
     {
       "path": "docs/architecture/AUTH_PERSISTENCE_INVENTORY.md",
@@ -482,7 +482,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "fadc44bffe9b95f01e5af17f9030104782c4cb38553207db7db59a0ba53d6f75"
+      "contentSha256": "4df8ef9b36cec2ebfe6d70714ef54abf9f7feae793f0dbadfe033f7d58b1533c"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -553,6 +553,16 @@
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical Phase 0 evidence / closed",
       "contentSha256": "8991aa61a1aace542bd869f39c681fbecc4ff59c6de1c4fca9855598023d7fc9"
+    },
+    {
+      "path": "docs/architecture/PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md",
+      "title": "Phase 10 — Threaded Post Composer and Reliable Publishing",
+      "authorityId": "phase-10-threaded-post-composer-and-reliable-publishing",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": "Accepted target / queued after Phase 9 and required Phase 5–8D dependencies",
+      "contentSha256": "e789f6ff6b5998421286ecdf08c1f5e905a9cc7936a3cd88c8726db8523067db"
     },
     {
       "path": "docs/architecture/PHASE_1_ARCHITECTURE_CONTRACTS.md",
@@ -762,7 +772,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 1,
       "statusHeader": "Canonical architecture index / Phase 0 closed",
-      "contentSha256": "9b7c4b5b27484e0890c313a9a030e2036536e29dbd67561cc79cdffb03d318c9"
+      "contentSha256": "bb8ed35452c1347d53d5afc5764576e728562709c43fe821e902378b4646f16a"
     },
     {
       "path": "docs/architecture/REDUX_AUTHORITY_DRIFT_GATE.md",
