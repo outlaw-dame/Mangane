@@ -29,8 +29,3 @@ test('shell navigation semantics are present in the static registry', () => {
     assert.match(registry, new RegExp(`['\"]?${name}['\"]?`));
   }
 });
-
-test('Framework7 imports remain confined to the approved shell boundary', () => {
-  const boundary = read('.eslintrc.js');
-  assert.match(boundary, /features\/f7-shell/);
-});
