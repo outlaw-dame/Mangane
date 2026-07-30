@@ -8584,9 +8584,9 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/ui/index.tsx:658:pencil-plus.svg",
+      "id": "svg-module:app/soapbox/features/ui/index.tsx:657:pencil-plus.svg",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 658,
+      "line": 657,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "pencil-plus.svg",
@@ -25490,24 +25490,24 @@
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/ui/index.tsx:656",
+      "id": "label:app/soapbox/features/ui/index.tsx:655",
       "kind": "label",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 656,
+      "line": 655,
       "classification": "accessibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/ui/index.tsx:656",
+      "id": "localization:app/soapbox/features/ui/index.tsx:655",
       "kind": "localization",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 656,
+      "line": 655,
       "classification": "compatibility-critical"
     },
     {
-      "id": "keyboard:app/soapbox/features/ui/index.tsx:684",
+      "id": "keyboard:app/soapbox/features/ui/index.tsx:683",
       "kind": "keyboard",
       "path": "app/soapbox/features/ui/index.tsx",
-      "line": 684,
+      "line": 683,
       "classification": "accessibility-critical"
     },
     {

@@ -342,7 +342,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Current Phase 0A evidence",
-      "contentSha256": "6341c60b4baec843027e2cade68149b6bf373353a6cafd42510f94b67a4b95d2"
+      "contentSha256": "56476a3517fdd6c92a74493d5defbff748a0a436ccfa6ffb145078366c8d3d31"
     },
     {
       "path": "docs/architecture/DEPENDENCY_REPLACEMENT_QUEUE.md",

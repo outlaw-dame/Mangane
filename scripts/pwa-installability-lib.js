@@ -113,8 +113,17 @@ const validateSource = root => {
     'await currentPrompt.prompt()',
     'persistDismissal()',
   ], 'PWA install discovery');
+  requireFragments(readText(root, 'app/soapbox/features/ui/index.tsx'), [
+    '<PWAInstallBanner />',
+    '{me !== null && (',
+  ], 'pre-authentication PWA install integration');
+  requireFragments(readText(root, 'app/styles/application.scss'), [
+    '@import \'components/pwa-install\';',
+  ], 'PWA install styling integration');
   requireFragments(readText(root, '.github/workflows/pwa-installability.yml'), [
     'permissions:\n  contents: read',
+    '\'app/soapbox/features/ui/index.tsx\'',
+    '\'app/styles/application.scss\'',
     'yarn install --immutable --mode=skip-build',
     'PWA_BUILD_OUTPUT_ROOT=static/Mangane PWA_BASE_PATH=/Mangane yarn check:pwa-installability',
     'yarn test:pwa-browser',

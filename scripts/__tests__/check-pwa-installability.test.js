@@ -55,6 +55,32 @@ const makeBuild = () => {
   return root;
 };
 
+const makeSourceFixture = () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mangane-pwa-source-'));
+  const sourcePaths = [
+    '.github/workflows/pwa-installability.yml',
+    'app/index.ejs',
+    'app/manifest.json',
+    'app/pwa-icons/icon-192.png',
+    'app/pwa-icons/icon-512.png',
+    'app/pwa-icons/icon.svg',
+    'app/soapbox/features/pwa-install/components/pwa-install-banner.tsx',
+    'app/soapbox/features/ui/index.tsx',
+    'app/soapbox/main.tsx',
+    'app/soapbox/service_worker/share_target.js',
+    'app/styles/application.scss',
+    'docs/architecture/PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md',
+    'webpack/production.js',
+    'webpack/shared.js',
+  ];
+  for (const sourcePath of sourcePaths) {
+    const destination = path.join(root, sourcePath);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(repositoryRoot, sourcePath), destination);
+  }
+  return root;
+};
+
 test('normalizes root and subdirectory deployment paths and rejects traversal', () => {
   assert.equal(normalizeBasePath(''), '/');
   assert.equal(normalizeBasePath('/Mangane'), '/Mangane/');
@@ -92,4 +118,17 @@ test('validates a built subdirectory PWA and fails closed on missing or wrong-si
 
 test('the repository satisfies the Phase 4B source contract', () => {
   assert.doesNotThrow(() => validateSource(repositoryRoot));
+});
+
+test('fails closed when the install surface or stylesheet is disconnected from the shell', () => {
+  for (const [relativePath, fragment] of [
+    ['app/soapbox/features/ui/index.tsx', '<PWAInstallBanner />'],
+    ['app/styles/application.scss', '@import \'components/pwa-install\';'],
+  ]) {
+    const root = makeSourceFixture();
+    const sourcePath = path.join(root, relativePath);
+    fs.writeFileSync(sourcePath, fs.readFileSync(sourcePath, 'utf8').replace(fragment, ''));
+    assert.throws(() => validateSource(root), /PWA install/);
+    fs.rmSync(root, { force: true, recursive: true });
+  }
 });

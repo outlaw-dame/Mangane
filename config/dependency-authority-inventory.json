@@ -11673,10 +11673,6 @@
       },
       "usageEvidence": [
         {
-          "path": "e2e/pwa/installability.spec.ts",
-          "context": "test"
-        },
-        {
           "path": "e2e/tests/accessibility.spec.ts",
           "context": "test"
         },
@@ -11731,6 +11727,10 @@
         {
           "path": "playwright.pwa.config.ts",
           "context": "node"
+        },
+        {
+          "path": "pwa-e2e/installability.spec.ts",
+          "context": "test"
         }
       ],
       "version": "1.52.0"
@@ -13823,6 +13823,10 @@
         },
         {
           "path": "app/soapbox/features/status/components/__tests__/card.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/ui/__tests__/index.test.tsx",
           "context": "test"
         },
         {
@@ -113682,7 +113686,7 @@
     },
     {
       "action": "actions/checkout",
-      "line": 67,
+      "line": 71,
       "local": false,
       "path": ".github/workflows/pwa-installability.yml",
       "pinnedToCommit": true,
@@ -113690,7 +113694,7 @@
     },
     {
       "action": "actions/setup-node",
-      "line": 70,
+      "line": 74,
       "local": false,
       "path": ".github/workflows/pwa-installability.yml",
       "pinnedToCommit": true,

@@ -79,7 +79,7 @@ The machine-readable `duplicatePackages` register records every package name wit
 | @tanstack/react-query | 4.44.0 | runtime | browser, test | frontend-runtime-maintainers | 6 | none-recorded |
 | @testing-library/jest-dom | 5.17.0 | development-unverified | unverified | dependency-governance-maintainers | 0 | review-required |
 | @testing-library/react-hooks | 8.0.1 | test-only | test | test-infrastructure-maintainers | 2 | none-recorded |
-| @testing-library/react | 12.1.5 | test-only | test | test-infrastructure-maintainers | 4 | none-recorded |
+| @testing-library/react | 12.1.5 | test-only | test | test-infrastructure-maintainers | 5 | none-recorded |
 | @testing-library/user-event | 14.6.1 | test-only | test | test-infrastructure-maintainers | 10 | none-recorded |
 | @types/escape-html | 1.0.4 | build-only | unverified | build-and-release-maintainers | 0 | none-recorded |
 | @types/http-link-header | 1.0.7 | build-only | unverified | build-and-release-maintainers | 0 | none-recorded |

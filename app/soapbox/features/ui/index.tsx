@@ -598,9 +598,6 @@ const UI: React.FC = ({ children }: { children: ReactNode}) => {
     return Boolean(path.match(/\/statuses|\/compose|\/posts\/|\/search|\/getting-started/));
   }, [location.pathname]);
 
-  // Wait for login to succeed or fail
-  if (me === null) return null;
-
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
 
   const handlers: HotkeyHandlers = {
@@ -624,64 +621,68 @@ const UI: React.FC = ({ children }: { children: ReactNode}) => {
   };
 
   return (
-    <HotKeys keyMap={keyMap} handlers={me ? handlers : undefined} ref={setHotkeysRef} attach={window} focused>
-      <div ref={node} style={style}>
-        <BackgroundShapes />
+    <>
+      <PWAInstallBanner />
+      {me !== null && (
+        <HotKeys keyMap={keyMap} handlers={me ? handlers : undefined} ref={setHotkeysRef} attach={window} focused>
+          <div ref={node} style={style}>
+            <BackgroundShapes />
 
-        <div className='z-10 flex flex-col'>
-          <PWAInstallBanner />
-          {useF7Shell ? (
-            <F7Shell>
-              <SwitchingColumnsArea>
-                {children}
-              </SwitchingColumnsArea>
-            </F7Shell>
-          ) : (
-            <>
-              <Layout>
-                <Layout.Sidebar>
-                  {!standalone && <SidebarNavigation />}
-                </Layout.Sidebar>
+            <div className='z-10 flex flex-col'>
+              {useF7Shell ? (
+                <F7Shell>
+                  <SwitchingColumnsArea>
+                    {children}
+                  </SwitchingColumnsArea>
+                </F7Shell>
+              ) : (
+                <>
+                  <Layout>
+                    <Layout.Sidebar>
+                      {!standalone && <SidebarNavigation />}
+                    </Layout.Sidebar>
 
-                <SwitchingColumnsArea>
-                  {children}
-                </SwitchingColumnsArea>
-              </Layout>
+                    <SwitchingColumnsArea>
+                      {children}
+                    </SwitchingColumnsArea>
+                  </Layout>
 
-              {me && !shouldHideFAB && (
-                <button
-                  key='floating-action-button'
-                  onClick={handleGoToCompose}
-                  className='floating-action-button'
-                  aria-label={intl.formatMessage(messages.publish)}
-                >
-                  <Icon src={require('@tabler/icons/pencil-plus.svg')} />
-                </button>
+                  {me && !shouldHideFAB && (
+                    <button
+                      key='floating-action-button'
+                      onClick={handleGoToCompose}
+                      className='floating-action-button'
+                      aria-label={intl.formatMessage(messages.publish)}
+                    >
+                      <Icon src={require('@tabler/icons/pencil-plus.svg')} />
+                    </button>
+                  )}
+
+                  <BundleContainer fetchComponent={UploadArea}>
+                    {Component => <Component active={draggingOver} onClose={closeUploadModal} />}
+                  </BundleContainer>
+
+                  {me && (
+                    <BundleContainer fetchComponent={SidebarMenu}>
+                      {Component => <Component />}
+                    </BundleContainer>
+                  )}
+                  <ThumbNavigation className='lg:hidden' />
+
+                  <BundleContainer fetchComponent={ProfileHoverCard}>
+                    {Component => <Component />}
+                  </BundleContainer>
+
+                  <BundleContainer fetchComponent={StatusHoverCard}>
+                    {Component => <Component />}
+                  </BundleContainer>
+                </>
               )}
-
-              <BundleContainer fetchComponent={UploadArea}>
-                {Component => <Component active={draggingOver} onClose={closeUploadModal} />}
-              </BundleContainer>
-
-              {me && (
-                <BundleContainer fetchComponent={SidebarMenu}>
-                  {Component => <Component />}
-                </BundleContainer>
-              )}
-              <ThumbNavigation className='lg:hidden' />
-
-              <BundleContainer fetchComponent={ProfileHoverCard}>
-                {Component => <Component />}
-              </BundleContainer>
-
-              <BundleContainer fetchComponent={StatusHoverCard}>
-                {Component => <Component />}
-              </BundleContainer>
-            </>
-          )}
-        </div>
-      </div>
-    </HotKeys>
+            </div>
+          </div>
+        </HotKeys>
+      )}
+    </>
   );
 };
 
