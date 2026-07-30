@@ -1,7 +1,7 @@
 import { isLoggedIn } from 'soapbox/utils/auth';
 import { getFeatures } from 'soapbox/utils/features';
 import { shouldHaveCard } from 'soapbox/utils/status';
-
+import { recoverAncestorContext } from 'soapbox/utils/context-recovery';
 import api, { getNextLink } from '../api';
 
 import { setComposeToStatus } from './compose';
@@ -11,6 +11,7 @@ import { deleteFromTimelines } from './timelines';
 
 import type { AppDispatch, RootState } from 'soapbox/store';
 import type { APIEntity, Status } from 'soapbox/types/entities';
+import type { ContextRecoveryResult } from 'soapbox/utils/context-recovery';
 
 const STATUS_CREATE_REQUEST = 'STATUS_CREATE_REQUEST';
 const STATUS_CREATE_SUCCESS = 'STATUS_CREATE_SUCCESS';
@@ -235,35 +236,81 @@ const fetchDescendants = (id: string) =>
     return response;
   };
 
+type ContextStatus = APIEntity & {
+  id: string,
+  in_reply_to_id?: string | null,
+};
+
+const repairStatusAncestors = (id: string, knownStatuses: ContextStatus[] = []) =>
+  async(dispatch: AppDispatch, getState: () => RootState): Promise<ContextRecoveryResult> => {
+    const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
+
+    if (!focusedStatus) {
+      return { ancestors: [], fetched: [], outcome: 'partial-malformed' };
+    }
+
+    const recovery = await recoverAncestorContext({
+      focusedStatus,
+      knownStatuses,
+      fetchStatusById: async(parentId: string) => {
+        const cached = getState().statuses.get(parentId) as unknown as ContextStatus | undefined;
+        if (cached) return cached;
+
+        const response = await api(getState).get(`/api/v1/statuses/${parentId}`);
+        const parent = response.data as ContextStatus;
+        dispatch(importFetchedStatus(parent));
+        return parent;
+      },
+    });
+
+    if (recovery.ancestors.length > 0) {
+      dispatch({
+        type: CONTEXT_FETCH_SUCCESS,
+        id,
+        ancestors: recovery.ancestors,
+        descendants: [],
+      });
+    }
+
+    return recovery;
+  };
+
 const fetchStatusWithContext = (id: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
     const features = getFeatures(getState().instance);
 
     if (features.paginatedContext) {
       await dispatch(fetchStatus(id));
-      const responses = await Promise.all([
+      const responses = await Promise.allSettled([
         dispatch(fetchAncestors(id)),
         dispatch(fetchDescendants(id)),
       ]);
+      const ancestors = responses[0].status === 'fulfilled' ? responses[0].value.data : [];
+      const descendants = responses[1].status === 'fulfilled' ? responses[1].value.data : [];
+      const recovery = await dispatch(repairStatusAncestors(id, ancestors));
 
       dispatch({
         type: CONTEXT_FETCH_SUCCESS,
         id,
-        ancestors: responses[0].data,
-        descendants: responses[1].data,
+        ancestors: recovery.ancestors,
+        descendants,
       });
 
-      const next = getNextLink(responses[1]);
-      return dispatch(repairStatusAncestors(id)).then(() => ({ next }));
+      const next = responses[1].status === 'fulfilled' ? getNextLink(responses[1].value) : undefined;
+      return { next, recovery };
     } else {
-      await Promise.all([
+      const [context] = await Promise.all([
         dispatch(fetchContext(id)),
         dispatch(fetchStatus(id)),
       ]);
-      return dispatch(repairStatusAncestors(id)).then(() => ({ next: undefined }));
+      const knownStatuses = Array.isArray(context)
+        ? context
+        : (context && typeof context === 'object' ? context.ancestors || [] : []);
+      const recovery = await dispatch(repairStatusAncestors(id, knownStatuses));
+
+      return { next: undefined, recovery };
     }
   };
-
 
 const muteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -325,50 +372,6 @@ const toggleStatusHidden = (status: Status) => {
     return hideStatus(status.id);
   }
 };
-
-const MAX_ANCESTOR_REPAIR_DEPTH = 40;
-const MAX_STATUS_ID_LENGTH = 512;
-
-type ContextStatus = APIEntity & {
-  id: string,
-  in_reply_to_id?: string | null,
-};
-
-const isUsableStatusId = (value: unknown): value is string =>
-  typeof value === 'string' && value.length > 0 && value.length <= MAX_STATUS_ID_LENGTH;
-
-const repairStatusAncestors = (id: string) =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
-    const focusedStatus = getState().statuses.get(id) as unknown as ContextStatus | undefined;
-    if (!focusedStatus || !isUsableStatusId(focusedStatus.id)) return [];
-
-    const visited = new Set<string>([focusedStatus.id]);
-    const nearestFirst: ContextStatus[] = [];
-    let parentId = focusedStatus.in_reply_to_id;
-
-    for (let depth = 0; depth < MAX_ANCESTOR_REPAIR_DEPTH; depth += 1) {
-      if (!isUsableStatusId(parentId) || visited.has(parentId)) break;
-      visited.add(parentId);
-
-      const parent = await dispatch(fetchStatus(parentId));
-      if (!parent || parent.id !== parentId) break;
-
-      nearestFirst.push(parent);
-      parentId = parent.in_reply_to_id;
-    }
-
-    const ancestors = nearestFirst.reverse();
-    if (ancestors.length > 0) {
-      dispatch({
-        type: CONTEXT_FETCH_SUCCESS,
-        id,
-        ancestors,
-        descendants: [],
-      });
-    }
-
-    return ancestors;
-  };
 
 export {
   STATUS_CREATE_REQUEST,
