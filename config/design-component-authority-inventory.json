@@ -2558,6 +2558,7 @@
       "scope": "feature",
       "classifications": [
         "feature-specific",
+        "accessibility-critical",
         "migration-adapter-required",
         "framework7-replacement-candidate"
       ]
