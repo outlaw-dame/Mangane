@@ -67,8 +67,8 @@ test('fails when the status-card iframe sandbox is weakened', () => {
   const root = copyRepository();
   const target = path.join(root, 'app', 'soapbox', 'features', 'status', 'components', 'card.tsx');
   fs.writeFileSync(target, fs.readFileSync(target, 'utf8').replace(
-    "sandbox='allow-scripts allow-same-origin allow-presentation allow-popups'",
-    "sandbox='allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox'",
+    'sandbox=\'allow-scripts allow-same-origin allow-presentation allow-popups\'',
+    'sandbox=\'allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox\'',
   ));
   const result = run(root);
   assert.notEqual(result.status, 0);
