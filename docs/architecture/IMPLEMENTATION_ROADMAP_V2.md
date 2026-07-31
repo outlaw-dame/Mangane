@@ -18,17 +18,14 @@ authoritative for scope and exit criteria.
 | Phase 2 — Design tokens, semantic icons, and accessibility foundation | Complete | [`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md) |
 | Phase 3 — Framework7 application shell | Complete | [`PHASE_3_FRAMEWORK7_SHELL.md`](./PHASE_3_FRAMEWORK7_SHELL.md) |
 | Phase 4 — PWA, service worker, and offline hardening | Complete | [`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md) |
-| Phase 4A — Bounded gzip/zstd compression authority | Complete; production zstd remains capability-gated | [`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md) |
-| Phase 4B — PWA installability and deployment closure | Complete | [`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md) |
 | Phase 5 — Canonical local data store | Complete | All slices merged including position continuity; [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md) |
-| Phases 6–7 | Queued | Required before Phase 8 runtime migration |
-| Phase 8 — Home and For You editorial migration | Queued | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md) |
-| Phase 8B — Entity Resolution & Creator Attribution | Queued | [`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md) |
-| Phase 8C — Shared Activity Aggregation and Shared Shelf | Queued | [`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md) |
-| Phase 8D — Misskey post, Markdown, and MFM compatibility | Queued; required before the next implementation phase | [`PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md`](./PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md) |
-| Phase 9 — Origin-Authoritative Conversation Trees and Reading Experience | Queued | [`PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md`](./PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md) |
-| Phase 10 — Threaded Post Composer and Reliable Publishing | Queued | [`PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md`](./PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md) |
-| Phases 11–23 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
+| Phases 6–7 | Complete | [`PHASE_6_DURABLE_OUTBOX.md`](./PHASE_6_DURABLE_OUTBOX.md), [`PHASE_7_LEGACY_STATE_ISOLATION.md`](./PHASE_7_LEGACY_STATE_ISOLATION.md) |
+| Phase 8 — Home and For You editorial migration | Complete | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md), [`PHASE_8_CLOSURE_REPORT.md`](./PHASE_8_CLOSURE_REPORT.md) |
+| Phase 8B — Entity Resolution & Creator Attribution | Complete | [`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md) |
+| Phase 8C — Shared Activity Aggregation and Shared Shelf | Complete | [`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md) |
+| Phase 8D — Misskey post, Markdown, and MFM compatibility | Complete | [`PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md`](./PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md) |
+| Phase 9 — Origin-Authoritative Conversation Trees and Reading Experience | Complete | [`PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md`](./PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md) |
+| Phases 10–23 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
 | Phase 23A — Custom Feeds | Queued | [`PHASE_23A_CUSTOM_FEEDS.md`](./PHASE_23A_CUSTOM_FEEDS.md) |
 | Phase 23B — Subscribed Post Stories | Queued | [`PHASE_23B_SUBSCRIBED_POST_STORIES.md`](./PHASE_23B_SUBSCRIBED_POST_STORIES.md) |
 | Phases 24–31 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
@@ -183,31 +180,6 @@ Exit criteria:
 - no cross-account cache leakage;
 - broken asset release can recover;
 - core shell starts offline after successful installation.
-
-## Phase 4A — Bounded gzip/zstd compression authority
-
-Status: **Complete; see
-[`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md).**
-
-Goal: reduce eligible transfer and rebuildable-cache cost without weakening
-account isolation, canonical record semantics, cache correctness, or
-decompression safety.
-
-Delivered boundaries:
-
-- deployment-owned gzip negotiation with `Vary: Accept-Encoding`;
-- provider-neutral native stream capability probes and identity fallback;
-- RFC 9659-bounded zstd frame-window inspection before decode;
-- checksummed, versioned, account-scoped mixed-format local envelopes;
-- transactional replacement with quota backoff and rollback-readable identity;
-- fail-closed malformed, truncated, oversized, high-expansion, cancellation,
-  corruption, schema, and scope tests;
-- a drift check prohibiting application-controlled `Accept-Encoding` and
-  critical-path codec imports.
-
-Production zstd, request-body compression, WASM codecs, and automatic
-background compression remain disabled unless a later measured caller proves
-the existing capability, safety, and performance gates.
 
 ## Phase 5 — Canonical local data store
 
@@ -401,19 +373,27 @@ Goal: make long, branched social conversations understandable through one immuta
 
 Deliverables and exit criteria are authoritative in the detailed Phase 9 plan. Phase 9 reuses Phase 8A origin authority, the Context Recovery Coordinator, canonical repositories, Phase 5E semantic anchors, the Phase 8 renderer, and existing moderation and protocol boundaries. It must not introduce a second origin resolver, context fetcher, status/reply store, moderation path, renderer, router, pagination system, or AI dependency.
 
-### Phase 9A — Profile walls and adaptive thread timelines
+## Phase 10 — Composer and publishing migration
 
-**Status:** Accepted target / queued.
+Goal: create a lightweight, reliable Framework7 composer before adding intelligence.
 
-After Phase 9 establishes canonical conversation graphs, implement [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement never appears to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades to mention-only. Thread ordering remains a bounded presentation projection.
+Deliverables:
 
-## Phase 10 — Adaptive Publishing, Articles, Formatted Notes, and Reliable Authored Sequences
+- draft persistence and account scoping;
+- visibility/audience controls;
+- reply and quote context;
+- media upload sequencing and recovery;
+- content warnings and backend-specific content types;
+- character/counting behavior;
+- offline/pending publication state;
+- edit/conflict handling;
+- accessible keyboard and focus behavior.
 
-Status: **Queued; see [`PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md`](./PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md).**
+Exit criteria:
 
-Goal: migrate the composer through Framework7 while adding a clean Threads-inspired multi-post authored-sequence flow, safe long-text splitting, truthful article presentation, bounded article media-sequence parsing, durable sequential publication, partial-success recovery, and later continuation without creating a proprietary thread object or duplicate draft/outbox/publishing/media authority.
-
-Deliverables and exit criteria are authoritative in the detailed Phase 10 plan. Phase 10 reuses Phase 5 drafts/statuses/media, Phase 6 durable outbox and retry policy, Phase 7 commands/capabilities, Phase 8B typed linked-work metadata, Phase 8D content-source and Markdown/MFM contracts, Phase 9 conversation reading, and existing publishing adapters. It owns one bounded article/media-sequence parser, treats a PreviewCard as one image rather than evidence of a slideshow, and must not introduce a second draft store, media uploader, publication client, retry queue, conversation graph, arbitrary-page fetcher, or remote thread object.
+- feature parity with current supported publishing behavior;
+- drafts survive reload and failed uploads;
+- no draft crosses account boundaries.
 
 ## Phase 11 — Explore and Search interaction shell
 
@@ -761,20 +741,16 @@ Goal: add modern Paper-like media and story treatment selectively.
 Deliverables:
 
 - media/story card eligibility rules;
-- accessible carousel, slideshow and gallery presentation consuming Phase 10's canonical article-media sequence without reparsing article content;
-- explicit-order preservation, stable item-key restoration across edits, and honest unordered/overflow fallbacks;
 - immersive viewer with spatial continuity;
 - alt text, captions, content warnings, and reduced-motion behavior;
 - image/video loading, caching, memory, and data-saver policy;
 - keyboard and screen-reader controls;
 - no automatic conversion of ordinary posts into stories.
-- no autoplay requirement and no inference of a slideshow from a single PreviewCard image or unordered attachments.
 
 Exit criteria:
 
 - media experience is performant and accessible;
 - low-data and reduced-motion modes remain first-class.
-- Phase 24 introduces no second article parser, media authority, remote fetcher, or restoration store.
 
 ## Phase 25 — Local reranking and advanced retrieval experiments
 
@@ -967,3 +943,4 @@ Exit criteria:
 - instance capabilities gate availability and authoring but never misclassify individual payload fields;
 - unsupported or unsafe MFM remains readable and inert;
 - all new and existing CI checks pass on the final head.
+
