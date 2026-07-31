@@ -23,4 +23,13 @@ describe('embed policy', () => {
     expect(resolveSafeEmbed({ embedUrl: 'http://evil.example/embed/1', pageUrl: 'https://example.com/post/1', providerName: 'Unknown', title: '' })).toBeNull();
     expect(resolveSafeEmbed({ embedUrl: 'https://evil.example/embed/1', pageUrl: 'https://example.com/post/1', providerName: 'Mastodon', title: '' })).toBeNull();
   });
+
+  it('rejects decentralized embeds on a different port', () => {
+    expect(resolveSafeEmbed({
+      embedUrl: 'https://social.example:8443/embed/1',
+      pageUrl: 'https://social.example/@creator/1',
+      providerName: 'Mastodon',
+      title: 'Post',
+    })).toBeNull();
+  });
 });
