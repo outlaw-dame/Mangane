@@ -10,6 +10,14 @@ describe('<Modal />', () => {
     expect(screen.getByTestId('modal')).toBeInTheDocument();
   });
 
+  it('keeps oversized dialogs top-reachable with a bounded touch scroll surface', () => {
+    render(<Modal title='Modal title' />);
+
+    const modal = screen.getByTestId('modal');
+    expect(modal).toHaveClass('my-auto', 'max-h-[100dvh]', 'overflow-y-auto', 'overscroll-contain');
+    expect(modal).toHaveStyle({ WebkitOverflowScrolling: 'touch' });
+  });
+
   it('renders children', () => {
     render(<Modal title='Modal title'><div data-testid='child' /></Modal>);
     expect(screen.getByTestId('child')).toBeInTheDocument();
