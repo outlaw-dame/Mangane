@@ -75,6 +75,7 @@ const messages = defineMessages({
   redraftHeading: { id: 'confirmations.redraft.heading', defaultMessage: 'Delete & redraft' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   blockAndReport: { id: 'confirmations.block.block_and_report', defaultMessage: 'Block & Report' },
+  translate: { id: 'status.translate', defaultMessage: 'Translate post' },
 });
 
 
@@ -222,6 +223,12 @@ const StatusActionBarMenu: React.FC<IStatusActionBarMenu> = ({ status, withDismi
     dispatch(deactivateUserModal(intl, status.getIn(['account', 'id']) as string));
   }, [dispatch, intl, status]);
 
+  const handleTranslate = React.useCallback<React.EventHandler<React.MouseEvent>>((e) => {
+    e.stopPropagation();
+    // Open the status detail page where translation is rendered inline
+    history.push(`/@${status.getIn(['account', 'acct'])}/posts/${status.id}`);
+  }, [history, status]);
+
   const handleDeleteUser = React.useCallback<React.EventHandler<React.MouseEvent>>((e) => {
     e.stopPropagation();
     dispatch(deleteUserModal(intl, status.getIn(['account', 'id']) as string));
@@ -260,6 +267,17 @@ const StatusActionBarMenu: React.FC<IStatusActionBarMenu> = ({ status, withDismi
           icon: require('@tabler/icons/share.svg'),
         });
       }
+    }
+
+    // Translate option: show if post has a language that differs from the user's locale
+    const userLocale = (settings.get('locale') as string || 'en').split('-')[0].toLowerCase();
+    const postLang = (status.language || '').split('-')[0].toLowerCase();
+    if (postLang && postLang !== userLocale) {
+      menu.push({
+        text: intl.formatMessage(messages.translate),
+        action: handleTranslate,
+        icon: require('@tabler/icons/language.svg'),
+      });
     }
 
     if (!me) {
@@ -390,7 +408,7 @@ const StatusActionBarMenu: React.FC<IStatusActionBarMenu> = ({ status, withDismi
     }
 
     return menu;
-  }, [status, me, features, withDismiss, intl, isStaff, isAdmin, handleCopy, handleEmbed, handleConversationMuteClick, handlePinClick, handleDeleteClick, handleEditClick, handleRedraftClick, handleMentionClick, handleDirectClick, handleMuteClick, handleBlockClick, handleReport, handleToggleStatusSensitivity, handleDeactivateUser, handleDeleteUser, handleDeleteStatus]);
+  }, [status, me, features, withDismiss, intl, isStaff, isAdmin, settings, handleCopy, handleEmbed, handleTranslate, handleConversationMuteClick, handlePinClick, handleDeleteClick, handleEditClick, handleRedraftClick, handleMentionClick, handleDirectClick, handleMuteClick, handleBlockClick, handleReport, handleToggleStatusSensitivity, handleDeactivateUser, handleDeleteUser, handleDeleteStatus]);
 
 
   return (

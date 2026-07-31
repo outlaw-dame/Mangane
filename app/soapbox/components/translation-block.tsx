@@ -75,7 +75,8 @@ const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false })
     if (provider === 'libretranslate') return !!libreTranslateUrl;
     return false;
   })();
-  const canTranslate = canTranslateServer || canTranslateClient;
+  // Always allow translation: fall back to public LibreTranslate if no provider configured
+  const canTranslate = canTranslateServer || canTranslateClient || true;
 
   const shouldOffer = shouldOfferTranslation(postLanguage, targetLanguage, hideLanguages);
 
@@ -95,7 +96,7 @@ const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false })
     setUIState('loading');
 
     try {
-      if (provider === 'server') {
+      if (provider === 'server' && features.translations) {
         // Use the existing Akkoma API
         await dispatch(translateStatus(status.id, targetLanguage));
         setUsedProvider('server');
@@ -103,15 +104,25 @@ const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false })
         setUIState('done');
       } else {
         // Use client-side translation
+        // Fall back to public LibreTranslate if no provider is configured
+        const effectiveProvider: TranslationProvider = (() => {
+          if (provider === 'deepl' && deeplApiKey) return 'deepl';
+          if (provider === 'libretranslate' && libreTranslateUrl) return 'libretranslate';
+          return 'libretranslate';
+        })();
+        const effectiveUrl = (effectiveProvider === 'libretranslate' && libreTranslateUrl)
+          ? libreTranslateUrl
+          : 'https://libretranslate.com';
+
         const result = await translateText(
           status.content,
           targetLanguage,
           postLanguage,
           {
-            provider,
+            provider: effectiveProvider,
             deeplApiKey,
             deeplPro,
-            libreTranslateUrl,
+            libreTranslateUrl: effectiveUrl,
             libreTranslateApiKey,
             targetLanguage,
             autoTranslate,
@@ -130,7 +141,7 @@ const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false })
       console.error('Translation failed:', error);
       setUIState('error');
     }
-  }, [status, provider, targetLanguage, postLanguage, dispatch, deeplApiKey, deeplPro, libreTranslateUrl, libreTranslateApiKey, autoTranslate, hideLanguages]);
+  }, [status, provider, targetLanguage, postLanguage, dispatch, deeplApiKey, deeplPro, libreTranslateUrl, libreTranslateApiKey, autoTranslate, hideLanguages, features.translations]);
 
   // Auto-translate on mount if enabled
   useEffect(() => {
