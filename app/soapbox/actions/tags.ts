@@ -1,3 +1,4 @@
+import { changeSettingImmediate, getSettings } from 'soapbox/actions/settings';
 import { isLoggedIn } from 'soapbox/utils/auth';
 import { getFeatures } from 'soapbox/utils/features';
 
@@ -16,15 +17,12 @@ import type { AppDispatch, RootState } from 'soapbox/store';
 const TAG_FETCH_REQUEST = 'TAG_FETCH_REQUEST';
 const TAG_FETCH_SUCCESS = 'TAG_FETCH_SUCCESS';
 const TAG_FETCH_FAIL = 'TAG_FETCH_FAIL';
-
 const TAG_FOLLOW_REQUEST = 'TAG_FOLLOW_REQUEST';
 const TAG_FOLLOW_SUCCESS = 'TAG_FOLLOW_SUCCESS';
 const TAG_FOLLOW_FAIL = 'TAG_FOLLOW_FAIL';
-
 const TAG_UNFOLLOW_REQUEST = 'TAG_UNFOLLOW_REQUEST';
 const TAG_UNFOLLOW_SUCCESS = 'TAG_UNFOLLOW_SUCCESS';
 const TAG_UNFOLLOW_FAIL = 'TAG_UNFOLLOW_FAIL';
-
 const FEATURED_TAGS_FETCH_REQUEST = 'FEATURED_TAGS_FETCH_REQUEST';
 const FEATURED_TAGS_FETCH_SUCCESS = 'FEATURED_TAGS_FETCH_SUCCESS';
 const FEATURED_TAGS_FETCH_FAIL = 'FEATURED_TAGS_FETCH_FAIL';
@@ -34,23 +32,19 @@ const FEATURED_TAGS_UPDATE_FAIL = 'FEATURED_TAGS_UPDATE_FAIL';
 const FEATURED_TAG_SUGGESTIONS_SUCCESS = 'FEATURED_TAG_SUGGESTIONS_SUCCESS';
 const ACCOUNT_FEATURED_TAGS_SUCCESS = 'ACCOUNT_FEATURED_TAGS_SUCCESS';
 
-const getAccountScope = (state: RootState): string => {
-  const account = state.auth.get('me');
-  if (typeof account !== 'string' || !account) throw new Error('Featured hashtags require an authenticated account');
-  return account;
+const localFeaturedTagNames = (state: RootState): unknown => getSettings(state).get('featuredTags');
+const persistLocalFeaturedTags = (dispatch: AppDispatch, tags: FeaturedTagEntity[]) => {
+  if (tags.some(({ source }) => source === 'mangane')) {
+    dispatch(changeSettingImmediate(['featuredTags'], tags.map(({ name }) => name)));
+  }
 };
 
 const fetchTags = () => async(dispatch: AppDispatch, getState: () => RootState) => {
   if (!isLoggedIn(getState)) return;
-
-  const state = getState();
-  const instance = state.instance;
-  const features = getFeatures(instance);
-
+  const features = getFeatures(getState().instance);
   if (!features.followTags) return;
 
   dispatch({ type: TAG_FETCH_REQUEST, skipLoading: true });
-
   try {
     let next = null;
     let tags = [];
@@ -66,12 +60,7 @@ const fetchTags = () => async(dispatch: AppDispatch, getState: () => RootState) 
 };
 
 const followTag = (tagId: string) => async(dispatch: AppDispatch, getState: () => RootState) => {
-  if (!isLoggedIn(getState)) return;
-
-  const state = getState();
-  const features = getFeatures(state.instance);
-  if (!features.followTags) return;
-
+  if (!isLoggedIn(getState) || !getFeatures(getState().instance).followTags) return;
   dispatch({ type: TAG_FOLLOW_REQUEST });
   try {
     const { data } = await api(getState).post(`/api/v1/tags/${tagId}/follow`);
@@ -82,12 +71,7 @@ const followTag = (tagId: string) => async(dispatch: AppDispatch, getState: () =
 };
 
 const unfollowTag = (tagId: string) => async(dispatch: AppDispatch, getState: () => RootState) => {
-  if (!isLoggedIn(getState)) return;
-
-  const state = getState();
-  const features = getFeatures(state.instance);
-  if (!features.followTags) return;
-
+  if (!isLoggedIn(getState) || !getFeatures(getState().instance).followTags) return;
   dispatch({ type: TAG_UNFOLLOW_REQUEST });
   try {
     const { data } = await api(getState).post(`/api/v1/tags/${tagId}/unfollow`);
@@ -102,7 +86,7 @@ const fetchFeaturedTags = () => async(dispatch: AppDispatch, getState: () => Roo
   dispatch({ type: FEATURED_TAGS_FETCH_REQUEST, skipLoading: true });
 
   try {
-    const tags = await fetchOwnFeaturedTagsRequest(api(getState), getAccountScope(getState()));
+    const tags = await fetchOwnFeaturedTagsRequest(api(getState), localFeaturedTagNames(getState()));
     const suggestions = await fetchFeaturedTagSuggestionsRequest(api(getState));
     dispatch({ type: FEATURED_TAGS_FETCH_SUCCESS, tags, skipLoading: true });
     dispatch({ type: FEATURED_TAG_SUGGESTIONS_SUCCESS, suggestions, skipLoading: true });
@@ -125,9 +109,9 @@ const featureTag = (name: string) => async(dispatch: AppDispatch, getState: () =
   dispatch({ type: FEATURED_TAGS_UPDATE_REQUEST });
 
   try {
-    const state = getState();
-    const current = state.tags.featured.toJS() as FeaturedTagEntity[];
-    const tags = await featureTagRequest(api(getState), getAccountScope(state), name, current);
+    const current = getState().tags.featured.toJS() as FeaturedTagEntity[];
+    const tags = await featureTagRequest(api(getState), name, current);
+    persistLocalFeaturedTags(dispatch, tags);
     dispatch({ type: FEATURED_TAGS_UPDATE_SUCCESS, tags });
   } catch (err) {
     dispatch({ type: FEATURED_TAGS_UPDATE_FAIL, err });
@@ -139,9 +123,9 @@ const unfeatureTag = (tag: FeaturedTagEntity) => async(dispatch: AppDispatch, ge
   dispatch({ type: FEATURED_TAGS_UPDATE_REQUEST });
 
   try {
-    const state = getState();
-    const current = state.tags.featured.toJS() as FeaturedTagEntity[];
-    const tags = await unfeatureTagRequest(api(getState), getAccountScope(state), tag, current);
+    const current = getState().tags.featured.toJS() as FeaturedTagEntity[];
+    const tags = await unfeatureTagRequest(api(getState), tag, current);
+    if (tag.source === 'mangane') dispatch(changeSettingImmediate(['featuredTags'], tags.map(({ name }) => name)));
     dispatch({ type: FEATURED_TAGS_UPDATE_SUCCESS, tags });
   } catch (err) {
     dispatch({ type: FEATURED_TAGS_UPDATE_FAIL, err });
