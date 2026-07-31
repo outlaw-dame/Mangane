@@ -118,4 +118,23 @@ describe('compressed cache repository', () => {
     await expect(repository.get(bob, 'timeline', isSnapshot)).resolves.toEqual(snapshot);
     expect(await database.settings.get([alice.accountUrl, 'compressed-cache:timeline'])).toBeUndefined();
   });
+
+  it('propagates cancellation without evicting the valid scoped record', async() => {
+    const snapshot = { ids: Array.from({ length: 500 }, (_, index) => `status-${index}`) };
+    await repository.put(alice, 'timeline', snapshot, isSnapshot, { context: 'public-cache' });
+
+    const controller = new AbortController();
+    controller.abort();
+    await expect(repository.get(
+      alice,
+      'timeline',
+      isSnapshot,
+      controller.signal,
+    )).rejects.toMatchObject({ code: 'ABORTED' });
+
+    expect(await database.settings.get([
+      alice.accountUrl,
+      'compressed-cache:timeline',
+    ])).toBeDefined();
+  });
 });
