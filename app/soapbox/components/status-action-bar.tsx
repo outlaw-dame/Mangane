@@ -225,8 +225,8 @@ const StatusActionBarMenu: React.FC<IStatusActionBarMenu> = ({ status, withDismi
 
   const handleTranslate = React.useCallback<React.EventHandler<React.MouseEvent>>((e) => {
     e.stopPropagation();
-    // Open the status detail page where translation is rendered inline
-    history.push(`/@${status.getIn(['account', 'acct'])}/posts/${status.id}`);
+    // Navigate to the status detail page with translate flag
+    history.push(`/@${status.getIn(['account', 'acct'])}/posts/${status.id}?translate=1`);
   }, [history, status]);
 
   const handleDeleteUser = React.useCallback<React.EventHandler<React.MouseEvent>>((e) => {
@@ -270,9 +270,10 @@ const StatusActionBarMenu: React.FC<IStatusActionBarMenu> = ({ status, withDismi
     }
 
     // Translate option: show if post has a language that differs from the user's locale
+    // or if post has no language set (provider will auto-detect)
     const userLocale = (settings.get('locale') as string || 'en').split('-')[0].toLowerCase();
     const postLang = (status.language || '').split('-')[0].toLowerCase();
-    if (postLang && postLang !== userLocale) {
+    if (!postLang || postLang !== userLocale) {
       menu.push({
         text: intl.formatMessage(messages.translate),
         action: handleTranslate,

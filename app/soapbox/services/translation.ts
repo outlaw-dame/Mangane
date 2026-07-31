@@ -43,6 +43,7 @@ const DEEPL_PRO_URL = 'https://api.deepl.com/v2/translate';
 
 /**
  * Translate text using DeepL API.
+ * Routes through local proxy to avoid CORS restrictions.
  */
 async function translateWithDeepL(
   text: string,
@@ -63,13 +64,17 @@ async function translateWithDeepL(
     params.source_lang = sourceLang.toUpperCase().split('-')[0];
   }
 
-  // DeepL prefers form-encoded bodies
-  const body = new URLSearchParams(params);
+  const body = new URLSearchParams(params).toString();
 
-  const response = await fetch(url, {
+  // Use local proxy to bypass CORS
+  const response = await fetch('/_translate/', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      targetUrl: url,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    }),
   });
 
   if (!response.ok) {
@@ -191,7 +196,8 @@ export function shouldOfferTranslation(
   targetLanguage: string,
   hideLanguages: string[],
 ): boolean {
-  if (!postLanguage) return false;
+  // If post has no language tag, still offer translation (provider will auto-detect)
+  if (!postLanguage) return true;
 
   const postLang = postLanguage.split('-')[0].toLowerCase();
   const targetLang = targetLanguage.split('-')[0].toLowerCase();

@@ -33,6 +33,8 @@ interface ITranslationBlock {
   status: StatusEntity;
   /** Whether this is a mini/inline version (for auto-translation in timelines) */
   mini?: boolean;
+  /** Force translation immediately on render */
+  forceTranslate?: boolean;
 }
 
 /**
@@ -40,7 +42,7 @@ interface ITranslationBlock {
  * Renders below a status to offer or display translation.
  * Supports server-native, DeepL, and LibreTranslate backends.
  */
-const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false }) => {
+const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false, forceTranslate = false }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const settings = useSettings();
@@ -143,13 +145,13 @@ const TranslationBlock: React.FC<ITranslationBlock> = ({ status, mini = false })
     }
   }, [status, provider, targetLanguage, postLanguage, dispatch, deeplApiKey, deeplPro, libreTranslateUrl, libreTranslateApiKey, autoTranslate, hideLanguages, features.translations]);
 
-  // Auto-translate on mount if enabled
+  // Auto-translate on mount if enabled or forced
   useEffect(() => {
-    if (autoTranslate && shouldOffer && canTranslate && !hasAutoTranslated.current && uiState === 'default') {
+    if ((autoTranslate || forceTranslate) && shouldOffer && canTranslate && !hasAutoTranslated.current && uiState === 'default') {
       hasAutoTranslated.current = true;
       handleTranslate();
     }
-  }, [autoTranslate, shouldOffer, canTranslate, handleTranslate, uiState]);
+  }, [autoTranslate, forceTranslate, shouldOffer, canTranslate, handleTranslate, uiState]);
 
   // Don't render if translation isn't available or not needed
   if (!canTranslate || !shouldOffer) return null;

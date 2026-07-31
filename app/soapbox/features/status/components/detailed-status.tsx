@@ -6,6 +6,7 @@ import Icon from 'soapbox/components/icon';
 import StatusMedia from 'soapbox/components/status-media';
 import StatusReplyMentions from 'soapbox/components/status-reply-mentions';
 import StatusContent from 'soapbox/components/status_content';
+import TranslationBlock from 'soapbox/components/translation-block';
 import { HStack, Text, Button } from 'soapbox/components/ui';
 import AccountContainer from 'soapbox/containers/account_container';
 import QuotedStatus from 'soapbox/features/status/containers/quoted_status_container';
@@ -161,6 +162,9 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
           expanded={!actualStatus.hidden}
           onExpandedToggle={handleExpandedToggle}
         />
+        {!actualStatus.hidden && (
+          <TranslationBlock status={actualStatus} />
+        )}
         {
           actualStatus.translations.get(locale) && !actualStatus.hidden && (
             <>
