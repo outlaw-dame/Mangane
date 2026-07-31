@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 
 import Blurhash from 'soapbox/components/blurhash';
 import Icon from 'soapbox/components/icon';
-import SemanticIcon from 'soapbox/components/ui/icon/semantic-icon';
 import { HStack, Stack, Text } from 'soapbox/components/ui';
+import SemanticIcon from 'soapbox/components/ui/icon/semantic-icon';
 import { normalizeAttachment } from 'soapbox/normalizers';
 import { resolveCreatorAttribution } from 'soapbox/utils/embed-creator';
 import { embedProviderLabel, resolveSafeEmbed } from 'soapbox/utils/embed-policy';
@@ -170,7 +170,10 @@ const Card: React.FC<ICard> = ({
         <button
           type='button'
           className='absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-xl leading-none text-white shadow-md'
-          onClick={(event) => { event.stopPropagation(); setEmbedActive(false); }}
+          onClick={(event) => {
+            event.stopPropagation();
+            setEmbedActive(false);
+          }}
           aria-label='Close embedded content'
         >
           <span aria-hidden='true'>×</span>
