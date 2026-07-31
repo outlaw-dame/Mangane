@@ -65,6 +65,14 @@ const normalizeLocalFeaturedTags = (values: unknown): FeaturedTagEntity[] => {
   });
 };
 
+const mergeFeaturedTags = (serverTags: FeaturedTagEntity[], localValues: unknown): FeaturedTagEntity[] => {
+  const serverKeys = new Set(serverTags.map(({ name }) => name.toLocaleLowerCase()));
+  const localTags = normalizeLocalFeaturedTags(localValues)
+    .filter(({ name }) => !serverKeys.has(name.toLocaleLowerCase()));
+
+  return [...serverTags, ...localTags].slice(0, MAX_FEATURED_TAGS);
+};
+
 const isUnsupportedFeaturedTagsError = (error: unknown): boolean => {
   const status = (error as AxiosError | undefined)?.response?.status;
   return typeof status === 'number' && UNSUPPORTED_STATUSES.has(status);
@@ -74,7 +82,7 @@ const fetchOwnFeaturedTags = async(client: AxiosInstance, localNames: unknown): 
   try {
     const { data } = await client.get('/api/v1/featured_tags');
     if (!Array.isArray(data)) throw new Error('Invalid featured hashtag response');
-    return data.map(normalizeServerTag);
+    return mergeFeaturedTags(data.map(normalizeServerTag), localNames);
   } catch (error) {
     if (!isUnsupportedFeaturedTagsError(error)) throw error;
     return normalizeLocalFeaturedTags(localNames);
@@ -106,20 +114,23 @@ const fetchFeaturedTagSuggestions = async(client: AxiosInstance): Promise<string
 
 const featureTag = async(client: AxiosInstance, nameInput: string, current: FeaturedTagEntity[]): Promise<FeaturedTagEntity[]> => {
   const name = normalizeTagName(nameInput);
-  const hasLocalAuthority = current.some(({ source }) => source === 'mangane');
+  const key = name.toLocaleLowerCase();
+  const serverTags = current.filter(({ source }) => source === 'server');
+  const localTags = current.filter(({ source }) => source === 'mangane');
 
-  if (!hasLocalAuthority) {
-    try {
-      const { data } = await client.post('/api/v1/featured_tags', { name });
-      const created = normalizeServerTag(data);
-      return [...current.filter(({ name: existing }) => existing.toLocaleLowerCase() !== name.toLocaleLowerCase()), created];
-    } catch (error) {
-      if (!isUnsupportedFeaturedTagsError(error)) throw error;
-    }
+  try {
+    const { data } = await client.post('/api/v1/featured_tags', { name });
+    const created = normalizeServerTag(data);
+    return mergeFeaturedTags(
+      [...serverTags.filter(({ name: existing }) => existing.toLocaleLowerCase() !== key), created],
+      localTags.filter(({ name: existing }) => existing.toLocaleLowerCase() !== key).map(({ name: existing }) => existing),
+    );
+  } catch (error) {
+    if (!isUnsupportedFeaturedTagsError(error)) throw error;
   }
 
-  return normalizeLocalFeaturedTags([
-    ...current.map(({ name: existing }) => existing).filter((existing) => existing.toLocaleLowerCase() !== name.toLocaleLowerCase()),
+  return mergeFeaturedTags(serverTags, [
+    ...localTags.map(({ name: existing }) => existing).filter((existing) => existing.toLocaleLowerCase() !== key),
     name,
   ]);
 };
@@ -127,10 +138,15 @@ const featureTag = async(client: AxiosInstance, nameInput: string, current: Feat
 const unfeatureTag = async(client: AxiosInstance, tag: FeaturedTagEntity, current: FeaturedTagEntity[]): Promise<FeaturedTagEntity[]> => {
   if (tag.source === 'server') {
     await client.delete(`/api/v1/featured_tags/${encodeURIComponent(tag.id)}`);
-    return current.filter(({ id }) => id !== tag.id);
+    return current.filter(({ id, source }) => source !== 'server' || id !== tag.id);
   }
 
-  return normalizeLocalFeaturedTags(current.map(({ name }) => name).filter((name) => name.toLocaleLowerCase() !== tag.name.toLocaleLowerCase()));
+  const serverTags = current.filter(({ source }) => source === 'server');
+  const remainingLocalNames = current
+    .filter(({ source }) => source === 'mangane')
+    .map(({ name }) => name)
+    .filter((name) => name.toLocaleLowerCase() !== tag.name.toLocaleLowerCase());
+  return mergeFeaturedTags(serverTags, remainingLocalNames);
 };
 
 export {
@@ -140,6 +156,7 @@ export {
   fetchFeaturedTagSuggestions,
   fetchOwnFeaturedTags,
   isUnsupportedFeaturedTagsError,
+  mergeFeaturedTags,
   normalizeLocalFeaturedTags,
   normalizeTagName,
   unfeatureTag,
