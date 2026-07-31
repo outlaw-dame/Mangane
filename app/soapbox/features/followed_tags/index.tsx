@@ -55,7 +55,7 @@ const FeaturedHashtags = () => {
 
   return (
     <section className='p-3 bg-white dark:bg-slate-800 shadow-sm dark:shadow-inset rounded-lg' aria-labelledby='featured-hashtags-heading'>
-      <Text id='featured-hashtags-heading' tag='h2' weight='semibold'>{intl.formatMessage(messages.featuredHeading)}</Text>
+      <h2 id='featured-hashtags-heading' className='font-semibold text-gray-900 dark:text-gray-100'>{intl.formatMessage(messages.featuredHeading)}</h2>
       <Text tag='p' size='sm' theme='muted'>
         <FormattedMessage id='featured_tags.explanation' defaultMessage='Show the topics you post about most. Server-backed tags appear publicly; Mangane-managed tags are available in Mangane when your server does not support them.' />
       </Text>
