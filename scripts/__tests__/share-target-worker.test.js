@@ -11,7 +11,7 @@ const workerSource = fs.readFileSync(
   'utf8',
 );
 
-const loadWorker = () => {
+const loadWorker = (scope = 'https://social.example/') => {
   let fetchListener;
   const response = class Response {
 
@@ -35,6 +35,7 @@ const loadWorker = () => {
         if (type === 'fetch') fetchListener = listener;
       },
       location: { origin: 'https://social.example' },
+      registration: { scope },
     },
   });
   return fetchListener;
@@ -55,9 +56,9 @@ const request = ({
   url,
 });
 
-const dispatch = async(input) => {
+const dispatch = async(input, scope) => {
   let response;
-  loadWorker()({
+  loadWorker(scope)({
     request: input,
     respondWith: promise => {
       response = promise;
@@ -73,7 +74,23 @@ test('redirects bounded same-origin share text to the inert composer parameter',
   assert.equal(response.status, 303);
   assert.equal(
     response.location,
-    '/statuses/compose?text=Name%0ADescription%0A%0Ahttps%3A%2F%2Felsewhere.example%2Fpost',
+    'https://social.example/statuses/compose?text=Name%0ADescription%0A%0Ahttps%3A%2F%2Felsewhere.example%2Fpost',
+  );
+});
+
+test('uses the service-worker scope for a subdirectory share target and composer redirect', async() => {
+  const response = await dispatch(request({
+    fields: { link: 'https://elsewhere.example/post' },
+    url: 'https://social.example/Mangane/share',
+  }), 'https://social.example/Mangane/');
+  assert.equal(response.status, 303);
+  assert.equal(
+    response.location,
+    'https://social.example/Mangane/statuses/compose?text=%0A%0A%0Ahttps%3A%2F%2Felsewhere.example%2Fpost',
+  );
+  assert.equal(
+    await dispatch(request({ url: 'https://social.example/share' }), 'https://social.example/Mangane/'),
+    undefined,
   );
 });
 

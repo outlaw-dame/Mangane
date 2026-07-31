@@ -52,8 +52,6 @@ export interface PlatformCapabilities {
   badgeAPI: boolean;
   /** Share API for native sharing */
   shareAPI: boolean;
-  /** Share Target API (receiving shares) */
-  shareTarget: boolean;
   /** Notification API available */
   notifications: boolean;
   /** Service Worker available */
@@ -80,7 +78,6 @@ export function detectCapabilities(): PlatformCapabilities {
     persistentStorage: 'storage' in navigator && 'persist' in navigator.storage,
     badgeAPI: 'setAppBadge' in navigator,
     shareAPI: 'share' in navigator,
-    shareTarget: hasServiceWorker, // Share target requires SW
     notifications: hasNotifications,
     serviceWorker: hasServiceWorker,
     installed: isInstalledPWA(),

@@ -37,9 +37,9 @@ const assertRunFails = (root, pattern) => assert.throws(() => run(root), error =
 
 test('verifies the hardened share target authority inventory', () => {
   const report = JSON.parse(run());
-  assert.equal(report.checkedExecutableBindings, 17);
+  assert.equal(report.checkedExecutableBindings, 21);
   assert.equal(report.checkedDocumentationFragments, 5);
-  assert.equal(report.explicitUnknowns, 6);
+  assert.equal(report.explicitUnknowns, 5);
 });
 
 test('fails when exact same-origin routing is weakened', () => {
@@ -62,7 +62,7 @@ test('fails when compose text ordering changes', () => {
 
 test('fails when the redirect destination or status changes', () => {
   const root = fixture();
-  mutate(root, 'app/soapbox/service_worker/share_target.js', source => source.replace('Response.redirect(`/statuses/compose?${params.toString()}`, 303)', 'Response.redirect(`/compose?${params.toString()}`, 302)'));
+  mutate(root, 'app/soapbox/service_worker/share_target.js', source => source.replace('Response.redirect(composeUrl.href, 303)', 'Response.redirect(\'/compose\', 302)'));
   assertRunFails(root, /Response\.redirect/);
 });
 
@@ -74,8 +74,8 @@ test('does not accept required worker behavior preserved only in a comment', () 
 
 test('fails when development registration points at another worker', () => {
   const root = fixture();
-  mutate(root, 'app/soapbox/main.tsx', source => source.replace('navigator.serviceWorker.register(\'/share_target.js\'', 'navigator.serviceWorker.register(\'/worker.js\''));
-  assertRunFails(root, /registers the expected share-target worker/);
+  mutate(root, 'app/soapbox/main.tsx', source => source.replace('`${scope}share_target.js`', '`${scope}worker.js`'));
+  assertRunFails(root, /registers the expected scoped share-target worker/);
 });
 
 test('fails when canonical documentation weakens the browser body-size limitation', () => {

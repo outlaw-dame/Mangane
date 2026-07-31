@@ -143,15 +143,11 @@ const SidebarNavigation = () => {
               )
             }
 
-            {
-              features.followTags && (
-                <SidebarNavigationLink
-                  to='/followed_hashtags'
-                  icon={require('@tabler/icons/hash.svg')}
-                  text={<FormattedMessage id='navigation_bar.tags' defaultMessage='Hashtags' />}
-                />
-              )
-            }
+            <SidebarNavigationLink
+              to='/followed_hashtags'
+              icon={require('@tabler/icons/hash.svg')}
+              text={<FormattedMessage id='navigation_bar.tags' defaultMessage='Hashtags' />}
+            />
 
             <Divider />
 

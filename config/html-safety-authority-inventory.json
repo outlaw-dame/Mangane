@@ -36,8 +36,8 @@
     "imperative-navigation": 9,
     "react-html-sink": 44,
     "sanitizer-boundary": 51,
-    "dynamic-link-destination": 43,
-    "iframe-sink": 2,
+    "dynamic-link-destination": 45,
+    "iframe-sink": 3,
     "html-parser": 5,
     "dom-html-write": 3
   },
@@ -682,6 +682,15 @@
       "classification": "central-navigation-policy"
     },
     {
+      "id": "dynamic-link-destination:app/soapbox/features/lists/components/discovery-packs-panel.tsx:145:33",
+      "kind": "dynamic-link-destination",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 145,
+      "column": 33,
+      "expression": "{pack.url && <a href={pack.url} target='_blank' rel='noopener noreferrer' className='mt-3 inline-flex text-sm font-medium text-primary-600 hover:underline' onClick={(event) => event.stopPropagation()}><FormattedMessage id='discovery_packs.open' defaultMessage='Open collection' /></a>}",
+      "classification": "central-navigation-policy"
+    },
+    {
       "id": "react-html-sink:app/soapbox/features/mobile/index.js:100:11",
       "kind": "react-html-sink",
       "path": "app/soapbox/features/mobile/index.js",
@@ -862,39 +871,57 @@
       "classification": "central-navigation-policy"
     },
     {
-      "id": "imperative-navigation:app/soapbox/features/status/components/card.tsx:75:7",
+      "id": "imperative-navigation:app/soapbox/features/status/components/card.tsx:91:22",
       "kind": "imperative-navigation",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 75,
-      "column": 7,
-      "expression": "window.open(safeCardUrl, '_blank', 'noopener,noreferrer');",
+      "line": 91,
+      "column": 22,
+      "expression": "if (safeCardUrl) window.open(safeCardUrl, '_blank', 'noopener,noreferrer');",
       "classification": "central-url-policy-or-fixed-local"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:106:7",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:102:53",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 106,
-      "column": 7,
-      "expression": "href={safeCardUrl || undefined}",
+      "line": 102,
+      "column": 53,
+      "expression": "<a onClick={(event) => event.stopPropagation()} href={safeCardUrl || undefined} title={trimmedTitle} rel='nofollow noopener noreferrer' target='_blank'>",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:181:19",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:110:9",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 181,
-      "column": 19,
-      "expression": "href={safeCardUrl || undefined}",
+      "line": 110,
+      "column": 9,
+      "expression": "href={creator.url}",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:229:7",
+      "id": "iframe-sink:app/soapbox/features/status/components/card.tsx:160:9",
+      "kind": "iframe-sink",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 160,
+      "column": 9,
+      "expression": "<iframe",
+      "classification": "sandboxed-policy-governed-src"
+    },
+    {
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:193:65",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 229,
-      "column": 7,
-      "expression": "href={safeCardUrl || undefined}",
+      "line": 193,
+      "column": 65,
+      "expression": "<a onClick={(event) => event.stopPropagation()} href={safeCardUrl} target='_blank' rel='nofollow noopener noreferrer' className='text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white' aria-label='Open original page'>",
+      "classification": "central-navigation-policy"
+    },
+    {
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:215:8",
+      "kind": "dynamic-link-destination",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 215,
+      "column": 8,
+      "expression": "<a href={safeCardUrl || undefined} className={className} target='_blank' rel='nofollow noopener noreferrer' ref={setRef} onClick={(event) => event.stopPropagation()}>",
       "classification": "central-navigation-policy"
     },
     {

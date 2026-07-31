@@ -26,6 +26,20 @@ describe('F7 Shell Route Manifest', () => {
     expect(publicAdmin).toHaveLength(0);
   });
 
+  it('matches authentication and conditional gates from SwitchingColumnsArea', () => {
+    expect(findRoute('/authorize_interaction')?.publicRoute).toBe(false);
+    expect(findRoute('/search')?.publicRoute).toBe(false);
+    expect(findRoute('/info')?.publicRoute).toBe(false);
+    expect(findRoute('/statuses/123')?.publicRoute).toBe(false);
+    expect(findRoute('/notice/123')?.publicRoute).toBe(true);
+
+    expect(findRoute('/timeline/bubble')?.featureGates).toEqual(['federating', 'bubbleTimeline']);
+    expect(findRoute('/settings/password')?.configurationGate).toBe('ldap-disabled');
+    expect(findRoute('/donate/crypto')?.configurationGate).toBe('crypto-configured');
+    expect(findRoute('/error')?.developerOnly).toBe(true);
+    expect(findRoute('/error/network')?.developerOnly).toBe(true);
+  });
+
   it('findRoute matches exact paths', () => {
     expect(findRoute('/')).toBeDefined();
     expect(findRoute('/notifications')).toBeDefined();
@@ -41,6 +55,16 @@ describe('F7 Shell Route Manifest', () => {
     const statusRoute = findRoute('/@user/posts/12345');
     expect(statusRoute).toBeDefined();
     expect(statusRoute?.path).toBe('/@:username/posts/:statusId');
+  });
+
+  it.each([
+    'https://attacker.example',
+    '//attacker.example/path',
+    '/notifications?token=secret',
+    '/notifications#private',
+    '/notifications\u0000',
+  ])('does not match unsafe or non-path input %s', (path) => {
+    expect(findRoute(path)).toBeUndefined();
   });
 
   it('getSidebarRoutes returns only navigable routes', () => {

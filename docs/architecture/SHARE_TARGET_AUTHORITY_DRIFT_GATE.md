@@ -7,15 +7,17 @@ This gate pins the verified inherited behavior of `app/soapbox/service_worker/sh
 The current worker:
 
 - listens for service-worker `fetch` events;
-- accepts only same-origin `POST /share` requests using exact origin and pathname checks;
+- accepts only same-origin `POST` requests at the deployment-scoped `share`
+  pathname using exact origin and pathname checks;
 - accepts only URL-encoded or multipart form content;
 - reads `name`, `description`, and `link` from `request.formData()`;
 - strips NUL bytes and bounds each accepted string before constructing a redirect;
 - rejects declared payloads over 16 KiB, unsupported content types, and malformed form data;
 - concatenates those fields into compose text;
 - stores that text in a `URLSearchParams` value;
-- returns a `303` redirect to `/statuses/compose?text=...`;
-- is registered directly as `/share_target.js` with root scope during development.
+- returns a `303` redirect to the deployment-scoped
+  `statuses/compose?text=...` route;
+- is registered at the configured `FE_SUBDIRECTORY` scope during development.
 
 A passing gate proves the listed routing, input-bounding, failure, and redirect behaviors through both adversarial drift checks and behavioral worker tests. It does not make shared URLs trusted or authorize file sharing.
 
@@ -25,10 +27,12 @@ Shared values must remain inert compose text throughout decoding, routing, compo
 
 Future file sharing requires a separate bounded storage contract covering MIME type, file size, filename normalization, metadata stripping, quota behavior, object URL lifetime, account and instance scope, one-time consumption, cleanup, and failure recovery.
 
-The gate also leaves these matters explicitly unresolved:
+Phase 4B verifies production service-worker bundling, manifest ownership, and
+root/subdirectory URL construction through the PWA installability gate.
 
-- production service-worker bundling and manifest ownership;
-- `FE_SUBDIRECTORY` and production rewrite behavior;
+The gate still leaves these matters explicitly unresolved:
+
+- deployment-edge rewrite precedence for the scoped share endpoint;
 - downstream URL preview and navigation policy;
 - exact deployment behavior across proxy-backed and subdirectory installations.
 

@@ -3,6 +3,8 @@ const MAX_NAME_LENGTH = 256;
 const MAX_DESCRIPTION_LENGTH = 4096;
 const MAX_LINK_LENGTH = 2048;
 const ACCEPTED_CONTENT_TYPES = ['application/x-www-form-urlencoded', 'multipart/form-data'];
+const scopeUrl = new URL(self.registration.scope);
+const sharePath = new URL('share', scopeUrl).pathname;
 
 const boundedText = (value, maxLength) =>
   typeof value === 'string' ? value.replace(/\0/g, '').slice(0, maxLength) : '';
@@ -26,8 +28,10 @@ const handleShareRequest = async(request) => {
     const text = `${name}\n${description}\n\n${link}`;
     const params = new URLSearchParams();
     params.append('text', text);
+    const composeUrl = new URL('statuses/compose', scopeUrl);
+    composeUrl.search = params.toString();
     // eslint-disable-next-line compat/compat
-    return Response.redirect(`/statuses/compose?${params.toString()}`, 303);
+    return Response.redirect(composeUrl.href, 303);
   } catch {
     return new Response('', { status: 400 });
   }
@@ -38,7 +42,7 @@ self.addEventListener('fetch', (event) => {
   if (
     event.request.method === 'POST'
     && requestUrl.origin === self.location.origin
-    && requestUrl.pathname === '/share'
+    && requestUrl.pathname === sharePath
   ) {
     event.respondWith(handleShareRequest(event.request));
   }

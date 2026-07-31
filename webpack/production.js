@@ -91,6 +91,10 @@ module.exports = merge(sharedConfig, {
         // https://github.com/NekR/offline-plugin/blob/master/docs/cache-maps.md
         match: (url) => {
           const { pathname } = url;
+          const scopePath = new URL(self.registration.scope).pathname.replace(/\/$/, '');
+          const relativePathname = scopePath && pathname.startsWith(`${scopePath}/`)
+            ? pathname.slice(scopePath.length)
+            : pathname;
 
           const backendRoutes = [
             '/.well-known',
@@ -118,7 +122,10 @@ module.exports = merge(sharedConfig, {
             '/unsubscribe',
           ];
 
-          if (backendRoutes.some(path => pathname.startsWith(path)) || pathname.endsWith('/embed')) {
+          if (
+            backendRoutes.some(path => relativePathname === path || relativePathname.startsWith(`${path}/`))
+            || relativePathname.endsWith('/embed')
+          ) {
             return url;
           }
         },

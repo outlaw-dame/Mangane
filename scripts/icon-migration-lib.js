@@ -38,6 +38,8 @@ const providerFor = request => {
   return undefined;
 };
 
+const importKey = item => `${item.provider}\0${item.path}\0${item.request}`;
+
 const buildIconImportSnapshot = root => {
   const imports = new Map();
   const files = walk(path.join(root, 'app')).sort();
@@ -45,9 +47,10 @@ const buildIconImportSnapshot = root => {
   for (const absolute of files) {
     const source = fs.readFileSync(absolute, 'utf8');
     const relative = slash(path.relative(root, absolute));
-    const quotedValue = /(['"])(~?(?:@phosphor-icons\/react|@tabler\/icons|bootstrap-icons|cryptocurrency-icons|feather-icons|fork-awesome|iconoir|iconoir-react|line-awesome)(?:\/[^'"]*)?)\1/g;
+    const quotedValue = /(['"`])(~?(?:@phosphor-icons\/react|@tabler\/icons|bootstrap-icons|cryptocurrency-icons|feather-icons|fork-awesome|iconoir|iconoir-react|line-awesome)(?:\/[^'"`]*)?)\1/g;
 
     for (let match = quotedValue.exec(source); match; match = quotedValue.exec(source)) {
+      if (match[1] === '`' && match[2].includes('${')) continue;
       const request = match[2].replace(/^~/, '');
       const provider = providerFor(request);
       if (!provider) continue;
@@ -65,6 +68,12 @@ const buildIconImportSnapshot = root => {
   ));
 };
 
+const findImportGrowth = (currentImports, trustedImports) => {
+  const trustedCounts = new Map(trustedImports.map(item => [importKey(item), item.count]));
+
+  return currentImports.filter(item => item.count > (trustedCounts.get(importKey(item)) || 0));
+};
+
 const summarizeProviders = imports => {
   const counts = Object.fromEntries(providerPatterns.map(([provider]) => [provider, 0]));
   for (const item of imports) counts[item.provider] += item.count;
@@ -74,5 +83,6 @@ const summarizeProviders = imports => {
 module.exports = {
   buildIconImportSnapshot,
   canonicalRegistryPath,
+  findImportGrowth,
   summarizeProviders,
 };

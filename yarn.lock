@@ -9672,24 +9672,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framework7-react@npm:8.3.4":
-  version: 8.3.4
-  resolution: "framework7-react@npm:8.3.4"
-  checksum: 6e1f8fb6483473587601245bcee3e0b4068dccb1c907ac3eb9e31cd92282e564b3e34869313d0a8d97d2868e898c28528558460e95ada1c3b954e16c16e3d8f5
+"framework7-react@npm:9.1.2":
+  version: 9.1.2
+  resolution: "framework7-react@npm:9.1.2"
+  checksum: a3c6666648f490cde84e6deff27b243bedc3981231ddf37d905c432ed1f6c7c10ef507d44b7736a18ff27e4c8be589b06f4ce8d2623402367d7e80ba92a98ec4
   languageName: node
   linkType: hard
 
-"framework7@npm:8.3.4":
-  version: 8.3.4
-  resolution: "framework7@npm:8.3.4"
+"framework7@npm:9.1.2":
+  version: 9.1.2
+  resolution: "framework7@npm:9.1.2"
   dependencies:
     dom7: "npm:^4.0.6"
     htm: "npm:^3.1.1"
-    path-to-regexp: "npm:^6.2.0"
+    path-to-regexp: "npm:^6.3.0"
     skeleton-elements: "npm:^4.0.1"
-    ssr-window: "npm:^4.0.2"
-    swiper: "npm:^10.2.0"
-  checksum: aca1e5ca88d656d5347bc8091151c7a1d9ae6d7033484bffb6314d566e793bc02c550eaf10a21c953bc359c8ebdd206fd64206c6643f3ade09758bf9acbb32cb
+    ssr-window: "npm:^5.0.1"
+    swiper: "npm:^12.1.2"
+  checksum: 19da7b436c51d150cccf16c6bfeefe854b29e72375d1b0a61602d5e0e74d057c30ebb0187266f528e6429acad8c4dd3af7e48203ac444fd29a998f37de86a0f3
   languageName: node
   linkType: hard
 
@@ -13506,8 +13506,8 @@ __metadata:
     fake-indexeddb: "npm:6.0.0"
     feather-icons: "npm:^4.28.0"
     fork-ts-checker-webpack-plugin: "npm:^7.2.11"
-    framework7: "npm:8.3.4"
-    framework7-react: "npm:8.3.4"
+    framework7: "npm:9.1.2"
+    framework7-react: "npm:9.1.2"
     history: "npm:^4.10.1"
     html-webpack-harddisk-plugin: "npm:^2.0.0"
     html-webpack-plugin: "npm:^5.5.0"
@@ -15146,7 +15146,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0":
+"path-to-regexp@npm:^6.3.0":
   version: 6.3.0
   resolution: "path-to-regexp@npm:6.3.0"
   checksum: 73b67f4638b41cde56254e6354e46ae3a2ebc08279583f6af3d96fe4664fc75788f74ed0d18ca44fa4a98491b69434f9eee73b97bb5314bd1b5adb700f5c18d6
@@ -18220,10 +18220,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ssr-window@npm:^4.0.0, ssr-window@npm:^4.0.2":
+"ssr-window@npm:^4.0.0":
   version: 4.0.2
   resolution: "ssr-window@npm:4.0.2"
   checksum: e91f690f42ab2d4e36577a631a9d7b9bd20864ab99c1394481f64c5a0ae6922165ac0a06228560c2ccdd4f68338e795f2fd3cc16fbf9bfcc9c561bb89eb237cd
+  languageName: node
+  linkType: hard
+
+"ssr-window@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "ssr-window@npm:5.0.1"
+  checksum: d42bcf5b02fe79c2eebf1bb53dfdd9633af217dc5ae02647bc52d9d6adda69b72fe222f1a07cf7166fcb9005ad07a41ac2a952122e7f2fe538a893bfb6d796be
   languageName: node
   linkType: hard
 
@@ -18790,10 +18797,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swiper@npm:^10.2.0":
-  version: 10.3.1
-  resolution: "swiper@npm:10.3.1"
-  checksum: 1e9ad5480cbf451d99fab280553d5105eb314f381d98610771f0808cac03962d87967a190696686d62bce8e4ebcbf34962c369f9d502b34fef1582ced17f6f98
+"swiper@npm:^12.1.2":
+  version: 12.2.0
+  resolution: "swiper@npm:12.2.0"
+  checksum: 459c9621e170130c0a6874b05e24fefd0411529600a17b2d8afc4987dc2e803ab18d42983081b723423819d464568fdb541b6c3f517e558c60888c644dc4ead1
   languageName: node
   linkType: hard
 

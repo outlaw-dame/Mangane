@@ -77,7 +77,7 @@
         "'/auth'",
         "'/inbox'",
         "'/objects'",
-        "pathname.endsWith('/embed')"
+        "relativePathname.endsWith('/embed')"
       ]
     }
   ],

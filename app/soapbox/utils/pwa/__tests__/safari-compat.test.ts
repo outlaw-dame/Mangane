@@ -9,7 +9,7 @@ describe('Safari PWA Compatibility', () => {
       expect(caps).toHaveProperty('persistentStorage');
       expect(caps).toHaveProperty('badgeAPI');
       expect(caps).toHaveProperty('shareAPI');
-      expect(caps).toHaveProperty('shareTarget');
+      expect(caps).not.toHaveProperty('shareTarget');
       expect(caps).toHaveProperty('notifications');
       expect(caps).toHaveProperty('serviceWorker');
       expect(caps).toHaveProperty('installed');

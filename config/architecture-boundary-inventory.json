@@ -66,6 +66,11 @@
       "snippet": "import { getFeatures } from 'soapbox/utils/features';"
     },
     {
+      "file": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "rule": "backend-feature-import",
+      "snippet": "import { parseVersion } from 'soapbox/utils/features';"
+    },
+    {
       "file": "app/soapbox/features/notifications/containers/column_settings_container.js",
       "rule": "backend-feature-import",
       "snippet": "import { getFeatures } from 'soapbox/utils/features';"

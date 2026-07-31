@@ -24,6 +24,8 @@ export function useSessionRestore(): void {
   const location = useLocation();
   const account = useOwnAccount();
   const restored = useRef(false);
+  const savedRoute = useRef<ReturnType<typeof getLastRoute> | undefined>(undefined);
+  if (savedRoute.current === undefined) savedRoute.current = getLastRoute();
 
   useEffect(() => {
     // Only attempt restoration once, on the root path
@@ -31,7 +33,7 @@ export function useSessionRestore(): void {
     if (location.pathname !== '/') return;
     restored.current = true;
 
-    const saved = getLastRoute();
+    const saved = savedRoute.current;
     if (!saved || saved.path === '/') return;
 
     // Validate the route exists in the manifest
@@ -44,8 +46,11 @@ export function useSessionRestore(): void {
     // Don't restore admin/staff routes unless user has access
     if (route.staffOnly && !account?.staff) return;
     if (route.adminOnly && !account?.admin) return;
+    // Developer/config/feature gates are runtime conditions owned by the
+    // canonical router. Do not restore them without proving those conditions.
+    if (route.developerOnly || route.featureGates?.length || route.configurationGate) return;
 
     // Restore
-    history.replace(saved.path + saved.search + saved.hash);
+    history.replace(saved.path);
   }, [account, history, location.pathname]);
 }

@@ -18,7 +18,9 @@ authoritative for scope and exit criteria.
 | Phase 2 — Design tokens, semantic icons, and accessibility foundation | Complete | [`PHASE_2_DESIGN_FOUNDATION.md`](./PHASE_2_DESIGN_FOUNDATION.md) |
 | Phase 3 — Framework7 application shell | Complete | [`PHASE_3_FRAMEWORK7_SHELL.md`](./PHASE_3_FRAMEWORK7_SHELL.md) |
 | Phase 4 — PWA, service worker, and offline hardening | Complete | [`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md) |
-| Phase 5 — Canonical local data store | Complete (data layer); Position continuity in progress | Slices A–E merged; [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md) |
+| Phase 4A — Bounded gzip/zstd compression authority | Complete; production zstd remains capability-gated | [`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md) |
+| Phase 4B — PWA installability and deployment closure | Complete | [`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md) |
+| Phase 5 — Canonical local data store | Complete | All slices merged including position continuity; [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md) |
 | Phases 6–7 | Queued | Required before Phase 8 runtime migration |
 | Phase 8 — Home and For You editorial migration | Queued | [`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md) |
 | Phase 8B — Entity Resolution & Creator Attribution | Queued | [`PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md`](./PHASE_8B_ENTITY_RESOLUTION_AND_CREATOR_ATTRIBUTION.md) |
@@ -182,11 +184,36 @@ Exit criteria:
 - broken asset release can recover;
 - core shell starts offline after successful installation.
 
+## Phase 4A — Bounded gzip/zstd compression authority
+
+Status: **Complete; see
+[`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md).**
+
+Goal: reduce eligible transfer and rebuildable-cache cost without weakening
+account isolation, canonical record semantics, cache correctness, or
+decompression safety.
+
+Delivered boundaries:
+
+- deployment-owned gzip negotiation with `Vary: Accept-Encoding`;
+- provider-neutral native stream capability probes and identity fallback;
+- RFC 9659-bounded zstd frame-window inspection before decode;
+- checksummed, versioned, account-scoped mixed-format local envelopes;
+- transactional replacement with quota backoff and rollback-readable identity;
+- fail-closed malformed, truncated, oversized, high-expansion, cancellation,
+  corruption, schema, and scope tests;
+- a drift check prohibiting application-controlled `Accept-Encoding` and
+  critical-path codec imports.
+
+Production zstd, request-body compression, WASM codecs, and automatic
+background compression remain disabled unless a later measured caller proves
+the existing capability, safety, and performance gates.
+
 ## Phase 5 — Canonical local data store
 
-Status: **Complete (data layer).** Slices A–E and bounded timeline hydration
-are merged. Position continuity (scroll restoration) is tracked separately
-as Phase 5E; see [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md).
+Status: **Complete.** All slices (A–E) and position continuity merged.
+See [`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md)
+for the position continuity exit criteria evidence.
 
 Goal: create normalized local records independent of UI and derived indexes.
 
@@ -373,6 +400,12 @@ Status: **Queued; see [`PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md`](./P
 Goal: make long, branched social conversations understandable through one immutable canonical reply graph, origin-first public context reconciliation, focused-path navigation, adaptive branch summaries, strict chronological inspection, and durable account-scoped reading state.
 
 Deliverables and exit criteria are authoritative in the detailed Phase 9 plan. Phase 9 reuses Phase 8A origin authority, the Context Recovery Coordinator, canonical repositories, Phase 5E semantic anchors, the Phase 8 renderer, and existing moderation and protocol boundaries. It must not introduce a second origin resolver, context fetcher, status/reply store, moderation path, renderer, router, pagination system, or AI dependency.
+
+### Phase 9A — Profile walls and adaptive thread timelines
+
+**Status:** Accepted target / queued.
+
+After Phase 9 establishes canonical conversation graphs, implement [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement never appears to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades to mention-only. Thread ordering remains a bounded presentation projection.
 
 ## Phase 10 — Adaptive Publishing, Articles, Formatted Notes, and Reliable Authored Sequences
 

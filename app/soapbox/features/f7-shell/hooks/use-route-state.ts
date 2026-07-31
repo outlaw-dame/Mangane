@@ -8,7 +8,40 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { isSafeRoutePath } from '../route-path';
+
 const STORAGE_KEY = 'mangane:f7-shell:last-route';
+const MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const MAX_FUTURE_SKEW_MS = 5 * 60 * 1000;
+
+interface SavedRouteState {
+  path: string;
+  timestamp: number;
+}
+
+const removeInvalidState = (): null => {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Storage may be unavailable; there is nothing else to clear.
+  }
+  return null;
+};
+
+/** Persist a validated pathname without query strings or fragments. */
+export function saveRoute(path: string): void {
+  if (!isSafeRoutePath(path)) {
+    removeInvalidState();
+    return;
+  }
+
+  try {
+    const state: SavedRouteState = { path, timestamp: Date.now() };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // sessionStorage may be unavailable or full.
+  }
+}
 
 /**
  * Persists the current route path to sessionStorage on every navigation.
@@ -18,18 +51,8 @@ export function useRouteState(): string | null {
   const location = useLocation();
 
   useEffect(() => {
-    try {
-      const state = {
-        path: location.pathname,
-        search: location.search,
-        hash: location.hash,
-        timestamp: Date.now(),
-      };
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      // sessionStorage may be unavailable in private mode on some browsers
-    }
-  }, [location.pathname, location.search, location.hash]);
+    saveRoute(location.pathname);
+  }, [location.pathname]);
 
   return null;
 }
@@ -38,21 +61,30 @@ export function useRouteState(): string | null {
  * Retrieves the last saved route for session restoration.
  * Returns null if no saved state or if it's too old (> 24 hours).
  */
-export function getLastRoute(): { path: string; search: string; hash: string } | null {
+export function getLastRoute(): { path: string } | null {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
 
-    const state = JSON.parse(raw);
-    const MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
-    if (Date.now() - state.timestamp > MAX_AGE) {
-      sessionStorage.removeItem(STORAGE_KEY);
-      return null;
-    }
+    const state: unknown = JSON.parse(raw);
+    if (
+      typeof state !== 'object'
+      || state === null
+      || Array.isArray(state)
+      || Object.keys(state).length !== 2
+      || !('path' in state)
+      || !('timestamp' in state)
+      || !isSafeRoutePath(state.path)
+      || typeof state.timestamp !== 'number'
+      || !Number.isFinite(state.timestamp)
+    ) return removeInvalidState();
 
-    return { path: state.path, search: state.search || '', hash: state.hash || '' };
+    const age = Date.now() - state.timestamp;
+    if (age > MAX_AGE_MS || age < -MAX_FUTURE_SKEW_MS) return removeInvalidState();
+
+    return { path: state.path };
   } catch {
-    return null;
+    return removeInvalidState();
   }
 }
 

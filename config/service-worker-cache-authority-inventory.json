@@ -71,6 +71,7 @@
   "invariants": {
     "productionNavigationUsesAppShellFallback": true,
     "backendRoutesBypassAppShellRewrite": true,
+    "backendRouteMatchingUsesWorkerScope": true,
     "cacheInputsAreBuildAssetsAndAppShell": true,
     "backendNavigationRoutesBypassAppShell": true,
     "accountPurgeDeletesOwnedCachePrefixes": true,
