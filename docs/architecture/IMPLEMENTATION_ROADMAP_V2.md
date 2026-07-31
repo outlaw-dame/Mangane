@@ -27,7 +27,8 @@ authoritative for scope and exit criteria.
 | Phase 8C — Shared Activity Aggregation and Shared Shelf | Queued | [`PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md`](./PHASE_8C_SHARED_ACTIVITY_AGGREGATION_AND_SHELF.md) |
 | Phase 8D — Misskey post, Markdown, and MFM compatibility | Queued; required before the next implementation phase | [`PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md`](./PHASE_8D_MISSKEY_MARKDOWN_MFM_COMPATIBILITY.md) |
 | Phase 9 — Origin-Authoritative Conversation Trees and Reading Experience | Queued | [`PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md`](./PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md) |
-| Phases 10–23 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
+| Phase 10 — Threaded Post Composer and Reliable Publishing | Queued | [`PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md`](./PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md) |
+| Phases 11–23 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
 | Phase 23A — Custom Feeds | Queued | [`PHASE_23A_CUSTOM_FEEDS.md`](./PHASE_23A_CUSTOM_FEEDS.md) |
 | Phase 23B — Subscribed Post Stories | Queued | [`PHASE_23B_SUBSCRIBED_POST_STORIES.md`](./PHASE_23B_SUBSCRIBED_POST_STORIES.md) |
 | Phases 24–31 | Queued | Begin only after their dependency and preceding-phase exit criteria are met |
@@ -406,27 +407,13 @@ Deliverables and exit criteria are authoritative in the detailed Phase 9 plan. P
 
 After Phase 9 establishes canonical conversation graphs, implement [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement never appears to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades to mention-only. Thread ordering remains a bounded presentation projection.
 
-## Phase 10 — Composer and publishing migration
+## Phase 10 — Adaptive Publishing, Articles, Formatted Notes, and Reliable Authored Sequences
 
-Goal: create a lightweight, reliable Framework7 composer before adding intelligence.
+Status: **Queued; see [`PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md`](./PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md).**
 
-Deliverables:
+Goal: migrate the composer through Framework7 while adding a clean Threads-inspired multi-post authored-sequence flow, safe long-text splitting, truthful article presentation, bounded article media-sequence parsing, durable sequential publication, partial-success recovery, and later continuation without creating a proprietary thread object or duplicate draft/outbox/publishing/media authority.
 
-- draft persistence and account scoping;
-- visibility/audience controls;
-- reply and quote context;
-- media upload sequencing and recovery;
-- content warnings and backend-specific content types;
-- character/counting behavior;
-- offline/pending publication state;
-- edit/conflict handling;
-- accessible keyboard and focus behavior.
-
-Exit criteria:
-
-- feature parity with current supported publishing behavior;
-- drafts survive reload and failed uploads;
-- no draft crosses account boundaries.
+Deliverables and exit criteria are authoritative in the detailed Phase 10 plan. Phase 10 reuses Phase 5 drafts/statuses/media, Phase 6 durable outbox and retry policy, Phase 7 commands/capabilities, Phase 8B typed linked-work metadata, Phase 8D content-source and Markdown/MFM contracts, Phase 9 conversation reading, and existing publishing adapters. It owns one bounded article/media-sequence parser, treats a PreviewCard as one image rather than evidence of a slideshow, and must not introduce a second draft store, media uploader, publication client, retry queue, conversation graph, arbitrary-page fetcher, or remote thread object.
 
 ## Phase 11 — Explore and Search interaction shell
 
@@ -774,16 +761,20 @@ Goal: add modern Paper-like media and story treatment selectively.
 Deliverables:
 
 - media/story card eligibility rules;
+- accessible carousel, slideshow and gallery presentation consuming Phase 10's canonical article-media sequence without reparsing article content;
+- explicit-order preservation, stable item-key restoration across edits, and honest unordered/overflow fallbacks;
 - immersive viewer with spatial continuity;
 - alt text, captions, content warnings, and reduced-motion behavior;
 - image/video loading, caching, memory, and data-saver policy;
 - keyboard and screen-reader controls;
 - no automatic conversion of ordinary posts into stories.
+- no autoplay requirement and no inference of a slideshow from a single PreviewCard image or unordered attachments.
 
 Exit criteria:
 
 - media experience is performant and accessible;
 - low-data and reduced-motion modes remain first-class.
+- Phase 24 introduces no second article parser, media authority, remote fetcher, or restoration store.
 
 ## Phase 25 — Local reranking and advanced retrieval experiments
 
