@@ -54,7 +54,7 @@ export const resolveSafeEmbed = ({
   else if (VIMEO_HOSTS.has(embed.hostname)) provider = 'vimeo';
   else {
     const namedProvider = providerFromName(providerName || '');
-    const sameOrigin = Boolean(page && page.hostname === embed.hostname);
+    const sameOrigin = Boolean(page && page.origin === embed.origin);
     if (sameOrigin && namedProvider !== 'unknown') provider = namedProvider;
     else if (sameOrigin && /\/(?:embed|videos\/embed|media|p)\//i.test(embed.pathname)) provider = 'fediverse';
   }
