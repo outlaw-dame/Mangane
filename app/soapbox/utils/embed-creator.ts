@@ -13,12 +13,18 @@ type CreatorInput = {
   providerUrl?: unknown,
 };
 
-const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
 const MAX_CREATOR_NAME_LENGTH = 120;
+
+const removeControlCharacters = (value: string): string => Array.from(value)
+  .filter(character => {
+    const codePoint = character.codePointAt(0) ?? 0;
+    return codePoint > 31 && codePoint !== 127;
+  })
+  .join('');
 
 const normalizeName = (value: unknown): string => {
   if (typeof value !== 'string') return '';
-  return value.replace(CONTROL_CHARACTERS, '').replace(/\s+/g, ' ').trim().slice(0, MAX_CREATOR_NAME_LENGTH);
+  return removeControlCharacters(value).replace(/\s+/g, ' ').trim().slice(0, MAX_CREATOR_NAME_LENGTH);
 };
 
 const trustedHostFamily = (hostname: string): string | null => {
