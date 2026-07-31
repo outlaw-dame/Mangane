@@ -17,70 +17,69 @@ jobs:
         with:
           ref: docs/profile-walls-adaptive-thread-timelines
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: corepack enable
-      - name: Reconcile recipient visibility and canonical phase authorities
+      - name: Reconcile Phase 9A authorities
         run: |
           python - <<'PY'
           from pathlib import Path
 
           phase = Path('docs/architecture/PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md')
           text = phase.read_text()
-          old = "  federationState: 'ordinary-status' | 'native-wall' | 'unknown';\n  createdAt: string;"
-          new = "  federationState: 'ordinary-status' | 'native-wall' | 'unknown';\n  visibility: 'author-private' | 'recipient-visible' | 'public-native';\n  recipientEvidence: string | null;\n  createdAt: string;"
-          if old not in text:
-              raise SystemExit('placement schema marker missing')
-          text = text.replace(old, new, 1)
-
+          text = text.replace(
+              "  federationState: 'ordinary-status' | 'native-wall' | 'unknown';\n  createdAt: string;",
+              "  federationState: 'ordinary-status' | 'native-wall' | 'unknown';\n  visibility: 'author-private' | 'recipient-visible' | 'public-native';\n  recipientEvidence: string | null;\n  createdAt: string;",
+              1,
+          )
+          section = """### Recipient-visible placement authority\n\nA placement created only in the author's account-scoped repository is **author-private**. It can organize the author's own view, but it cannot drive the recipient's wall, wall policy, wall-specific notification, or a visitor's view. An ordinary federated mention is not evidence of recipient-visible placement.\n\nA placement becomes `recipient-visible` only through verified protocol-native wall metadata, or through an authenticated target-controlled synchronization channel carrying a signed, target-addressed claim bound to the canonical status. Such a claim is metadata only: it grants no status access, cannot override canonical visibility or moderation, must be replay-protected and revocable, and must be accepted in the recipient's canonical account scope.\n\nUntil such a channel is implemented and verified, another-profile composition on Mastodon-compatible platforms is **mention-only** for the recipient and visitors. Mangane may retain an explicitly labelled author-private record, **Saved to your Mangane view**, but must not describe it as appearing on the target's wall.\n\n"""
           marker = "### Composing to a profile\n"
-          section = """### Recipient-visible placement authority\n\nA placement created only in the author's account-scoped repository is **author-private**. It may help the author organize their own view, but it cannot drive the recipient's wall, wall policy, wall-specific notification, or a third-party visitor's view. Mangane must never infer recipient visibility merely because the federated status mentions the target.\n\nA placement may become `recipient-visible` only when Mangane verifies one of these channels:\n\n- protocol-native wall metadata returned by the target platform and bound to the canonical status;\n- an authenticated, target-controlled Mangane synchronization service that stores a signed placement claim in the recipient's account scope; or\n- a future portable signed claim carried by a standardized federated field whose issuer, target, canonical status, audience, expiry, and revocation state can all be verified.\n\nThe synchronization claim is metadata only. It never grants status access, overrides canonical visibility, or bypasses recipient policy. It must be signed by the posting account, addressed to the canonical target account, bound to the canonical status URI, replay-protected, bounded, revocable, and accepted by the recipient before it can create a wall-specific notification or visible wall entry. Server and service requests use authenticated canonical account scope and must resist IDOR and existence leaks.\n\nUntil one of those channels is implemented and verified, the Mastodon-compatible outcome for another person's profile is **mention-only** for the recipient and visitors. An optional author-private placement may still appear in the author's own Mangane history, labelled **Saved to your Mangane view**, but it is not described as posting on the recipient's wall.\n\n"""
-          if marker not in text:
-              raise SystemExit('composer marker missing')
-          text = text.replace(marker, section + marker, 1)
-          replacements = {
-              "- **Mangane wall placement:** Mangane publishes an ordinary compatible status and records the intended wall placement locally.\n": "- **Mangane wall placement:** available to the recipient only through a verified recipient-visible channel. Without one, Mangane publishes an ordinary compatible mention and may keep only an explicitly labelled author-private organizational record.\n",
-              "- whether the action can create a local placement after confirmed publication.\n": "- whether confirmed publication can create only an author-private record or a verified recipient-visible placement.\n",
-              "Mangane-only wall placements cannot be treated as globally public metadata. Another client may show only the underlying ordinary status.\n": "Author-private Mangane placements cannot affect the target or visitors. Recipient-visible Mangane placements require verified target-addressed synchronization evidence, and neither form is globally public metadata. Other clients may show only the underlying ordinary status.\n",
-              "- explicit own-wall and other-profile composition;\n": "- explicit own-wall and other-profile composition, including author-private abstention when no recipient-visible channel exists;\n",
-          }
-          for old_text, new_text in replacements.items():
-              if old_text not in text:
-                  raise SystemExit(f'phase marker missing: {old_text[:50]}')
-              text = text.replace(old_text, new_text, 1)
+          if section not in text and marker in text:
+              text = text.replace(marker, section + marker, 1)
+          text = text.replace(
+              "- **Mangane wall placement:** Mangane publishes an ordinary compatible status and records the intended wall placement locally.",
+              "- **Mangane wall placement:** recipient-visible only through verified target-addressed authority. Without it, Mangane publishes an ordinary mention and may keep only an explicitly labelled author-private record.",
+              1,
+          )
+          text = text.replace(
+              "- whether the action can create a local placement after confirmed publication.",
+              "- whether confirmed publication creates only an author-private record or a verified recipient-visible placement.",
+              1,
+          )
+          text = text.replace(
+              "Mangane-only wall placements cannot be treated as globally public metadata. Another client may show only the underlying ordinary status.",
+              "Author-private placements cannot affect the target or visitors. Recipient-visible placements require verified target-addressed evidence, and neither form is globally public metadata. Other clients may show only the underlying ordinary status.",
+              1,
+          )
           phase.write_text(text)
 
           readme = Path('docs/architecture/README.md')
           rtext = readme.read_text()
-          active = "## Active and accepted phase plans\n\n"
-          entry = "- [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md) defines truthful profile-wall projections, recipient-visible placement authority, author-private fallback limits, and graph-aware chronological, newest-first, and adaptive thread presentation without mutating canonical status or conversation state.\n"
-          if active not in rtext:
-              raise SystemExit('architecture index marker missing')
+          entry = "- [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md) defines truthful profile-wall projections, recipient-visible placement authority, author-private fallback limits, and graph-aware chronological, newest-first, and adaptive thread presentation.\n"
+          marker = "## Active and accepted phase plans\n\n"
           if entry not in rtext:
-              readme.write_text(rtext.replace(active, active + entry, 1))
+              rtext = rtext.replace(marker, marker + entry, 1)
+              readme.write_text(rtext)
 
           roadmap = Path('docs/architecture/IMPLEMENTATION_ROADMAP_V2.md')
-          mtext = roadmap.read_text()
-          roadmap_entry = """### Phase 9A — Profile walls and adaptive thread timelines\n\n**Status:** Accepted target / queued.\n\nAfter Phase 9 establishes canonical conversation graphs, implement the contract in [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement must never be presented to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades truthfully to mention-only. Thread ordering remains a pure bounded projection over Phase 9 state. Phase 10 may consume these capabilities but cannot redefine them.\n\n"""
-          if roadmap_entry not in mtext:
-              marker10 = "## Phase 10"
-              roadmap.write_text(mtext.replace(marker10, roadmap_entry + marker10, 1) if marker10 in mtext else mtext + "\n\n" + roadmap_entry)
+          if roadmap.exists():
+              mtext = roadmap.read_text()
+              entry = """### Phase 9A — Profile walls and adaptive thread timelines\n\n**Status:** Accepted target / queued.\n\nAfter Phase 9 establishes canonical conversation graphs, implement [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement never appears to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades to mention-only. Thread ordering remains a bounded presentation projection.\n\n"""
+              if entry not in mtext:
+                  marker10 = "## Phase 10"
+                  mtext = mtext.replace(marker10, entry + marker10, 1) if marker10 in mtext else mtext + "\n\n" + entry
+                  roadmap.write_text(mtext)
 
           adr = Path('docs/architecture/ARCHITECTURAL_DECISIONS.md')
-          atext = adr.read_text()
-          adr_entry = """\n\n## ADR — Profile walls are verified projections, not implied recipient state\n\n**Status:** Accepted\n\nMangane will model profile walls as projections over canonical statuses plus explicit placement evidence. A record held only in the author's account scope is author-private and cannot affect the recipient, visitors, wall policy, or notifications. Recipient-visible placement requires protocol-native evidence or authenticated, signed, target-addressed synchronization accepted in the recipient's scope. Where that authority is absent, another-profile composition degrades to an ordinary mention and is labelled accordingly. Adaptive thread ordering is presentation-only and never rewrites canonical timeline or conversation graph order.\n"""
-          if "## ADR — Profile walls are verified projections" not in atext:
-              adr.write_text(atext.rstrip() + adr_entry + "\n")
+          if adr.exists():
+              atext = adr.read_text()
+              entry = """\n\n## ADR — Profile walls are verified projections, not implied recipient state\n\n**Status:** Accepted\n\nA placement held only in the author's account scope is author-private and cannot affect the recipient, visitors, wall policy, or notifications. Recipient-visible placement requires protocol-native evidence or authenticated, signed, target-addressed synchronization accepted in the recipient's scope. Without that authority, another-profile composition degrades to an ordinary mention. Adaptive thread ordering never rewrites canonical timeline or conversation graph order.\n"""
+              if "## ADR — Profile walls are verified projections" not in atext:
+                  adr.write_text(atext.rstrip() + entry + "\n")
+
+          Path('.github/workflows/temp-pr88-review-fix.yml').unlink()
           PY
-      - name: Regenerate documentation authority
-        run: yarn generate:documentation-authority
-      - name: Remove temporary workflow
-        run: rm .github/workflows/temp-pr88-review-fix.yml
       - name: Commit review fixes
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add docs .github/workflows/temp-pr88-review-fix.yml
+          git add -A
           git commit -m "docs: reconcile Phase 9A authority and visibility [pr88-review-fixed]"
           git push origin HEAD:docs/profile-walls-adaptive-thread-timelines
