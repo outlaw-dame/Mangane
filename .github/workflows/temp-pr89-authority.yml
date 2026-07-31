@@ -28,7 +28,6 @@ jobs:
           yarn generate:telemetry
           yarn generate:design-authority
           yarn generate:architecture-boundaries
-          node scripts/generate-component-ownership-manifest.js
           yarn generate:documentation-authority
       - run: rm .github/workflows/temp-pr89-authority.yml
       - name: Commit generated inventories
