@@ -5,6 +5,7 @@ import { normalizeInstance } from '../instance';
 describe('normalizeInstance()', () => {
   it('normalizes an empty Map', () => {
     const expected = {
+      api_versions: {},
       approval_required: false,
       contact_account: {},
       configuration: {
@@ -59,6 +60,15 @@ describe('normalizeInstance()', () => {
 
     const result = normalizeInstance(ImmutableMap());
     expect(result.toJS()).toEqual(expected);
+  });
+
+  it('preserves advertised Mastodon API versions', () => {
+    const result = normalizeInstance({
+      version: '4.6.0',
+      api_versions: { mastodon: 10 },
+    });
+
+    expect(result.getIn(['api_versions', 'mastodon'])).toBe(10);
   });
 
   it('normalizes Pleroma instance with Mastodon configuration format', () => {
@@ -139,10 +149,7 @@ describe('normalizeInstance()', () => {
     const instance = require('soapbox/__fixtures__/fedibird-instance.json');
     const result = normalizeInstance(instance);
 
-    // Sets description_limit
     expect(result.description_limit).toEqual(1500);
-
-    // Preserves fedibird_capabilities
     expect(result.fedibird_capabilities).toEqual(fromJS(instance.fedibird_capabilities));
   });
 
@@ -150,7 +157,6 @@ describe('normalizeInstance()', () => {
     const instance = require('soapbox/__fixtures__/mitra-instance.json');
     const result = normalizeInstance(instance);
 
-    // Adds configuration and description_limit
     expect(result.get('configuration') instanceof ImmutableMap).toBe(true);
     expect(result.get('description_limit')).toBe(1500);
   });
@@ -159,11 +165,8 @@ describe('normalizeInstance()', () => {
     const instance = require('soapbox/__fixtures__/gotosocial-instance.json');
     const result = normalizeInstance(instance);
 
-    // Normalizes max_toot_chars
     expect(result.getIn(['configuration', 'statuses', 'max_characters'])).toEqual(5000);
     expect(result.has('max_toot_chars')).toBe(false);
-
-    // Adds configuration and description_limit
     expect(result.get('configuration') instanceof ImmutableMap).toBe(true);
     expect(result.get('description_limit')).toBe(1500);
   });
@@ -172,11 +175,8 @@ describe('normalizeInstance()', () => {
     const instance = require('soapbox/__fixtures__/friendica-instance.json');
     const result = normalizeInstance(instance);
 
-    // Normalizes max_toot_chars
     expect(result.getIn(['configuration', 'statuses', 'max_characters'])).toEqual(200000);
     expect(result.has('max_toot_chars')).toBe(false);
-
-    // Adds configuration and description_limit
     expect(result.get('configuration') instanceof ImmutableMap).toBe(true);
     expect(result.get('description_limit')).toBe(1500);
   });
