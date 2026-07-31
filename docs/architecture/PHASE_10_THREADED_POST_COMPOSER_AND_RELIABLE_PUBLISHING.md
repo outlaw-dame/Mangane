@@ -2,7 +2,7 @@
 
 Status: **Accepted target / queued after Phase 9 and required Phase 5–8D dependencies**
 
-Last updated: 2026-07-30
+Last updated: 2026-07-31
 
 ## Purpose
 
@@ -193,6 +193,8 @@ An article is an intentionally structured long-form work. Where the origin softw
 
 An article may project a title, subtitle or deck, cover media, creator attribution, publication/provider, lead, sections, headings, lists, quotations, code, embedded canonical posts, citations, footnotes, reading time, edit history, and a table of contents where supported and truthful.
 
+Multiple images do not by themselves prove a carousel or slideshow. Mangane presents article media as an ordered slideshow only when a canonical source, structured article block, or explicitly ordered collection supplies that relationship. An unordered attachment set may still use the ordinary media gallery, but presentation must not invent slide order or narrative meaning.
+
 ### Authored sequence
 
 An authored sequence is a deliberate chain of ordinary statuses connected by canonical reply relationships. It retains exact per-status identity and actions while supporting an optional continuous reader projection.
@@ -265,6 +267,61 @@ Low-confidence enrichment may improve typography and truncation without applying
 
 Classification does not merge entire payloads by source priority. Title, source, body, creator, publication, canonical URL, cover, and content-type observations retain independent provenance and freshness. Origin-authoritative public fields, connected-server viewer state, local canonical state, and linked-work metadata keep their existing authority boundaries.
 
+## Article media-sequence parsing authority
+
+Phase 10 owns one bounded `articleMediaSequence` projection for native articles, article-like notes, and approved linked-work metadata. Phase 24 consumes this projection for immersive presentation; it does not reparse article HTML or create a second media model.
+
+```ts
+interface ArticleMediaSequence {
+  schemaVersion: 1;
+  articleIdentity: CanonicalContentRef;
+  revisionIdentity: string;
+  ordering: 'explicit' | 'source-block-order' | 'unknown';
+  presentation: 'carousel' | 'slideshow' | 'gallery' | 'fallback';
+  items: readonly ArticleMediaItem[];
+  provenance: readonly ContentPresentationProvenance[];
+  completeness: 'complete' | 'bounded-overflow' | 'partial' | 'unknown';
+}
+
+interface ArticleMediaItem {
+  stableItemKey: string;
+  mediaRef: CanonicalMediaRef;
+  role: 'cover' | 'lead' | 'inline' | 'slide' | 'gallery' | 'unknown';
+  position?: number;
+  altText?: string;
+  caption?: string;
+  credit?: string;
+  sensitive: boolean;
+  provenance: readonly ContentPresentationProvenance[];
+}
+```
+
+### Accepted evidence and ordering
+
+The parser accepts only normalized data from existing protocol adapters or the approved Phase 8B linked-work metadata boundary:
+
+- native article/document blocks whose media positions are part of the canonical object;
+- ActivityStreams `image` and `attachment` objects, including explicitly ordered `OrderedCollection.orderedItems`;
+- connected-server media attachments with canonical IDs and documented roles;
+- typed, bounded metadata emitted by an approved server-side linked-work extractor;
+- a Mastodon PreviewCard as one preview image only.
+
+A PreviewCard never proves that the linked article contains a gallery or slideshow. Repeated Open Graph images, DOM proximity, CSS class names, filenames, URL numbering, or page layout heuristics may be recorded only by an approved extractor as low-confidence observations; they cannot independently create an ordered slideshow. When order is not explicit, `ordering` is `unknown` and controls must use gallery language rather than “slide N of M.”
+
+### Safe parsing and normalization
+
+- External article HTML is never fetched directly by the PWA, returned to presentation code, persisted in browser storage, or inserted into the DOM. Phase 8B's HTTPS, SSRF, redirect, DNS-rebinding, byte, timeout, content-type, and credential-stripping controls remain mandatory for linked-work extraction.
+- Native rich content is sanitized through the canonical HTML policy. Any inert parser extracts allowlisted typed fields only; parsed nodes are never reinserted, event handlers and active content are discarded, and every emitted media/link URL passes the central URL policy.
+- Only supported passive raster-image media types are eligible for image sequences. SVG, HTML, scripts, `data:`, `blob:`, `file:`, `javascript:`, ambiguous MIME data, and credential-bearing URLs fail closed to the ordinary safe fallback.
+- Item count, source depth, string lengths, dimensions, decoded size, redirects, and processing time have explicit tested bounds. Overflow is represented honestly and offers an open-origin fallback; it is not silently discarded or recursively fetched.
+- Deduplication uses canonical media identity and source role, not a lossy URL-only guess. The same resource referenced twice for distinct evidenced roles remains representable; exact duplicate observations merge provenance deterministically.
+- Alt text, caption, credit, sensitive state, focal point, and role retain field-level provenance. A caption never substitutes for missing alt text without an explicit accessible-text policy, and generated descriptions are labeled rather than attributed to the author.
+- A slideshow is selected only for explicit narrative ordering. A carousel is a responsive presentation of an evidenced media sequence; a gallery is the honest fallback for unordered media. Ordinary status attachments continue through the canonical media-gallery authority.
+
+### State, edits, and restoration
+
+Viewer position is keyed by account scope, canonical article identity, revision identity, and `stableItemKey`, never by array index alone. On edit, alias migration, moderation change, deletion, or reordered media, restoration resolves the same safe item where possible; otherwise it clamps to the nearest valid item, announces the change accessibly, and never opens a different sensitive item silently. Stale or corrupt viewer state is rebuildable and cannot grant access to media that the current account may not view.
+
 ## Cross-platform compatibility and fixture matrix
 
 Phase 10 cannot be implemented from nominal protocol support alone. The first implementation slice must inventory every software family Mangane currently supports or explicitly targets that can emit native articles, rich notes, Markdown, MFM, long plain notes, external article previews, or same-author continuations.
@@ -290,6 +347,7 @@ Versioned sanitized fixtures must capture, where applicable:
 - title, subtitle, summary and body;
 - canonical URL and origin identity;
 - cover and attachment roles;
+- ordered and unordered multi-image structures, per-item roles, captions, alt text, credits and sensitive state;
 - status author, linked-work creator and publication/provider;
 - `fediverse:creator`, Mastodon preview-card `authors[]`, legacy author fields and missing-attribution state;
 - Markdown, MFM, HTML and plain-text degradation;
@@ -307,6 +365,7 @@ Every fixture family must pass assertions for:
 - classification outcome, confidence and abstention;
 - article card, formatted-note card, link preview and ordinary fallback;
 - article reader, formatted-note reader and authored-sequence reader;
+- carousel/slideshow/gallery classification, explicit-order preservation, overflow fallback and edit-safe restoration;
 - creator tag and publication/provider treatment;
 - keyboard, screen-reader, reflow, RTL, forced-colors and reduced-motion behavior;
 - warnings, moderation, blocked/muted creators, deleted content and unavailable origins;
@@ -352,6 +411,8 @@ A high-confidence article/blog preview may include:
 - reading-time estimate and section count only when derived reproducibly;
 - **Read article** or **Read post** according to classification;
 - ordinary reply, Share, favorite, bookmark, quote and moderation actions for the containing social status.
+
+When an approved article-media sequence is available, the card may show one deterministic representative image plus a bounded count. Feed cards do not eagerly fetch every slide, auto-advance, or imply a slideshow when only the PreviewCard image is known.
 
 Opening the linked work and engaging with the containing social status are distinct controls and accessible actions.
 
@@ -404,6 +465,8 @@ The article reader preserves:
 - edits, deletion, tombstone and unavailable-origin states;
 - sanitization, URL policy, embed policy and media constraints.
 
+For an evidenced media sequence, the reader preserves source order, per-item alt text/captions/credits, content-warning state, and stable restoration identity. Controls expose previous/next and a direct item chooser, announce the current item and total when total is known, retain focus predictably, and support touch without making swipe the only operation. Auto-advance is off by default; reduced motion disables nonessential transitions; data-saver mode loads only the selected item and bounded adjacent previews.
+
 ### Formatted-note reader
 
 The note reader is intentionally lighter than the article reader. It preserves the author’s semantic formatting but avoids a publication masthead, invented title, fabricated cover, or table of contents unless those elements exist in the canonical source.
@@ -454,6 +517,8 @@ The initial implementation should reject arbitrary font families, arbitrary font
 - reader caches remain account scoped where viewer state or restricted content is involved;
 - classification and reader projections are bounded, rebuildable and purgeable;
 - stale classifications invalidate on edit, deletion, creator-proof change, preview change, alias migration, moderation change or origin revision.
+- media-sequence parsing never turns the browser into an arbitrary article fetcher, never forwards connected-account cookies or authorization headers, and requires a no-referrer, credential-minimizing image/proxy policy that does not expose account identifiers to slide origins;
+- slideshow selection requires explicit ordering evidence, while malformed, oversized, active, unsupported, or ambiguous media degrades to the canonical safe card/gallery.
 
 ## Authored sequence draft model
 
@@ -1147,7 +1212,18 @@ Exit gate: every partial outcome is honest and recoverable without duplicating o
 
 Exit gate: Continue thread attaches to the intended verified parent, and Phase 9 remains the sole conversation-reading authority.
 
-### 10.8 — Scheduling and advanced capability evaluation
+### 10.8 — Article classification, media-sequence parsing, and readers
+
+- implement the bounded content-presentation classifier over normalized adapter evidence;
+- implement one typed article block and `articleMediaSequence` parser with field provenance, explicit-order semantics, stable media identity, bounds, safe URL/media validation, abstention, and ordinary-renderer fallback;
+- consume only typed Phase 8B linked-work metadata and never fetch or persist arbitrary article HTML in the PWA;
+- add article/link-preview cards and long-form readers while reusing canonical status actions, creator attribution, media, moderation, sanitization, and navigation;
+- integrate Phase 24's viewer only as a presentation consumer of the canonical media sequence;
+- test native/federated degradation, single PreviewCard images, ordered collections, unordered attachments, duplicate observations, hostile URLs/MIME, overflow, edits, restoration, content warnings, data saver, keyboard, screen reader, RTL, reflow, and reduced motion.
+
+Exit gate: supported article sources produce one truthful bounded projection; carousel/slideshow UI appears only from evidenced media structure, and every unsupported or unsafe case falls back without hiding canonical content.
+
+### 10.9 — Scheduling and advanced capability evaluation
 
 - evaluate whether each supported backend can schedule a dependent status chain;
 - implement only proven adapter contracts;
@@ -1157,7 +1233,7 @@ Exit gate: Continue thread attaches to the intended verified parent, and Phase 9
 
 Exit gate: scheduling is exposed only where dependency-safe publication can be guaranteed by an approved authority.
 
-### 10.9 — Hardening, accessibility, performance, rollout, and closure
+### 10.10 — Hardening, accessibility, performance, rollout, and closure
 
 - run adversarial, property, fuzz, IDOR, authorization, privacy, retry, corruption, account-transition, multi-tab, service-worker, update, and rollback tests;
 - benchmark large drafts, long text, media-heavy sequences, editor latency, persistence, upload, and publication recovery on mid-range mobile;
@@ -1192,6 +1268,12 @@ Exit gate: no known correctness, security, privacy, accessibility, performance, 
 - polls, quotes, visibility, interaction policy, local-only options;
 - upload timeout, processing delay, duplicate retry, orphan cleanup;
 - unsupported capabilities and content-type fallback.
+- native article blocks, ActivityStreams images/attachments and explicitly ordered collections;
+- PreviewCard single-image fallback and refusal to infer a slideshow from repeated or heuristic page images;
+- explicit versus unknown order, stable item identities, exact duplicate observations and distinct evidenced roles;
+- unsafe schemes, SVG/HTML/active content, MIME mismatch, hostile dimensions, oversized collections, timeout and bounded overflow;
+- per-item alt text, captions, credits, sensitive state, edits, deletion, reorder, alias migration and account-scoped restoration;
+- gallery/carousel/slideshow accessibility, no mandatory autoplay, data saver, reduced motion, keyboard, touch, screen reader, RTL and reflow.
 
 ### Publication correctness
 
@@ -1254,6 +1336,8 @@ Phase 10 is complete only when:
 - partial success is communicated honestly and confirmed statuses are never auto-deleted;
 - Continue thread uses verified author and parent-tip selection and does not misclassify every self-reply;
 - Phase 9 remains the sole canonical conversation graph and reading authority;
+- Phase 10 owns one bounded article/media-sequence parsing projection, Phase 24 only presents it, and no PWA path fetches arbitrary article HTML;
+- carousel/slideshow treatment requires explicit media/order evidence and unsafe or ambiguous inputs degrade to the canonical card/gallery without content loss;
 - drafts, runs, commands, media, and callbacks are account/instance scoped and cross-account IDOR tests pass;
 - clean semantic icons and minimal product language replace decorative or emoji-only controls;
 - accessibility, security, privacy, performance, migration, corruption, multi-tab, scheduling, and rollback gates pass;

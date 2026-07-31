@@ -378,9 +378,9 @@ Deliverables and exit criteria are authoritative in the detailed Phase 9 plan. P
 
 Status: **Queued; see [`PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md`](./PHASE_10_THREADED_POST_COMPOSER_AND_RELIABLE_PUBLISHING.md).**
 
-Goal: migrate the composer through Framework7 while adding a clean Threads-inspired multi-post authored-sequence flow, safe long-text splitting, durable sequential publication, partial-success recovery, and later continuation without creating a proprietary thread object or duplicate draft/outbox/publishing authority.
+Goal: migrate the composer through Framework7 while adding a clean Threads-inspired multi-post authored-sequence flow, safe long-text splitting, truthful article presentation, bounded article media-sequence parsing, durable sequential publication, partial-success recovery, and later continuation without creating a proprietary thread object or duplicate draft/outbox/publishing/media authority.
 
-Deliverables and exit criteria are authoritative in the detailed Phase 10 plan. Phase 10 reuses Phase 5 drafts/statuses/media, Phase 6 durable outbox and retry policy, Phase 7 commands/capabilities, Phase 8D content-source and Markdown/MFM contracts, Phase 9 conversation reading, and existing publishing adapters. It must not introduce a second draft store, media uploader, publication client, retry queue, conversation graph, or remote thread object.
+Deliverables and exit criteria are authoritative in the detailed Phase 10 plan. Phase 10 reuses Phase 5 drafts/statuses/media, Phase 6 durable outbox and retry policy, Phase 7 commands/capabilities, Phase 8B typed linked-work metadata, Phase 8D content-source and Markdown/MFM contracts, Phase 9 conversation reading, and existing publishing adapters. It owns one bounded article/media-sequence parser, treats a PreviewCard as one image rather than evidence of a slideshow, and must not introduce a second draft store, media uploader, publication client, retry queue, conversation graph, arbitrary-page fetcher, or remote thread object.
 
 ## Phase 11 — Explore and Search interaction shell
 
@@ -728,16 +728,20 @@ Goal: add modern Paper-like media and story treatment selectively.
 Deliverables:
 
 - media/story card eligibility rules;
+- accessible carousel, slideshow and gallery presentation consuming Phase 10's canonical article-media sequence without reparsing article content;
+- explicit-order preservation, stable item-key restoration across edits, and honest unordered/overflow fallbacks;
 - immersive viewer with spatial continuity;
 - alt text, captions, content warnings, and reduced-motion behavior;
 - image/video loading, caching, memory, and data-saver policy;
 - keyboard and screen-reader controls;
 - no automatic conversion of ordinary posts into stories.
+- no autoplay requirement and no inference of a slideshow from a single PreviewCard image or unordered attachments.
 
 Exit criteria:
 
 - media experience is performant and accessible;
 - low-data and reduced-motion modes remain first-class.
+- Phase 24 introduces no second article parser, media authority, remote fetcher, or restoration store.
 
 ## Phase 25 — Local reranking and advanced retrieval experiments
 
@@ -930,4 +934,3 @@ Exit criteria:
 - instance capabilities gate availability and authoring but never misclassify individual payload fields;
 - unsupported or unsafe MFM remains readable and inert;
 - all new and existing CI checks pass on the final head.
-
