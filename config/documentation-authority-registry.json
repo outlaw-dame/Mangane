@@ -562,7 +562,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Accepted target / queued after Phase 9 and required Phase 5–8D dependencies",
-      "contentSha256": "489f5a36c9aa3c16ef9f0eb4dc22a19c9081536ac0cff3e873578fd889ede2bd"
+      "contentSha256": "c4fea0f687baa552c0942359dd102df4c874dbb31e9ad56c68f7fb6f558f6ade"
     },
     {
       "path": "docs/architecture/PHASE_1_ARCHITECTURE_CONTRACTS.md",

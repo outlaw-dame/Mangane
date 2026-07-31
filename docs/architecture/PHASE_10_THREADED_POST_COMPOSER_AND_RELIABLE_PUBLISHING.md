@@ -532,6 +532,7 @@ interface AuthoredSequenceDraft {
   createdAt: string;
   updatedAt: string;
   mode: 'new-sequence' | 'continue-published-sequence';
+  initialReplyTarget?: PublishedStatusRef;
   continuationParent?: PublishedStatusRef;
   segmentOrder: readonly string[];
   segmentById: Readonly<Record<string, AuthoredSequenceSegmentDraft>>;
@@ -561,6 +562,8 @@ The precise types may evolve, but the following separation is mandatory:
 
 - local draft sequence identity;
 - local segment identity;
+- an optional `initialReplyTarget` used only when segment 1 of a new sequence replies to an existing external status;
+- an optional `continuationParent` used only when appending to an already-published authored sequence;
 - published canonical status identity;
 - publication-run identity;
 - media-upload identity;
@@ -847,6 +850,8 @@ publish segment 3 as reply to confirmed segment 2
 
 The next command is not released merely because the prior HTTP request returned. It requires a validated success response or reconciliation proving the status exists with the expected author, content fingerprint or client token, and parent relationship.
 
+For a new sequence started as a reply, the frozen publication run must copy `initialReplyTarget` from the confirmed draft revision and publish segment 1 against that exact canonical target. For a root sequence it must be absent. For `continue-published-sequence`, `continuationParent` is the parent of segment 1. These fields are mutually exclusive, remain account-scoped, and may not be reconstructed from route state after the run is frozen. Later segments always reply to the immediately preceding confirmed segment.
+
 ### Idempotency and ambiguous outcomes
 
 Use backend idempotency support where available. Otherwise, maintain a local operation token and reconcile before retrying any ambiguous non-idempotent request.
@@ -863,6 +868,8 @@ Reconciliation must avoid matching an unrelated coincidentally similar post. Use
 - bounded creation-time window;
 - content/media fingerprint held locally and never logged;
 - server-side scheduled-status identity where applicable.
+
+A reconciliation attempt may advance the run only when it yields exactly one provable candidate after all applicable authority checks. Zero candidates remain unresolved. Multiple candidates are ambiguous even when their visible content is identical; the run transitions to `needs-user-action`, does not choose a candidate, does not release dependent segments, and does not automatically retry the original non-idempotent publication. The recovery UI must explain the ambiguity without exposing private candidate data and offer bounded user-directed verification or cancellation.
 
 ### Retry policy
 
