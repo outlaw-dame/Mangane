@@ -6,6 +6,7 @@ import Blurhash from 'soapbox/components/blurhash';
 import Icon from 'soapbox/components/icon';
 import { HStack, Stack, Text } from 'soapbox/components/ui';
 import { normalizeAttachment } from 'soapbox/normalizers';
+import { resolveCreatorAttribution } from 'soapbox/utils/embed-creator';
 import { embedProviderLabel, resolveSafeEmbed } from 'soapbox/utils/embed-policy';
 import { sanitizeUrl } from 'soapbox/utils/url-policy';
 
@@ -49,6 +50,12 @@ const Card: React.FC<ICard> = ({
     pageUrl: safeCardUrl,
     providerName: card.provider_name,
     title: trimmedTitle,
+  });
+  const creator = resolveCreatorAttribution({
+    authorName: card.author_name,
+    authorUrl: card.author_url,
+    pageUrl: safeCardUrl,
+    providerUrl: card.provider_url,
   });
 
   const setRef: React.RefCallback<HTMLElement> = element => {
@@ -96,8 +103,34 @@ const Card: React.FC<ICard> = ({
     </a>
   ) : <span title={trimmedTitle}>{trimmedTitle}</span>;
 
+  const creatorTag = creator && (
+    creator.url ? (
+      <a
+        href={creator.url}
+        target='_blank'
+        rel='nofollow noopener noreferrer'
+        onClick={(event) => event.stopPropagation()}
+        className='inline-flex max-w-full items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50'
+        aria-label={`Creator: ${creator.name}`}
+      >
+        <Icon src={require('@tabler/icons/user-circle.svg')} className='h-4 w-4 shrink-0' />
+        <span className='truncate'>Creator · {creator.name}</span>
+      </a>
+    ) : (
+      <span
+        className='inline-flex max-w-full items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 dark:bg-slate-700 dark:text-gray-200'
+        aria-label={`Creator metadata: ${creator.name}`}
+        title='Creator name supplied by the embed provider; no trusted creator link was available.'
+      >
+        <Icon src={require('@tabler/icons/user-circle.svg')} className='h-4 w-4 shrink-0' />
+        <span className='truncate'>Creator · {creator.name}</span>
+      </span>
+    )
+  );
+
   const description = (
     <Stack space={2} className='flex-1 overflow-hidden p-4'>
+      {creatorTag}
       {trimmedTitle && <Text weight='bold'>{title}</Text>}
       {trimmedDescription && <Text>{trimmedDescription}</Text>}
       <HStack space={1} alignItems='center'>
