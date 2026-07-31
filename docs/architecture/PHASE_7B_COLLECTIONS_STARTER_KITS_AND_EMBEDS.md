@@ -76,7 +76,7 @@ Mangane never merges objects from different providers solely because their title
 
 ## Embed policy
 
-Embeds are activated only after an explicit user action. A preview image, title, description, provider, and original-page link remain available before activation and after closing the embed.
+Embeds are activated only after an explicit user action. A preview image, title, description, provider, creator attribution, and original-page link remain available before activation and after closing the embed.
 
 The first supported provider set is:
 
@@ -103,11 +103,30 @@ Security requirements:
 
 The current iframe sandbox permits scripts, same-origin execution within the provider origin, presentation, and provider-initiated popups. It does not permit top-navigation, forms, downloads, storage-access escalation, or unrestricted browser capabilities.
 
+## Creator attribution
+
+The preview-card normalizer preserves standard `author_name`, `author_url`, `provider_name`, and `provider_url` metadata. Rich embeds consume those fields through the same creator-tag presentation intended for article and link-preview cards.
+
+Creator attribution has two bounded proof states:
+
+- **linked metadata:** a non-empty creator name plus an HTTPS creator URL whose origin matches the canonical page or provider origin. YouTube and Vimeo aliases are accepted only within their exact trusted host families;
+- **name-only metadata:** a bounded creator name without a trustworthy same-authority URL. Mangane displays the creator tag without a link and explains that the name was supplied by the embed provider.
+
+Mangane must not:
+
+- infer a creator from the person who shared the link;
+- treat `provider_name` as the creator;
+- link cross-origin `author_url` values merely because an oEmbed response supplied them;
+- describe metadata attribution as account verification;
+- expose control characters, unbounded names, non-HTTPS destinations, or unsafe schemes.
+
+The creator tag remains visible while the embed is inactive and while the iframe is active, because the canonical preview card—not the remote iframe—owns attribution presentation.
+
 ## Presentation
 
 Collections and starter kits appear alongside, but visually separate from, private lists. Cards should use clear provider labels, account counts, topic metadata, sensitivity treatment, and an original-source link.
 
-Rich embeds use the existing canonical link-preview card and replace the preview area only after activation. The card retains editorial hierarchy and does not become a bare iframe.
+Rich embeds use the existing canonical link-preview card and replace the preview area only after activation. The card retains editorial hierarchy and does not become a bare iframe. When trustworthy creator metadata exists, the creator tag appears above the title so authorship is visible before a user loads third-party content.
 
 ## Testing and completion gates
 
@@ -120,6 +139,7 @@ Required coverage includes:
 - Pixelfed supported and unsupported capability fixtures;
 - provider normalization without cross-provider ID collision;
 - malicious URL, non-HTTPS, cross-origin, deceptive provider-name, and malformed-response tests;
+- creator-name normalization, trusted creator links, cross-origin unlinked attribution, and missing-metadata behavior;
 - iframe sandbox, consent, keyboard, focus, reduced-motion, and content-warning tests;
 - account switching and authorization scope tests;
 - generated network, design, persistence, documentation, and HTML-safety authority reconciliation.
