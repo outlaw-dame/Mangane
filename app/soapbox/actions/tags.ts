@@ -34,15 +34,19 @@ const ACCOUNT_FEATURED_TAGS_SUCCESS = 'ACCOUNT_FEATURED_TAGS_SUCCESS';
 
 const localFeaturedTagNames = (state: RootState): unknown => getSettings(state).get('featuredTags');
 const persistLocalFeaturedTags = (dispatch: AppDispatch, tags: FeaturedTagEntity[]) => {
-  if (tags.some(({ source }) => source === 'mangane')) {
-    dispatch(changeSettingImmediate(['featuredTags'], tags.map(({ name }) => name)));
-  }
+  dispatch(changeSettingImmediate(
+    ['featuredTags'],
+    tags.filter(({ source }) => source === 'mangane').map(({ name }) => name),
+  ));
 };
 
 const fetchTags = () => async(dispatch: AppDispatch, getState: () => RootState) => {
   if (!isLoggedIn(getState)) return;
   const features = getFeatures(getState().instance);
-  if (!features.followTags) return;
+  if (!features.followTags) {
+    dispatch({ type: TAG_FETCH_SUCCESS, tags: [], skipLoading: true });
+    return;
+  }
 
   dispatch({ type: TAG_FETCH_REQUEST, skipLoading: true });
   try {
@@ -87,9 +91,14 @@ const fetchFeaturedTags = () => async(dispatch: AppDispatch, getState: () => Roo
 
   try {
     const tags = await fetchOwnFeaturedTagsRequest(api(getState), localFeaturedTagNames(getState()));
-    const suggestions = await fetchFeaturedTagSuggestionsRequest(api(getState));
     dispatch({ type: FEATURED_TAGS_FETCH_SUCCESS, tags, skipLoading: true });
-    dispatch({ type: FEATURED_TAG_SUGGESTIONS_SUCCESS, suggestions, skipLoading: true });
+
+    try {
+      const suggestions = await fetchFeaturedTagSuggestionsRequest(api(getState));
+      dispatch({ type: FEATURED_TAG_SUGGESTIONS_SUCCESS, suggestions, skipLoading: true });
+    } catch {
+      dispatch({ type: FEATURED_TAG_SUGGESTIONS_SUCCESS, suggestions: [], skipLoading: true });
+    }
   } catch (err) {
     dispatch({ type: FEATURED_TAGS_FETCH_FAIL, err, skipLoading: true });
   }
@@ -125,7 +134,7 @@ const unfeatureTag = (tag: FeaturedTagEntity) => async(dispatch: AppDispatch, ge
   try {
     const current = getState().tags.featured.toJS() as FeaturedTagEntity[];
     const tags = await unfeatureTagRequest(api(getState), tag, current);
-    if (tag.source === 'mangane') dispatch(changeSettingImmediate(['featuredTags'], tags.map(({ name }) => name)));
+    persistLocalFeaturedTags(dispatch, tags);
     dispatch({ type: FEATURED_TAGS_UPDATE_SUCCESS, tags });
   } catch (err) {
     dispatch({ type: FEATURED_TAGS_UPDATE_FAIL, err });
