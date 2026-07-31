@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "phase-2b-in-progress",
+  "status": "phase-2b-complete",
   "policy": "legacy-imports-may-only-shrink-through-reviewed-baseline-updates",
   "canonicalRegistry": "app/soapbox/components/ui/icon/semantic-icon-registry.ts",
   "providers": {

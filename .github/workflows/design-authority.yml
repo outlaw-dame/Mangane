@@ -52,6 +52,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
@@ -65,6 +67,8 @@ jobs:
         run: node --test scripts/__tests__/design-token-foundation.test.js
       - name: Verify semantic icon registry and shrinking legacy baseline
         run: node scripts/check-icon-migration.js
+        env:
+          ICON_MIGRATION_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
       - name: Run semantic icon migration mutation tests
         run: node --test scripts/__tests__/icon-migration-foundation.test.js
       - name: Verify foundational controls, focus, motion, and state contracts

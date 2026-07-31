@@ -13818,6 +13818,10 @@
       },
       "usageEvidence": [
         {
+          "path": "app/soapbox/features/f7-shell/__tests__/bottom-tabs.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/features/f7-shell/__tests__/orientation-scroll.test.tsx",
           "context": "test"
         },
@@ -23921,6 +23925,10 @@
         {
           "path": "app/soapbox/api.ts",
           "context": "browser"
+        },
+        {
+          "path": "app/soapbox/services/__tests__/featured-tags.test.ts",
+          "context": "test"
         }
       ],
       "version": "1.22.0"
@@ -24196,6 +24204,10 @@
         },
         {
           "path": "app/soapbox/reducers/me.ts",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/services/featured-tags.ts",
           "context": "browser"
         }
       ],
@@ -29861,6 +29873,10 @@
         },
         {
           "path": "app/soapbox/features/directory/index.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/components/bottom-tabs.tsx",
           "context": "browser"
         },
         {
@@ -82253,6 +82269,10 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/features/f7-shell/__tests__/bottom-tabs.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/features/f7-shell/__tests__/route-recovery.test.tsx",
           "context": "test"
         },
@@ -84251,6 +84271,10 @@
         {
           "path": "app/soapbox/features/external_login/index.tsx",
           "context": "browser"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/bottom-tabs.test.tsx",
+          "context": "test"
         },
         {
           "path": "app/soapbox/features/f7-shell/__tests__/orientation-scroll.test.tsx",
@@ -113644,7 +113668,7 @@
     },
     {
       "action": "actions/setup-node",
-      "line": 55,
+      "line": 57,
       "local": false,
       "path": ".github/workflows/design-authority.yml",
       "pinnedToCommit": true,
