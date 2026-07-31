@@ -871,55 +871,55 @@
       "classification": "central-navigation-policy"
     },
     {
-      "id": "imperative-navigation:app/soapbox/features/status/components/card.tsx:90:22",
+      "id": "imperative-navigation:app/soapbox/features/status/components/card.tsx:91:22",
       "kind": "imperative-navigation",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 90,
+      "line": 91,
       "column": 22,
       "expression": "if (safeCardUrl) window.open(safeCardUrl, '_blank', 'noopener,noreferrer');",
       "classification": "central-url-policy-or-fixed-local"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:101:53",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:102:53",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 101,
+      "line": 102,
       "column": 53,
       "expression": "<a onClick={(event) => event.stopPropagation()} href={safeCardUrl || undefined} title={trimmedTitle} rel='nofollow noopener noreferrer' target='_blank'>",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:109:9",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:110:9",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 109,
+      "line": 110,
       "column": 9,
       "expression": "href={creator.url}",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "iframe-sink:app/soapbox/features/status/components/card.tsx:159:9",
+      "id": "iframe-sink:app/soapbox/features/status/components/card.tsx:160:9",
       "kind": "iframe-sink",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 159,
+      "line": 160,
       "column": 9,
       "expression": "<iframe",
       "classification": "unverified"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:189:65",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:190:65",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 189,
+      "line": 190,
       "column": 65,
       "expression": "<a onClick={(event) => event.stopPropagation()} href={safeCardUrl} target='_blank' rel='nofollow noopener noreferrer' className='text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white' aria-label='Open original page'>",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:211:8",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:212:8",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 211,
+      "line": 212,
       "column": 8,
       "expression": "<a href={safeCardUrl || undefined} className={className} target='_blank' rel='nofollow noopener noreferrer' ref={setRef} onClick={(event) => event.stopPropagation()}>",
       "classification": "central-navigation-policy"

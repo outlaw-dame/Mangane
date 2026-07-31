@@ -8148,72 +8148,45 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:116:user-circle.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:138:link.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 116,
-      "kind": "svg-module",
-      "provider": "tabler",
-      "symbol": "user-circle.svg",
-      "disposition": "phosphor-migration-candidate"
-    },
-    {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:125:user-circle.svg",
-      "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 125,
-      "kind": "svg-module",
-      "provider": "tabler",
-      "symbol": "user-circle.svg",
-      "disposition": "phosphor-migration-candidate"
-    },
-    {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:137:link.svg",
-      "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 137,
+      "line": 138,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "link.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:156:player-play.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:157:player-play.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 156,
+      "line": 157,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "player-play.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:156:zoom-in.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:157:zoom-in.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 156,
+      "line": 157,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "zoom-in.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:175:x.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:191:external-link.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 175,
-      "kind": "svg-module",
-      "provider": "tabler",
-      "symbol": "x.svg",
-      "disposition": "phosphor-migration-candidate"
-    },
-    {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:190:external-link.svg",
-      "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 190,
+      "line": 191,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "external-link.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:207:file-text.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:208:file-text.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 207,
+      "line": 208,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "file-text.svg",
@@ -22833,52 +22806,52 @@
       "classification": "compatibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:114",
+      "id": "label:app/soapbox/features/status/components/card.tsx:115",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 114,
+      "line": 115,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:122",
+      "id": "label:app/soapbox/features/status/components/card.tsx:123",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 122,
+      "line": 123,
       "classification": "accessibility-critical"
     },
     {
-      "id": "inline-style:app/soapbox/features/status/components/card.tsx:146",
+      "id": "inline-style:app/soapbox/features/status/components/card.tsx:147",
       "kind": "inline-style",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 146,
+      "line": 147,
       "classification": "accessibility-critical"
     },
     {
-      "id": "inline-style:app/soapbox/features/status/components/card.tsx:158",
+      "id": "inline-style:app/soapbox/features/status/components/card.tsx:159",
       "kind": "inline-style",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 158,
+      "line": 159,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:173",
+      "id": "label:app/soapbox/features/status/components/card.tsx:174",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 173,
+      "line": 174,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:185",
+      "id": "label:app/soapbox/features/status/components/card.tsx:186",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 185,
+      "line": 186,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:189",
+      "id": "label:app/soapbox/features/status/components/card.tsx:190",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 189,
+      "line": 190,
       "classification": "accessibility-critical"
     },
     {
@@ -26677,7 +26650,7 @@
   "counts": {
     "components": 492,
     "styles": 76,
-    "icons": 395,
+    "icons": 392,
     "behaviors": {
       "localization": 2007,
       "focus": 141,
@@ -26690,7 +26663,7 @@
       "live-region": 3
     },
     "iconProviders": {
-      "tabler": 373,
+      "tabler": 370,
       "line-awesome": 13,
       "repository-asset": 8,
       "phosphor": 1
