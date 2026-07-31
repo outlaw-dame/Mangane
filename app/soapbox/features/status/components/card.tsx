@@ -6,17 +6,14 @@ import Blurhash from 'soapbox/components/blurhash';
 import Icon from 'soapbox/components/icon';
 import { HStack, Stack, Text } from 'soapbox/components/ui';
 import { normalizeAttachment } from 'soapbox/normalizers';
+import { embedProviderLabel, resolveSafeEmbed } from 'soapbox/utils/embed-policy';
 import { sanitizeUrl } from 'soapbox/utils/url-policy';
 
 import type { Card as CardEntity, Attachment } from 'soapbox/types/entities';
 
 const trim = (text: string, len: number): string => {
   const cut = text.indexOf(' ', len);
-
-  if (cut === -1) {
-    return text;
-  }
-
+  if (cut === -1) return text;
   return text.substring(0, cut) + (text.length > len ? '…' : '');
 };
 
@@ -42,151 +39,122 @@ const Card: React.FC<ICard> = ({
   horizontal,
 }): JSX.Element => {
   const [width, setWidth] = useState(defaultWidth);
-  const trimmedTitle       = trim(card.title, maxTitle);
+  const [embedActive, setEmbedActive] = useState(false);
+  const trimmedTitle = trim(card.title, maxTitle);
   const trimmedDescription = trim(card.description, maxDescription);
   const safeCardUrl = sanitizeUrl(card.url);
   const safeCardImage = sanitizeUrl(card.image, 'media');
-  const safeEmbedUrl = sanitizeUrl(card.embed_url, 'media');
+  const safeEmbed = resolveSafeEmbed({
+    embedUrl: sanitizeUrl(card.embed_url, 'media'),
+    pageUrl: safeCardUrl,
+    providerName: card.provider_name,
+    title: trimmedTitle,
+  });
 
-  const handlePhotoClick = () => {
-    if (!safeEmbedUrl) return;
-
-    const attachment = normalizeAttachment({
-      type: 'image',
-      url: safeEmbedUrl,
-      description: trimmedTitle,
-      meta: {
-        original: {
-          width: card.width,
-          height: card.height,
-        },
-      },
-    });
-
-    onOpenMedia(ImmutableList([attachment]), 0);
+  const setRef: React.RefCallback<HTMLElement> = element => {
+    if (!element) return;
+    cacheWidth?.(element.offsetWidth);
+    setWidth(element.offsetWidth);
   };
 
-  const handleEmbedClick: React.MouseEventHandler = (e) => {
-    e.stopPropagation();
-
-    if (card.type === 'photo') {
-      handlePhotoClick();
-    } else if (safeCardUrl) {
-      window.open(safeCardUrl, '_blank', 'noopener,noreferrer');
-    }
-  };
-
-  const setRef: React.RefCallback<HTMLElement> = c => {
-    if (c) {
-      if (cacheWidth) {
-        cacheWidth(c.offsetWidth);
-      }
-
-      setWidth(c.offsetWidth);
-    }
-  };
-
-  const getRatio = (card: CardEntity): number => {
-    const ratio  = (card.width / card.height) || 16 / 9;
-
-    // Constrain to a sane limit
-    // https://en.wikipedia.org/wiki/Aspect_ratio_(image)
-    return Math.min(Math.max(9 / 16, ratio), 4);
-  };
-
+  const ratio = Math.min(Math.max(9 / 16, (card.width / card.height) || 16 / 9), 4);
   const interactive = card.type !== 'link';
-  horizontal = typeof horizontal === 'boolean' ? horizontal : interactive;
-  const className   = classnames('status-card', { horizontal, compact, interactive }, `status-card--${card.type}`);
-  const ratio       = getRatio(card);
-  const height      = compact ? (width / (16 / 9)) : (width / ratio);
+  const isHorizontal = typeof horizontal === 'boolean' ? horizontal : interactive;
+  const className = classnames('status-card', {
+    horizontal: isHorizontal,
+    compact,
+    interactive,
+  }, `status-card--${card.type}`);
+  const height = compact ? width / (16 / 9) : width / ratio;
+
+  const openPhoto = () => {
+    const imageUrl = sanitizeUrl(card.embed_url, 'media');
+    if (!imageUrl) return;
+    onOpenMedia(ImmutableList([normalizeAttachment({
+      type: 'image',
+      url: imageUrl,
+      description: trimmedTitle,
+      meta: { original: { width: card.width, height: card.height } },
+    })]), 0);
+  };
+
+  const openExternal = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (safeCardUrl) window.open(safeCardUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const activateEmbed = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (card.type === 'photo') return openPhoto();
+    if (safeEmbed) setEmbedActive(true);
+    else openExternal(event);
+  };
 
   const title = interactive ? (
-    <a
-      onClick={(e) => e.stopPropagation()}
-      href={safeCardUrl || undefined}
-      title={trimmedTitle}
-      rel='nofollow noopener noreferrer'
-      target='_blank'
-    >
+    <a onClick={(event) => event.stopPropagation()} href={safeCardUrl || undefined} title={trimmedTitle} rel='nofollow noopener noreferrer' target='_blank'>
       <span>{trimmedTitle}</span>
     </a>
-  ) : (
-    <span title={trimmedTitle}>{trimmedTitle}</span>
-  );
+  ) : <span title={trimmedTitle}>{trimmedTitle}</span>;
 
   const description = (
     <Stack space={2} className='flex-1 overflow-hidden p-4'>
-      {trimmedTitle && (
-        <Text weight='bold'>{title}</Text>
-      )}
-      {trimmedDescription && (
-        <Text>{trimmedDescription}</Text>
-      )}
+      {trimmedTitle && <Text weight='bold'>{title}</Text>}
+      {trimmedDescription && <Text>{trimmedDescription}</Text>}
       <HStack space={1} alignItems='center'>
-        <Text tag='span' theme='muted'>
-          <Icon src={require('@tabler/icons/link.svg')} />
-        </Text>
-        <Text tag='span' theme='muted' size='sm'>
-          {card.provider_name}
-        </Text>
+        <Text tag='span' theme='muted'><Icon src={require('@tabler/icons/link.svg')} /></Text>
+        <Text tag='span' theme='muted' size='sm'>{card.provider_name || (safeEmbed ? embedProviderLabel(safeEmbed.provider) : '')}</Text>
       </HStack>
     </Stack>
   );
 
-  let embed: React.ReactNode = '';
-
-  const canvas = (
-    <Blurhash
-      className='absolute w-full h-full inset-0 -z-10'
-      hash={card.blurhash}
-    />
-  );
-
+  const canvas = <Blurhash className='absolute w-full h-full inset-0 -z-10' hash={card.blurhash} />;
   const thumbnail = (
     <div
       style={{
         backgroundImage: safeCardImage ? `url(${JSON.stringify(safeCardImage)})` : undefined,
-        width: horizontal ? width : undefined,
-        height: horizontal ? height : undefined,
+        width: isHorizontal ? width : undefined,
+        height: isHorizontal ? height : undefined,
       }}
       className='status-card__image-image'
     />
   );
 
   if (interactive) {
-    let iconVariant = require('@tabler/icons/player-play.svg');
-
-    if (card.type === 'photo') {
-      iconVariant = require('@tabler/icons/zoom-in.svg');
-    }
-
-    embed = (
+    const iconVariant = card.type === 'photo' ? require('@tabler/icons/zoom-in.svg') : require('@tabler/icons/player-play.svg');
+    const media = embedActive && safeEmbed ? (
+      <div className='status-card__image relative overflow-hidden bg-black' style={{ minHeight: height }} onClick={(event) => event.stopPropagation()}>
+        <iframe
+          src={safeEmbed.src}
+          title={safeEmbed.title}
+          className='absolute inset-0 h-full w-full border-0'
+          sandbox='allow-scripts allow-same-origin allow-presentation allow-popups'
+          allow={safeEmbed.allow}
+          referrerPolicy='no-referrer'
+          loading='lazy'
+          allowFullScreen
+        />
+        <button
+          type='button'
+          className='absolute right-2 top-2 rounded-full bg-black/70 p-2 text-white shadow-md'
+          onClick={(event) => { event.stopPropagation(); setEmbedActive(false); }}
+          aria-label='Close embedded content'
+        >
+          <Icon src={require('@tabler/icons/x.svg')} className='h-5 w-5' />
+        </button>
+      </div>
+    ) : (
       <div className='status-card__image'>
         {canvas}
         {thumbnail}
-
         <div className='absolute inset-0 flex items-center justify-center'>
-          <div className='bg-white shadow-md rounded-md p-2 flex items-center justify-center'>
+          <div className='rounded-full bg-white/95 p-2 shadow-lg dark:bg-slate-900/95'>
             <HStack space={3} alignItems='center'>
-              <button onClick={handleEmbedClick} className='appearance-none text-gray-400 hover:text-gray-600'>
-                <Icon
-                  src={iconVariant}
-                  className='w-5 h-5 text-inherit'
-                />
+              <button type='button' onClick={activateEmbed} className='appearance-none text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white' aria-label={safeEmbed ? `Play ${embedProviderLabel(safeEmbed.provider)} embed` : 'Open media'}>
+                <Icon src={iconVariant} className='h-6 w-6 text-inherit' />
               </button>
-
-              {horizontal && (
-                <a
-                  onClick={(e) => e.stopPropagation()}
-                  href={safeCardUrl || undefined}
-                  target='_blank'
-                  rel='nofollow noopener noreferrer'
-                  className='text-gray-400 hover:text-gray-600'
-                >
-                  <Icon
-                    src={require('@tabler/icons/external-link.svg')}
-                    className='w-5 h-5 text-inherit'
-                  />
+              {isHorizontal && safeCardUrl && (
+                <a onClick={(event) => event.stopPropagation()} href={safeCardUrl} target='_blank' rel='nofollow noopener noreferrer' className='text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white' aria-label='Open original page'>
+                  <Icon src={require('@tabler/icons/external-link.svg')} className='h-5 w-5 text-inherit' />
                 </a>
               )}
             </HStack>
@@ -195,46 +163,20 @@ const Card: React.FC<ICard> = ({
       </div>
     );
 
-    return (
-      <div className={className} ref={setRef}>
-        {embed}
-        {description}
-      </div>
-    );
-  } else if (card.image) {
-    embed = (
-      <div className={classnames(
-        'status-card__image',
-        'w-full rounded-l md:w-auto md:h-auto flex-none md:flex-auto',
-        {
-          'h-auto': horizontal,
-          'h-[200px]': !horizontal,
-        },
-      )}
-      >
-        {canvas}
-        {thumbnail}
-      </div>
-    );
-  } else {
-    embed = (
-      <div className='status-card__image status-card__image--empty'>
-        <Icon src={require('@tabler/icons/file-text.svg')} />
-      </div>
-    );
+    return <div className={className} ref={setRef}>{media}{description}</div>;
   }
 
+  const image = card.image ? (
+    <div className={classnames('status-card__image', 'w-full rounded-l md:w-auto md:h-auto flex-none md:flex-auto', { 'h-auto': isHorizontal, 'h-[200px]': !isHorizontal })}>
+      {canvas}{thumbnail}
+    </div>
+  ) : (
+    <div className='status-card__image status-card__image--empty'><Icon src={require('@tabler/icons/file-text.svg')} /></div>
+  );
+
   return (
-    <a
-      href={safeCardUrl || undefined}
-      className={className}
-      target='_blank'
-      rel='nofollow noopener noreferrer'
-      ref={setRef}
-      onClick={e => e.stopPropagation()}
-    >
-      {embed}
-      {description}
+    <a href={safeCardUrl || undefined} className={className} target='_blank' rel='nofollow noopener noreferrer' ref={setRef} onClick={(event) => event.stopPropagation()}>
+      {image}{description}
     </a>
   );
 };
