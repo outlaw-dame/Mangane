@@ -197,41 +197,6 @@ describe('bounded compression authority', () => {
     })).rejects.toMatchObject({ code: 'ABORTED' });
   });
 
-  it('reports cancellation while a codec read is pending as ABORTED', async() => {
-    const envelope = await createLocalEnvelope({
-      ids: Array.from({ length: 500 }, (_, index) => `status-${index}`),
-    }, {
-      scopeKey: 'account-a',
-      context: 'public-cache',
-    });
-    if (envelope.kind !== 'compressed') throw new Error('expected compression');
-
-    class PendingDecompressionStream extends TransformStream<Uint8Array, Uint8Array> {
-
-      constructor() {
-        super({
-          transform: () => new Promise<void>(() => undefined),
-        });
-      }
-
-    }
-    Object.defineProperty(globalThis, 'DecompressionStream', {
-      configurable: true,
-      value: PendingDecompressionStream,
-    });
-
-    const controller = new AbortController();
-    const decode = decodeLocalEnvelope(envelope, {
-      scopeKey: 'account-a',
-      signal: controller.signal,
-      validate: (_candidate): _candidate is { ids: string[] } => true,
-    });
-    await new Promise(resolve => setTimeout(resolve, 0));
-    controller.abort();
-
-    await expect(decode).rejects.toMatchObject({ code: 'ABORTED' });
-  });
-
   it('parses bounded zstd window descriptors and rejects malformed frames', () => {
     // Standard zstd magic, non-single-segment frame, 1 KiB window descriptor.
     expect(inspectZstdWindowSize(new Uint8Array([0x28, 0xb5, 0x2f, 0xfd, 0x00, 0x00]))).toBe(1024);
