@@ -13,7 +13,7 @@
  */
 import classNames from 'classnames';
 import { App, View, Panel } from 'framework7-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { useAppSelector, useOwnAccount, useSettings } from 'soapbox/hooks';
 import { isStandalone } from 'soapbox/utils/state';
@@ -22,13 +22,14 @@ import F7BottomTabs from './components/bottom-tabs';
 import F7DesktopLayout from './components/desktop-layout';
 import OfflineBanner from './components/offline-banner';
 import RouteErrorBoundary from './components/route-error-boundary';
+import RouteTransition from './components/route-transition';
 import F7SidebarNavigation from './components/sidebar-navigation';
 import { useAccountSwitch } from './hooks/use-account-switch';
 import { useBreakpoint } from './hooks/use-breakpoint';
 import { useOnlineStatus } from './hooks/use-online-status';
 import { useRouteState } from './hooks/use-route-state';
 import { useSessionRestore } from './hooks/use-session-restore';
-import { useViewport } from './hooks/use-viewport';
+import { useOrientationScrollPreserve, useViewport } from './hooks/use-viewport';
 import { getTransitionCssVars } from './transitions';
 
 /** Framework7 app parameters — no router in Slice 3A. */
@@ -46,6 +47,19 @@ interface F7ShellProps {
   children: React.ReactNode;
 }
 
+const ShellRouteContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useOrientationScrollPreserve(containerRef);
+
+  return (
+    <div ref={containerRef} className='f7-shell__route-content'>
+      <RouteErrorBoundary>
+        <RouteTransition>{children}</RouteTransition>
+      </RouteErrorBoundary>
+    </div>
+  );
+};
+
 /**
  * The Framework7 adaptive shell.
  * Wraps existing content in the appropriate phone/tablet/desktop layout.
@@ -59,14 +73,14 @@ const F7Shell: React.FC<F7ShellProps> = ({ children }) => {
   const { keyboardVisible, isStandalone: isPwa, orientation } = useViewport();
   const { isOnline } = useOnlineStatus();
 
-  // Persist current route for session restoration
-  useRouteState();
-
   // Handle account switch — clears navigation state
   useAccountSwitch();
 
-  // Restore last route on PWA relaunch / page refresh
+  // Capture and restore the prior route before root-route persistence runs.
   useSessionRestore();
+
+  // Persist only the current pathname for session restoration.
+  useRouteState();
 
   // Compute transition CSS variables based on reduced-motion preference
   const transitionVars = useMemo(
@@ -86,9 +100,7 @@ const F7Shell: React.FC<F7ShellProps> = ({ children }) => {
 
       {breakpoint === 'desktop' && (
         <F7DesktopLayout standalone={standalone}>
-          <RouteErrorBoundary>
-            {children}
-          </RouteErrorBoundary>
+          <ShellRouteContent>{children}</ShellRouteContent>
         </F7DesktopLayout>
       )}
 
@@ -98,9 +110,7 @@ const F7Shell: React.FC<F7ShellProps> = ({ children }) => {
             {!standalone && <F7SidebarNavigation />}
           </Panel>
           <View main className='f7-shell__main-view'>
-            <RouteErrorBoundary>
-              {children}
-            </RouteErrorBoundary>
+            <ShellRouteContent>{children}</ShellRouteContent>
           </View>
         </div>
       )}
@@ -108,9 +118,7 @@ const F7Shell: React.FC<F7ShellProps> = ({ children }) => {
       {breakpoint === 'phone' && (
         <div className='f7-shell__phone'>
           <View main className='f7-shell__main-view'>
-            <RouteErrorBoundary>
-              {children}
-            </RouteErrorBoundary>
+            <ShellRouteContent>{children}</ShellRouteContent>
           </View>
           {account && !keyboardVisible && <F7BottomTabs />}
         </div>

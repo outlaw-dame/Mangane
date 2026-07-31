@@ -16,7 +16,10 @@ const F7BottomTabs: React.FC = () => {
   const { pathname } = useLocation();
   const notificationCount = useAppSelector((state) => state.notifications.get('unread'));
 
-  const navigate = (path: string) => () => history.push(path);
+  const navigate = (path: string): React.MouseEventHandler<HTMLAnchorElement> => (event) => {
+    event.preventDefault();
+    history.push(path);
+  };
 
   const homeActive = pathname === '/';
   const searchActive = pathname.startsWith('/search');
@@ -31,6 +34,7 @@ const F7BottomTabs: React.FC = () => {
     >
       <Link
         tabLink
+        href='/'
         tabLinkActive={homeActive}
         onClick={navigate('/')}
         text='Home'
@@ -39,6 +43,7 @@ const F7BottomTabs: React.FC = () => {
       </Link>
       <Link
         tabLink
+        href='/search'
         tabLinkActive={searchActive}
         onClick={navigate('/search')}
         text='Search'
@@ -47,15 +52,26 @@ const F7BottomTabs: React.FC = () => {
       </Link>
       <Link
         tabLink
+        href='/notifications'
         tabLinkActive={notificationsActive}
         onClick={navigate('/notifications')}
-        iconBadge={notificationCount > 0 ? notificationCount : undefined}
         text='Alerts'
       >
-        <SemanticIcon name='notifications' size={24} weight={notificationsActive ? 'fill' : 'regular'} />
+        <span className='f7-shell__tab-icon'>
+          <SemanticIcon name='notifications' size={24} weight={notificationsActive ? 'fill' : 'regular'} />
+          {notificationCount > 0 && (
+            <span
+              className='f7-shell__notification-badge'
+              aria-label={`${notificationCount} unread notifications`}
+            >
+              {notificationCount > 99 ? '99+' : notificationCount}
+            </span>
+          )}
+        </span>
       </Link>
       <Link
         tabLink
+        href='/settings'
         tabLinkActive={settingsActive}
         onClick={navigate('/settings')}
         text='Settings'

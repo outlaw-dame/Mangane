@@ -102,7 +102,7 @@
       "replacement": "README.md",
       "inheritedBrandingReferences": 24,
       "statusHeader": null,
-      "contentSha256": "93556301805bcda7270e753e62041b6b664e895d98ab3f0020d3343c666e6f07"
+      "contentSha256": "24673592defbaa9fe7e119ae790bd16b0188bf5e2e3e15274dfa43c9c18b1102"
     },
     {
       "path": "docs/administration/mastodon.md",
@@ -182,7 +182,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Current Phase 0A evidence",
-      "contentSha256": "fb751ed44c63731fb666e46bbae98a4ab54154ab16ce56474f21db15032b4eaf"
+      "contentSha256": "d178693fa5da593cc96d64f4f69caa5a3df2f4d8856338e28732f28e64e89c53"
     },
     {
       "path": "docs/architecture/API_AND_PROTOCOL_CALLSITE_MATRIX.md",
@@ -321,8 +321,8 @@
       "classification": "current-supporting-evidence",
       "replacement": null,
       "inheritedBrandingReferences": 0,
-      "statusHeader": "Canonical verified current state / Phases 0–4 complete / Phase 5 in progress",
-      "contentSha256": "484e71866a7eaf25d4ae48b42c69dc7476c6b587badaba9f594c1db542fdf056"
+      "statusHeader": "Canonical verified current state / Phases 0–5 complete",
+      "contentSha256": "d81351a65d3197d4e5044eeaed25ff189df702411532c18e9530a296f220f22a"
     },
     {
       "path": "docs/architecture/DATA_PRIVACY_AND_RESILIENCE.md",
@@ -342,7 +342,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Current Phase 0A evidence",
-      "contentSha256": "56476a3517fdd6c92a74493d5defbff748a0a436ccfa6ffb145078366c8d3d31"
+      "contentSha256": "93ec5e0cab886ffa51bea75f9582e90002c998d1dc57eca27cd13ce9ee00491c"
     },
     {
       "path": "docs/architecture/DEPENDENCY_REPLACEMENT_QUEUE.md",
@@ -482,7 +482,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "bd8db4383e96af6e05dd21e610dc22d5b9b22e8f94cf9bb652dc2098df7154fe"
+      "contentSha256": "3f0c39f243bdf29785844157eb35caf59c3858e58cfcbf79be893aa05c8e9aa7"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -601,8 +601,8 @@
       "classification": "current-supporting-evidence",
       "replacement": null,
       "inheritedBrandingReferences": 1,
-      "statusHeader": "Shell foundation complete / application-surface migration remains phased",
-      "contentSha256": "56dfc7008bb140600e46694a4a69658b69c17407f74c9c1fffa946115e5c867b"
+      "statusHeader": "Complete — shell foundation and compatibility bridge / application-surface migration remains phased",
+      "contentSha256": "491ecb5ac9d45ba309dc0f5daba6a2eabd2b94fa1611be89430b4d37e924fc90"
     },
     {
       "path": "docs/architecture/PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md",
@@ -610,9 +610,9 @@
       "authorityId": "phase-4a-zstd-and-gzip-compression",
       "classification": "current-supporting-evidence",
       "replacement": null,
-      "inheritedBrandingReferences": 0,
-      "statusHeader": "Accepted target / queued after Phase 4 foundations",
-      "contentSha256": "3d2bc3df1a1533592ecd0bd39291bc374d0b084104d401957b497549c5d025d8"
+      "inheritedBrandingReferences": 2,
+      "statusHeader": "Complete — bounded native-codec and deployment authority; production zstd remains capability-gated",
+      "contentSha256": "26105889570e6a3ea3c6987d55566b3da56d5c70dec381dd8bc8c7d685908b45"
     },
     {
       "path": "docs/architecture/PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md",
@@ -632,7 +632,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 5,
       "statusHeader": "Complete",
-      "contentSha256": "ff7f6e17c3755f5d3e996d3abc64d7cc1d7e247930e73936cd17d9acc26fe8ac"
+      "contentSha256": "d92c58516a16f240b863ed70aa46ade955081f320bf394f968d20e32283490d5"
     },
     {
       "path": "docs/architecture/PHASE_5E_TIMELINE_POSITION_CONTINUITY.md",

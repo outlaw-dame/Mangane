@@ -24,9 +24,16 @@ test('Framework7 shell navigation uses the canonical semantic icon authority', (
   }
 });
 
+test('notification count is rendered beside the semantic icon without Framework7 generated-icon badge coupling', () => {
+  const source = read('app/soapbox/features/f7-shell/components/bottom-tabs.tsx');
+  assert.doesNotMatch(source, /\biconBadge\s*=/);
+  assert.match(source, /f7-shell__notification-badge/);
+  assert.match(source, /aria-label=/);
+});
+
 test('shell navigation semantics are present in the static registry', () => {
   const registry = read('app/soapbox/components/ui/icon/semantic-icon-registry.ts');
   for (const name of ['home', 'search', 'notifications', 'settings', 'local', 'explore', 'bookmark', 'lists']) {
-    assert.match(registry, new RegExp(`['\"]?${name}['\"]?`));
+    assert.match(registry, new RegExp(`['"]?${name}['"]?`));
   }
 });

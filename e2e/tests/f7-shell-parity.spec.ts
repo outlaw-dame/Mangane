@@ -61,6 +61,18 @@ test.describe('Framework7 shell parity fixture', () => {
     await expect(page).toHaveURL(/#search$/);
   });
 
+  test('initial hash and history state restore the selected destination', async({ page }) => {
+    await page.goto('about:blank');
+    await page.goto(`${shellUrl}#settings`);
+    await expect(page.locator('#route-title')).toHaveText('Settings');
+    await expect(page.locator('[data-route="settings"][aria-current="page"]')).toHaveCount(2);
+
+    await page.goto(`${shellUrl}?historyRoute=notifications`);
+    expect(await page.evaluate(() => history.state?.route)).toBe('notifications');
+    await expect(page.locator('#route-title')).toHaveText('Notifications');
+    await expect(page.locator('[data-route="notifications"][aria-current="page"]')).toHaveCount(2);
+  });
+
   test('account switch resets route state without leaking the prior account', async({ page }) => {
     await page.getByRole('button', { name: 'Settings' }).first().click();
     await page.getByRole('button', { name: 'Switch account' }).click();
