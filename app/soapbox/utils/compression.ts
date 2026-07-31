@@ -208,6 +208,7 @@ const transformBytes = async(
     for (;;) {
       assertNotAborted(signal);
       const { done, value } = await reader.read();
+      assertNotAborted(signal);
       if (done) break;
       if (!ArrayBuffer.isView(value)) {
         throw new CompressionError('CODEC_FAILURE', 'Compression codec returned an invalid chunk');
