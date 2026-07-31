@@ -17,13 +17,14 @@ describe('featured hashtag service', () => {
     expect(() => normalizeTagName('1234')).toThrow('Invalid hashtag');
   });
 
-  it('uses the Mastodon featured tags API when available', async() => {
+  it('preserves server tags and merges distinct Mangane-managed tags', async() => {
     const client = baseClient();
     const mock = new MockAdapter(client);
     mock.onGet('/api/v1/featured_tags').reply(200, [{ id: '1', name: 'Cats', url: 'https://example.com/@alice/tagged/Cats', statuses_count: '4', last_status_at: null }]);
 
-    await expect(fetchOwnFeaturedTags(client, ['LocalOnly'])).resolves.toEqual([
+    await expect(fetchOwnFeaturedTags(client, ['LocalOnly', 'cats'])).resolves.toEqual([
       expect.objectContaining({ id: '1', name: 'Cats', source: 'server', federated: true }),
+      expect.objectContaining({ name: 'LocalOnly', source: 'mangane', federated: false }),
     ]);
   });
 
@@ -33,6 +34,26 @@ describe('featured hashtag service', () => {
     mock.onGet('/api/v1/featured_tags').reply(404);
 
     await expect(fetchOwnFeaturedTags(client, ['Art', 'art', 'two words', 3])).resolves.toEqual([
+      expect.objectContaining({ name: 'Art', source: 'mangane', federated: false }),
+    ]);
+  });
+
+  it('keeps server tags server-owned when POST falls back locally', async() => {
+    const client = baseClient();
+    const mock = new MockAdapter(client);
+    mock.onPost('/api/v1/featured_tags').reply(405);
+    const current = [{
+      id: '1',
+      name: 'Cats',
+      url: 'https://example.com/@alice/tagged/Cats',
+      statuses_count: '4',
+      last_status_at: null,
+      source: 'server' as const,
+      federated: true,
+    }];
+
+    await expect(featureTag(client, 'Art', current)).resolves.toEqual([
+      expect.objectContaining({ id: '1', name: 'Cats', source: 'server', federated: true }),
       expect.objectContaining({ name: 'Art', source: 'mangane', federated: false }),
     ]);
   });
@@ -47,12 +68,22 @@ describe('featured hashtag service', () => {
     ]);
   });
 
-  it('removes local tags without calling the server', async() => {
+  it('removes local tags without calling the server or dropping server tags', async() => {
     const client = baseClient();
-    const tags = normalizeLocalFeaturedTags(['Design']);
+    const mock = new MockAdapter(client);
+    const local = normalizeLocalFeaturedTags(['Design'])[0];
+    const server = {
+      id: '1',
+      name: 'Cats',
+      url: null,
+      statuses_count: '4',
+      last_status_at: null,
+      source: 'server' as const,
+      federated: true,
+    };
 
-    await expect(unfeatureTag(client, tags[0], tags)).resolves.toEqual([]);
-    expect(new MockAdapter(client).history.delete).toHaveLength(0);
+    await expect(unfeatureTag(client, local, [server, local])).resolves.toEqual([server]);
+    expect(mock.history.delete).toHaveLength(0);
   });
 
   it('loads another account featured tags only from the public server endpoint', async() => {
