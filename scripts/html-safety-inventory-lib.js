@@ -55,9 +55,9 @@ const isVerifiedPreviewCardIframe = (relativePath, source) => (
   relativePath === 'app/soapbox/features/status/components/card.tsx'
   && source.includes('resolveSafeEmbed({')
   && source.includes('src={safeEmbed.src}')
-  && source.includes("sandbox='allow-scripts allow-same-origin allow-presentation allow-popups'")
-  && source.includes("referrerPolicy='no-referrer'")
-  && source.includes("loading='lazy'")
+  && source.includes('sandbox=\'allow-scripts allow-same-origin allow-presentation allow-popups\'')
+  && source.includes('referrerPolicy=\'no-referrer\'')
+  && source.includes('loading=\'lazy\'')
 );
 
 const classify = (kind, relativePath, source, index, expression) => {
