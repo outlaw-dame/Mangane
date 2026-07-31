@@ -58,11 +58,11 @@ assert.ok(!embedSource.includes('.write('), 'oEmbed preview must not use documen
 
 const statusCardSource = fs.readFileSync(path.join(root, 'app/soapbox/features/status/components/card.tsx'), 'utf8');
 for (const requiredFragment of [
-  "import { embedProviderLabel, resolveSafeEmbed } from 'soapbox/utils/embed-policy';",
+  'import { embedProviderLabel, resolveSafeEmbed } from \'soapbox/utils/embed-policy\';',
   'const safeEmbed = resolveSafeEmbed({',
   'src={safeEmbed.src}',
-  "sandbox='allow-scripts allow-same-origin allow-presentation allow-popups'",
-  "referrerPolicy='no-referrer'",
+  'sandbox=\'allow-scripts allow-same-origin allow-presentation allow-popups\'',
+  'referrerPolicy=\'no-referrer\'',
 ]) {
   assert.ok(statusCardSource.includes(requiredFragment), `Status-card iframe safety evidence missing: ${requiredFragment}`);
 }
