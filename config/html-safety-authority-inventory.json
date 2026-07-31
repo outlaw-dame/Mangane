@@ -907,19 +907,19 @@
       "classification": "sandboxed-policy-governed-src"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:190:65",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:193:65",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 190,
+      "line": 193,
       "column": 65,
       "expression": "<a onClick={(event) => event.stopPropagation()} href={safeCardUrl} target='_blank' rel='nofollow noopener noreferrer' className='text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white' aria-label='Open original page'>",
       "classification": "central-navigation-policy"
     },
     {
-      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:212:8",
+      "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:215:8",
       "kind": "dynamic-link-destination",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 212,
+      "line": 215,
       "column": 8,
       "expression": "<a href={safeCardUrl || undefined} className={className} target='_blank' rel='nofollow noopener noreferrer' ref={setRef} onClick={(event) => event.stopPropagation()}>",
       "classification": "central-navigation-policy"

@@ -8175,18 +8175,18 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:191:external-link.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:194:external-link.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 191,
+      "line": 194,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "external-link.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:208:file-text.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:211:file-text.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 208,
+      "line": 211,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "file-text.svg",
@@ -22834,24 +22834,24 @@
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:174",
+      "id": "label:app/soapbox/features/status/components/card.tsx:177",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 174,
+      "line": 177,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:186",
+      "id": "label:app/soapbox/features/status/components/card.tsx:189",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 186,
+      "line": 189,
       "classification": "accessibility-critical"
     },
     {
-      "id": "label:app/soapbox/features/status/components/card.tsx:190",
+      "id": "label:app/soapbox/features/status/components/card.tsx:193",
       "kind": "label",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 190,
+      "line": 193,
       "classification": "accessibility-critical"
     },
     {
