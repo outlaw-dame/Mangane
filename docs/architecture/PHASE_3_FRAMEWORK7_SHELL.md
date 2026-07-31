@@ -1,6 +1,6 @@
 # Phase 3 Framework7 Application Shell
 
-Status: **Shell foundation complete / application-surface migration remains phased**
+Status: **Complete — shell foundation and compatibility bridge / application-surface migration remains phased**
 
 Last updated: 2026-07-30
 
@@ -78,8 +78,9 @@ than a second icon provider or provider-specific filename.
 
 ## Slice 3B contract
 
-- The canonical route manifest enumerates existing routes and authorization
-  metadata.
+- The compatibility route manifest mirrors route access and conditional
+  metadata for safe restoration; `SwitchingColumnsArea` remains the canonical
+  authorization and runtime-gate authority.
 - React Router remains authoritative for path matching, browser back/forward,
   parameters, query strings, hashes, and URL synchronization.
 - Route state persistence supports validated refresh and PWA restoration.
@@ -154,6 +155,32 @@ UI disabled or hidden state is never an authorization boundary.
 No navigation state may cross account scope. Stored route state must remain
 bounded, path-only, validated, and purgeable. Diagnostics must not include
 private route query data, status content, tokens, or account identifiers.
+
+## Post-review closure remediation
+
+The final Phase 3 closure resolves the deferred review findings from PRs 53–55,
+79, and 81:
+
+- session restoration stores only a strictly validated pathname; query strings
+  and fragments are never persisted;
+- the saved route is captured before the initial root persistence effect, and
+  account changes clear the prior scope before returning home;
+- the compatibility manifest now matches public/protected routes, missing
+  notice/error paths, compound feature gates, LDAP exclusion, and configured
+  crypto conditions without becoming an authorization authority;
+- keyboard detection requires editable focus and rebases after orientation or
+  zoom changes; the orientation scroll hook is attached to the actual shell
+  route scroller;
+- React Router navigation now remounts an observable, reduced-motion-aware
+  transition wrapper;
+- go-home recovery resets the route boundary, semantic notification badges no
+  longer depend on Framework7-generated icon markup, and fixture cold loads honor
+  initial hash/history state;
+- Playwright's desktop Firefox project is enabled alongside Chromium and
+  WebKit, with CI installing all three engines.
+- Framework7 and Framework7 React were upgraded together to 9.1.2 after a live
+  audit identified vulnerable Swiper 10.3.1; the supported dependency now
+  resolves Swiper 12.2.0 and removes that critical advisory from the lockfile.
 
 ## Phase 3 completion checklist
 

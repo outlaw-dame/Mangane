@@ -120,6 +120,13 @@ test('the repository satisfies the Phase 4B source contract', () => {
   assert.doesNotThrow(() => validateSource(repositoryRoot));
 });
 
+test('runtime branding owns theme-color without a conflicting static value', () => {
+  const template = fs.readFileSync(path.join(repositoryRoot, 'app/index.ejs'), 'utf8');
+  const runtime = fs.readFileSync(path.join(repositoryRoot, 'app/soapbox/containers/soapbox.tsx'), 'utf8');
+  assert.doesNotMatch(template, /name=["']theme-color["']/);
+  assert.match(runtime, /<meta name='theme-color' content=\{soapboxConfig\.brandColor\}/);
+});
+
 test('fails closed when the install surface or stylesheet is disconnected from the shell', () => {
   for (const [relativePath, fragment] of [
     ['app/soapbox/features/ui/index.tsx', '<PWAInstallBanner />'],

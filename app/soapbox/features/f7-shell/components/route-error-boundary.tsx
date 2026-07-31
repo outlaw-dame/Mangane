@@ -6,7 +6,7 @@
  * the shell itself (those are handled by the app-level ErrorBoundary).
  */
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -72,7 +72,7 @@ class RouteErrorBoundaryInner extends React.Component<
         <Fallback
           error={this.state.error}
           onRetry={this.handleRetry}
-          onGoHome={() => {/* handled by wrapper */}}
+          onGoHome={this.handleRetry}
         />
       );
     }
@@ -86,17 +86,21 @@ class RouteErrorBoundaryInner extends React.Component<
  */
 const RouteErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const history = useHistory();
+  const location = useLocation();
 
   const FallbackWithNav: React.FC<RouteErrorFallbackProps> = ({ error, onRetry }) => (
     <RouteErrorFallback
       error={error}
       onRetry={onRetry}
-      onGoHome={() => history.push('/')}
+      onGoHome={() => {
+        history.replace('/');
+        onRetry();
+      }}
     />
   );
 
   return (
-    <RouteErrorBoundaryInner fallback={FallbackWithNav}>
+    <RouteErrorBoundaryInner key={location.key || location.pathname} fallback={FallbackWithNav}>
       {children}
     </RouteErrorBoundaryInner>
   );

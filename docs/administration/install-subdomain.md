@@ -81,12 +81,13 @@ server {
     #brotli_static on;
     #brotli_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/activity+json application/atom+xml;
 
+    gzip on;
     gzip_vary on;
     gzip_proxied any;
     gzip_comp_level 6;
     gzip_buffers 16 8k;
     gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/activity+json application/atom+xml;
+    gzip_types text/plain text/css application/json application/javascript application/activity+json application/ld+json application/manifest+json text/xml application/xml application/xml+rss text/javascript application/atom+xml image/svg+xml;
 
     # the nginx default is 1m, not enough for large media uploads
     client_max_body_size 40m;

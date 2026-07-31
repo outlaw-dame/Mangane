@@ -42,6 +42,7 @@
 </div>
 <script>
 const params=new URLSearchParams(location.search);const shell=document.querySelector('.shell');const title=document.querySelector('#route-title');const account=document.querySelector('#account');const main=document.querySelector('#main');
+const allowedRoutes=['home','search','notifications','settings'];const seededHistoryRoute=params.get('historyRoute');if(allowedRoutes.includes(seededHistoryRoute))history.replaceState({route:seededHistoryRoute},'',location.pathname);
 shell.dataset.keyboard=String(params.get('keyboard')==='true');shell.dataset.offline=String(params.get('offline')==='true');shell.dataset.error=String(params.get('error')==='true');if(params.get('legacy')==='true')document.body.dataset.shell='legacy';
 function navigate(route,{push=true}={}){document.querySelectorAll('[data-route]').forEach(el=>{if(el.dataset.route===route)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current')});title.textContent=route[0].toUpperCase()+route.slice(1);if(push)history.pushState({route},'',`#${route}`);main.focus()}
 document.querySelectorAll('[data-route]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.route)));
@@ -50,6 +51,7 @@ document.querySelector('#switch-account').addEventListener('click',()=>{shell.da
 document.querySelector('#legacy-shell').addEventListener('click',()=>document.body.dataset.shell='legacy');
 document.querySelector('#retry').addEventListener('click',()=>shell.dataset.error='false');document.querySelector('#go-home').addEventListener('click',()=>{shell.dataset.error='false';navigate('home')});
 addEventListener('popstate',event=>navigate(event.state?.route||'home',{push:false}));
+const initialRoute=history.state?.route||location.hash.slice(1);if(allowedRoutes.includes(initialRoute))navigate(initialRoute,{push:false});
 </script>
 </body>
 </html>

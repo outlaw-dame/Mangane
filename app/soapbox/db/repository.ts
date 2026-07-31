@@ -108,7 +108,7 @@ const BASE_BACKOFF_MS = 100;
  * Executes a write operation with exponential backoff on quota errors.
  * Returns true if successful, false if quota is permanently exhausted.
  */
-async function writeWithBackoff<T>(operation: () => Promise<T>): Promise<T> {
+export async function writeWithBackoff<T>(operation: () => Promise<T>): Promise<T> {
   let lastError: unknown;
   for (let attempt = 0; attempt < MAX_WRITE_RETRIES; attempt++) {
     try {

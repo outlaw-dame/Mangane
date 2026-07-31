@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "status": "current-phase-0a-evidence",
   "sourceDigests": {
-    "packageJsonSha256": "327c64bfced5c63419dbe476772d32c23c55f7d2758f1e19cfd0bf52da1dd4ba",
+    "packageJsonSha256": "a1c52fe9c66ae9a6af8141a114f83721cd1bff7cc5aec1ca4a642de38b39d730",
     "twemojiDownloaderSha256": "89f1d9fec29b1d53c8862466efbfc270fc5324bfc476095ced7ae3ee5b26c303",
-    "yarnLockSha256": "28ba12c2764bd1a55ce29ce43e444935de91e821fcd5b6405ca6f2269576f830"
+    "yarnLockSha256": "e01d24110598f1f63eaaa2bf30117b04cd94a09b5a3be1f8e72476208fab85e7"
   },
   "repositorySupplyChain": {
     "postinstall": {
@@ -29,13 +29,13 @@
       "low": 9
     },
     "directPackages": 212,
-    "duplicatePackageNames": 237,
+    "duplicatePackageNames": 238,
     "installScriptPackages": 4,
     "nativeBindingPackages": 7,
     "networkInstallIndicatorPackages": 0,
     "packageScriptNetworkIndicatorPackages": 42,
     "codeGenerationIndicatorPackages": 663,
-    "resolvedPackages": 2034,
+    "resolvedPackages": 2035,
     "unpinnedActionUses": 28
   },
   "packages": [
@@ -13818,6 +13818,22 @@
       },
       "usageEvidence": [
         {
+          "path": "app/soapbox/features/f7-shell/__tests__/orientation-scroll.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-recovery.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-transition.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/session-lifecycle.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/features/pwa-install/components/__tests__/pwa-install-banner.test.tsx",
           "context": "test"
         },
@@ -15670,6 +15686,10 @@
           "context": "build"
         },
         {
+          "path": "package.json#scripts.test:compression-authority",
+          "context": "build"
+        },
+        {
           "path": "package.json#scripts.test:html-safety",
           "context": "build"
         },
@@ -16341,6 +16361,10 @@
           "context": "build"
         },
         {
+          "path": "package.json#scripts.check:compression-authority",
+          "context": "build"
+        },
+        {
           "path": "package.json#scripts.check:dependencies",
           "context": "build"
         },
@@ -16446,6 +16470,10 @@
         },
         {
           "path": "package.json#scripts.test:ci-baseline",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:compression-authority",
           "context": "build"
         },
         {
@@ -37078,6 +37106,10 @@
       },
       "usageEvidence": [
         {
+          "path": "app/soapbox/db/__tests__/compressed-cache.test.ts",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/db/__tests__/repository.test.ts",
           "context": "test"
         },
@@ -45650,7 +45682,7 @@
       "classification": "runtime",
       "declaredSection": "dependencies",
       "descriptors": [
-        "framework7-react@npm:8.3.4"
+        "framework7-react@npm:9.1.2"
       ],
       "direct": true,
       "executionContexts": [
@@ -45664,7 +45696,7 @@
         ],
         "status": "declared"
       },
-      "locator": "framework7-react@npm:8.3.4",
+      "locator": "framework7-react@npm:9.1.2",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "framework7-react",
       "owner": "frontend-runtime-maintainers",
@@ -45707,13 +45739,13 @@
           "context": "browser"
         }
       ],
-      "version": "8.3.4"
+      "version": "9.1.2"
     },
     {
       "classification": "unused-or-dynamically-referenced-unverified",
       "declaredSection": "dependencies",
       "descriptors": [
-        "framework7@npm:8.3.4"
+        "framework7@npm:9.1.2"
       ],
       "direct": true,
       "executionContexts": [],
@@ -45725,7 +45757,7 @@
         ],
         "status": "declared"
       },
-      "locator": "framework7@npm:8.3.4",
+      "locator": "framework7@npm:9.1.2",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "framework7",
       "owner": "dependency-governance-maintainers",
@@ -45751,7 +45783,7 @@
         "scripts": {}
       },
       "usageEvidence": [],
-      "version": "8.3.4"
+      "version": "9.1.2"
     },
     {
       "classification": "build-transitive",
@@ -49738,7 +49770,8 @@
       ],
       "direct": true,
       "executionContexts": [
-        "browser"
+        "browser",
+        "test"
       ],
       "license": {
         "evidence": "Installed package.json metadata.",
@@ -49786,6 +49819,18 @@
         {
           "path": "app/soapbox/components/modal_root.js",
           "context": "browser"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-recovery.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-transition.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/session-lifecycle.test.tsx",
+          "context": "test"
         },
         {
           "path": "app/soapbox/utils/redirect.ts",
@@ -59672,6 +59717,10 @@
         },
         {
           "path": "package.json#scripts.test",
+          "context": "build"
+        },
+        {
+          "path": "package.json#scripts.test:compression-authority",
           "context": "build"
         },
         {
@@ -73700,7 +73749,7 @@
       "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
-        "path-to-regexp@npm:^6.2.0"
+        "path-to-regexp@npm:^6.3.0"
       ],
       "direct": false,
       "executionContexts": [],
@@ -82204,11 +82253,27 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-recovery.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-transition.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/session-lifecycle.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/features/f7-shell/components/bottom-tabs.tsx",
           "context": "browser"
         },
         {
           "path": "app/soapbox/features/f7-shell/components/route-error-boundary.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
           "context": "browser"
         },
         {
@@ -84188,6 +84253,22 @@
           "context": "browser"
         },
         {
+          "path": "app/soapbox/features/f7-shell/__tests__/orientation-scroll.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-recovery.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/route-transition.test.tsx",
+          "context": "test"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/__tests__/session-lifecycle.test.tsx",
+          "context": "test"
+        },
+        {
           "path": "app/soapbox/features/f7-shell/components/bottom-tabs.tsx",
           "context": "browser"
         },
@@ -84201,6 +84282,10 @@
         },
         {
           "path": "app/soapbox/features/f7-shell/components/route-error-boundary.tsx",
+          "context": "browser"
+        },
+        {
+          "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
           "context": "browser"
         },
         {
@@ -93027,8 +93112,7 @@
       "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
-        "ssr-window@npm:^4.0.0",
-        "ssr-window@npm:^4.0.2"
+        "ssr-window@npm:^4.0.0"
       ],
       "direct": false,
       "executionContexts": [],
@@ -93067,6 +93151,50 @@
       },
       "usageEvidence": [],
       "version": "4.0.2"
+    },
+    {
+      "classification": "unverified-transitive",
+      "declaredSection": null,
+      "descriptors": [
+        "ssr-window@npm:^5.0.1"
+      ],
+      "direct": false,
+      "executionContexts": [],
+      "license": {
+        "evidence": "Installed package.json metadata.",
+        "expression": "MIT",
+        "obligations": [
+          "retain-applicable-copyright-license-and-notice-text"
+        ],
+        "status": "declared"
+      },
+      "locator": "ssr-window@npm:5.0.1",
+      "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
+      "name": "ssr-window",
+      "owner": "dependency-governance-maintainers",
+      "upstream": {
+        "author": "Vladimir Kharlampidi",
+        "repository": "git+https://github.com/nolimits4web/ssr-window.git"
+      },
+      "purpose": "Transitive dependency required by: framework7.",
+      "replacementRelevance": "none-recorded",
+      "rootDependencies": [
+        "framework7"
+      ],
+      "installBehavior": {
+        "hasInstallScript": false,
+        "hasInstallTimeNetworkIndicator": false,
+        "hasPackageScriptNetworkIndicator": false,
+        "hasCodeGenerationIndicator": false,
+        "hasNativeBinding": false,
+        "platformConstraints": {
+          "cpu": [],
+          "os": []
+        },
+        "scripts": {}
+      },
+      "usageEvidence": [],
+      "version": "5.0.1"
     },
     {
       "classification": "runtime-transitive",
@@ -95647,7 +95775,7 @@
       "classification": "unverified-transitive",
       "declaredSection": null,
       "descriptors": [
-        "swiper@npm:^10.2.0"
+        "swiper@npm:^12.1.2"
       ],
       "direct": false,
       "executionContexts": [],
@@ -95659,7 +95787,7 @@
         ],
         "status": "declared"
       },
-      "locator": "swiper@npm:10.3.1",
+      "locator": "swiper@npm:12.2.0",
       "maintenanceStatus": "not-declared-deprecated-in-audit-snapshot",
       "name": "swiper",
       "owner": "dependency-governance-maintainers",
@@ -95685,7 +95813,7 @@
         "scripts": {}
       },
       "usageEvidence": [],
-      "version": "10.3.1"
+      "version": "12.2.0"
     },
     {
       "classification": "unverified-transitive",
@@ -108794,6 +108922,20 @@
     },
     {
       "locators": [
+        "ssr-window@npm:4.0.2",
+        "ssr-window@npm:5.0.1"
+      ],
+      "name": "ssr-window",
+      "rootDependencies": [
+        "framework7"
+      ],
+      "versions": [
+        "4.0.2",
+        "5.0.1"
+      ]
+    },
+    {
+      "locators": [
         "statuses@npm:1.5.0",
         "statuses@npm:2.0.2"
       ],
@@ -111213,7 +111355,7 @@
       "key": "fast-uri|1124064|high|3.1.0|ajv@npm:8.18.0|>=3.0.0 <=3.1.3|https://github.com/advisories/GHSA-v2hh-gcrm-f6hx"
     },
     {
-      "advisoryId": "1124231",
+      "advisoryId": "1130178",
       "dependents": [
         "ajv@npm:8.18.0"
       ],
@@ -111248,7 +111390,7 @@
         "status": "remediation-required",
         "transitiveDoesNotImplySafe": true
       },
-      "key": "fast-uri|1124231|high|3.1.0|ajv@npm:8.18.0|>=3.0.0 <3.1.3|https://github.com/advisories/GHSA-4c8g-83qw-93j6"
+      "key": "fast-uri|1130178|high|3.1.0|ajv@npm:8.18.0|>=3.0.0 <3.1.3|https://github.com/advisories/GHSA-4c8g-83qw-93j6"
     },
     {
       "advisoryId": "1118965",
@@ -113686,7 +113828,7 @@
     },
     {
       "action": "actions/checkout",
-      "line": 71,
+      "line": 87,
       "local": false,
       "path": ".github/workflows/pwa-installability.yml",
       "pinnedToCommit": true,
@@ -113694,7 +113836,7 @@
     },
     {
       "action": "actions/setup-node",
-      "line": 74,
+      "line": 90,
       "local": false,
       "path": ".github/workflows/pwa-installability.yml",
       "pinnedToCommit": true,
@@ -114228,7 +114370,7 @@
       "status": "queued"
     },
     {
-      "currentLocator": "framework7@npm:8.3.4",
+      "currentLocator": "framework7@npm:9.1.2",
       "owner": "dependency-governance-maintainers",
       "reason": [
         "usage-or-security-review"

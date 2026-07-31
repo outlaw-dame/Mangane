@@ -2,7 +2,7 @@
 
 Status: **Complete**
 
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 ## Current manifest/service-worker audit
 
@@ -23,7 +23,7 @@ Instance operators may override `name`, `short_name`, `theme_color`, and
 
 ### Service Worker
 
-The application uses `@lcdp/offline-plugin` (v5.1.0) configured in
+The application uses the lockfile-pinned `@lcdp/offline-plugin` 5.1.7 configured in
 `webpack/production.js`. The generated service worker:
 
 - Caches all webpack-emitted assets in a `main` cache (`:rest:` pattern)
@@ -88,6 +88,9 @@ No cross-account leakage is possible because:
    revokes the token and closes associated notifications
 4. The F7 shell's `clearRouteState()` (Phase 3D) clears sessionStorage
    navigation state on account switch
+
+Route persistence is pathname-only. Confirmation tokens, query strings, and
+fragments are never written to sessionStorage.
 
 ## Offline shell and route handling
 
@@ -239,7 +242,7 @@ following gaps are addressed through the compatibility layer
 | Rubber-band overscroll in standalone | `overscroll-behavior: none` on body | Implemented |
 | No status bar theming | `apple-mobile-web-app-status-bar-style: black-translucent` meta | Implemented |
 | No splash screen configuration | `apple-mobile-web-app-title` + `apple-touch-icon` meta | Implemented |
-| No `theme-color` support (pre-15) | Meta tag present for browsers that support it | Implemented |
+| No `theme-color` support (pre-15) | Runtime Helmet branding owns the single theme-color value | Implemented |
 
 ### Platform capability detection
 
@@ -248,6 +251,19 @@ what the current browser supports:
 
 - Push notifications, Background Sync, Badge API, Share API
 - Persistent storage, Service Worker availability
+
+Declarative Web Share Target support is intentionally not reported as a
+JavaScript browser capability: service-worker presence does not prove that the
+installed manifest registered a share target. Installability and the inbound
+worker route are verified by the Phase 4B manifest/browser gates instead.
+
+## Phase 4A compression boundary
+
+Phase 4A is separately complete. Deployment gzip, optional capability-gated
+zstd, and account-scoped local compression are governed by
+[`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md).
+The service worker continues to cache browser-decoded representations and never
+caches account-private API responses by wire coding.
 - Installed PWA status, platform identifier (ios/android/desktop)
 
 Components use the `usePlatformCapabilities()` hook to conditionally render

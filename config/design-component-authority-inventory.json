@@ -2517,7 +2517,8 @@
       "owner": "feature:f7-shell",
       "scope": "feature",
       "classifications": [
-        "feature-specific"
+        "feature-specific",
+        "accessibility-critical"
       ]
     },
     {
@@ -2549,6 +2550,15 @@
       "classifications": [
         "feature-specific",
         "accessibility-critical"
+      ]
+    },
+    {
+      "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
+      "kind": "component",
+      "owner": "feature:f7-shell",
+      "scope": "feature",
+      "classifications": [
+        "feature-specific"
       ]
     },
     {
@@ -2601,7 +2611,7 @@
     },
     {
       "path": "app/soapbox/features/f7-shell/hooks/use-session-restore.ts",
-      "kind": "supporting-ui-module",
+      "kind": "component",
       "owner": "feature:f7-shell",
       "scope": "feature",
       "classifications": [
@@ -2628,6 +2638,15 @@
     },
     {
       "path": "app/soapbox/features/f7-shell/route-manifest.ts",
+      "kind": "supporting-ui-module",
+      "owner": "feature:f7-shell",
+      "scope": "feature",
+      "classifications": [
+        "feature-specific"
+      ]
+    },
+    {
+      "path": "app/soapbox/features/f7-shell/route-path.ts",
       "kind": "supporting-ui-module",
       "owner": "feature:f7-shell",
       "scope": "feature",
@@ -17706,9 +17725,37 @@
       "classification": "compatibility-critical"
     },
     {
+      "id": "label:app/soapbox/features/f7-shell/components/bottom-tabs.tsx:65",
+      "kind": "label",
+      "path": "app/soapbox/features/f7-shell/components/bottom-tabs.tsx",
+      "line": 65,
+      "classification": "accessibility-critical"
+    },
+    {
       "id": "live-region:app/soapbox/features/f7-shell/components/offline-banner.tsx:21",
       "kind": "live-region",
       "path": "app/soapbox/features/f7-shell/components/offline-banner.tsx",
+      "line": 21,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "motion:app/soapbox/features/f7-shell/components/route-transition.tsx:10",
+      "kind": "motion",
+      "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
+      "line": 10,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "motion:app/soapbox/features/f7-shell/components/route-transition.tsx:19",
+      "kind": "motion",
+      "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
+      "line": 19,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "motion:app/soapbox/features/f7-shell/components/route-transition.tsx:21",
+      "kind": "motion",
+      "path": "app/soapbox/features/f7-shell/components/route-transition.tsx",
       "line": 21,
       "classification": "accessibility-critical"
     },
@@ -17720,10 +17767,24 @@
       "classification": "accessibility-critical"
     },
     {
-      "id": "motion:app/soapbox/features/f7-shell/index.tsx:71",
+      "id": "focus:app/soapbox/features/f7-shell/hooks/use-viewport.ts:80",
+      "kind": "focus",
+      "path": "app/soapbox/features/f7-shell/hooks/use-viewport.ts",
+      "line": 80,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "motion:app/soapbox/features/f7-shell/index.tsx:25",
       "kind": "motion",
       "path": "app/soapbox/features/f7-shell/index.tsx",
-      "line": 71,
+      "line": 25,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "motion:app/soapbox/features/f7-shell/index.tsx:85",
+      "kind": "motion",
+      "path": "app/soapbox/features/f7-shell/index.tsx",
+      "line": 85,
       "classification": "accessibility-critical"
     },
     {
@@ -26343,16 +26404,16 @@
     "screenshotPlan": "docs/architecture/SCREENSHOT_AND_INTERACTION_BASELINE_PLAN.md"
   },
   "counts": {
-    "components": 489,
+    "components": 491,
     "styles": 76,
     "icons": 392,
     "behaviors": {
       "localization": 1987,
-      "focus": 140,
+      "focus": 141,
       "inline-style": 75,
       "keyboard": 90,
-      "label": 91,
-      "motion": 70,
+      "label": 92,
+      "motion": 74,
       "gesture": 37,
       "rtl": 13,
       "live-region": 3
@@ -26398,7 +26459,7 @@
       "feature:emoji": 8,
       "feature:export_data": 2,
       "feature:external_login": 2,
-      "feature:f7-shell": 14,
+      "feature:f7-shell": 16,
       "feature:favourited_statuses": 1,
       "feature:federation_restrictions": 3,
       "feature:feed-filtering": 1,

@@ -51,15 +51,15 @@ export default defineConfig({
         colorScheme: 'dark',
       },
     },
-    // Desktop — Firefox (run only in CI on Linux where Firefox/Playwright is stable)
-    // Uncomment for CI: {
-    //   name: 'desktop-firefox-light',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //     viewport: { width: 1440, height: 900 },
-    //     colorScheme: 'light',
-    //   },
-    // },
+    // Desktop — Firefox
+    {
+      name: 'desktop-firefox-light',
+      use: {
+        ...devices['Desktop Firefox'],
+        viewport: { width: 1440, height: 900 },
+        colorScheme: 'light',
+      },
+    },
     // Desktop — WebKit
     {
       name: 'desktop-webkit-light',

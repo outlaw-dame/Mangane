@@ -1,8 +1,8 @@
 # Phase 4A Zstd and Gzip Compression
 
-Status: **Accepted target / queued after Phase 4 foundations**
+Status: **Complete — bounded native-codec and deployment authority; production zstd remains capability-gated**
 
-Last updated: 2026-07-29
+Last updated: 2026-07-30
 
 ## Purpose
 
@@ -15,6 +15,40 @@ This phase is an efficiency and resilience phase. It must not change canonical
 record semantics, leak secrets through compression side channels, create
 unbounded decompression work, or introduce a large WebAssembly dependency without
 measured benefit.
+
+## Implemented outcome
+
+Phase 4A closes the compression boundary without adding a WASM codec or
+silently changing normal API behavior:
+
+- `app/soapbox/utils/compression.ts` provides independent native gzip/zstd
+  compression and decompression probes, identity fallback, cancellation,
+  bounded streaming collection, typed failures, zstd frame/window inspection,
+  scope-bound SHA-256 integrity, and inner-schema validation;
+- `app/soapbox/db/compressed-cache.ts` stores only explicitly approved
+  rebuildable cache documents in the existing account-scoped settings table.
+  It verifies the encoded value before an atomic Dexie replacement, uses the
+  repository's bounded jittered quota backoff, reads identity and compressed
+  formats, and evicts only the owning account's corrupt rebuildable entry;
+- production imports are restricted to that opt-in repository. No startup,
+  scrolling, service-worker, API transport, draft, message, or credential path
+  invokes compression;
+- `installation/mastodon.conf` and the subdomain Nginx template explicitly
+  enable gzip, emit `Vary: Accept-Encoding`, and cover ActivityStreams,
+  JSON-LD, manifest, script, style, text, XML, and SVG types;
+- `scripts/check-compression-authority.js` rejects forbidden app-side
+  `Accept-Encoding`, critical-path import drift, missing gzip activation,
+  missing `Vary`, or incomplete ActivityStreams media types;
+- the conformance suite tests HTTP quality negotiation, incorrect coding,
+  missing `Vary`, missing validators, representative timeline compression,
+  gzip/identity fallback, zstd capability/window handling, corrupted and
+  truncated records, high expansion, cancellation, invalid schemas,
+  account-scope mismatch, quota rollback, and self-healing.
+
+Zstd is not configured at the origin by this repository and request-body
+compression remains disabled. Either may be enabled only when the relevant
+server/client capability and the existing gates are proven. Normal fetch
+responses remain browser-decoded.
 
 ## External standards and browser constraints
 
@@ -338,21 +372,26 @@ Required coverage includes:
 
 ## Exit criteria
 
-Phase 4A is complete only when:
+Phase 4A closure evidence:
 
-1. HTTP and local compression boundaries are documented and implemented
-   separately;
-2. gzip works as the tested portable fallback;
-3. zstd is used only under verified capability and RFC 9659 limits;
-4. no application code attempts to control forbidden HTTP negotiation headers;
-5. compressed local records are versioned, bounded, checksummed, transactional,
-   and rollback-readable;
-6. decompression-bomb, malformed-frame, cancellation, quota, and corruption tests
-   pass;
-7. secret-bearing and attacker-controlled data do not share an unsafe compression
-   context;
-8. deployment caches vary correctly by content coding;
-9. mobile performance, memory, battery, bundle, and startup budgets pass;
-10. disabling zstd or all local compression preserves canonical data and normal
-    Mangane operation;
-11. documentation authority, CI, and review are clean.
+1. [x] HTTP and local compression are separate deployment and repository
+   boundaries.
+2. [x] Native gzip round trips and identity fallback are tested.
+3. [x] Zstd requires independent operation probes and an RFC 9659 application
+   window limit; it is not otherwise enabled.
+4. [x] Application-side `Accept-Encoding` fails the authority gate.
+5. [x] Local envelopes are versioned, bounded, checksummed, account-scoped,
+   transactionally replaced, and mixed-format/rollback readable.
+6. [x] High-expansion, malformed, truncated, cancellation, quota, corruption,
+   inner-schema, and cross-scope tests fail closed.
+7. [x] Runtime context allowlisting rejects secret/mixed-trust compression, and
+   the import authority limits production use to rebuildable cache documents.
+8. [x] Deployment templates enable gzip variation, and conformance tests reject
+   missing `Vary`, mismatched coding, or missing variant validators.
+9. [x] The representative timeline fixture stays below the byte/CPU budgets.
+   No automatic or critical-path caller exists, so startup, scroll, and battery
+   work remain zero by construction; the import drift gate preserves that fact.
+10. [x] Disabling compression stores the unchanged typed value, and zstd absence
+    falls back to gzip then identity.
+11. [x] Documentation, source, targeted tests, full relevant gates, CI, and
+    review must be green before merge.

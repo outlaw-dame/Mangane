@@ -1,8 +1,8 @@
 # Mangane Verified Current State
 
-Status: **Canonical verified current state / Phases 0–4 complete / Phase 5 in progress**
+Status: **Canonical verified current state / Phases 0–5 complete**
 
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 This document records verified repository behavior and known unknowns before modernization begins. It is intentionally distinct from accepted-target architecture. A claim belongs here only when supported by the current repository or a reproducible inspection.
 
@@ -108,33 +108,38 @@ The implementation and slice evidence are recorded in
 
 ## 9. Phase 4 completion state
 
-Phase 4 is complete. The installable PWA has a documented asset update and
+Phase 4, Phase 4A, and Phase 4B are complete. The installable PWA has a documented asset update and
 rollback path, static-only CacheStorage policy, cache purge coverage, offline
 shell behavior, and Safari/WebKit capability handling. Private API responses
 are not cached in CacheStorage.
 
+The bounded compression authority keeps HTTP negotiation in the deployment
+layer, provides gzip with identity fallback, gates zstd by operation capability
+and frame-window limits, and permits only account-scoped, checksummed,
+transactional rebuildable-cache envelopes. No automatic startup or private-data
+compression is enabled.
+
 The implementation and exit evidence are recorded in
-[`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md).
+[`PHASE_4_PWA_OFFLINE_HARDENING.md`](./PHASE_4_PWA_OFFLINE_HARDENING.md),
+[`PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md`](./PHASE_4A_ZSTD_AND_GZIP_COMPRESSION.md),
+and [`PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md`](./PHASE_4B_PWA_INSTALLABILITY_CLOSURE.md).
 
 ## 10. Phase 5 implementation state
 
-Phase 5 is in progress. Merged slices A–D provide:
+Phase 5 is complete. Its merged slices provide:
 
 - an account-scoped Dexie store and repository API;
 - versioned migrations and corruption quarantine/healing;
 - quota monitoring, TTL retention, and bounded eviction;
 - a feature-flagged bridge that persists API-normalized accounts, statuses, and
-  notifications and can hydrate cached statuses and notifications.
+  notifications and can hydrate cached statuses and notifications;
+- account-scoped timeline membership, cursors, gaps, bounded hydration, and
+  position anchors with server-marker degradation.
 
-The current schema does not yet store feed membership/order, source provenance,
-gaps, or feed-owned cursors. The bridge does not yet hydrate conversations.
-The stored editorial projection is also insufficient for Phase 8 parity, and
-presentation code must not parse `raw` to compensate.
-
-Accordingly, Phase 5's representative timeline and conversation hydration exit
-criterion is not complete. The required gap contract is recorded in
-[`IMPLEMENTATION_ROADMAP_V2.md`](./IMPLEMENTATION_ROADMAP_V2.md) and
-[`PHASE_8_HOME_AND_BUILT_IN_FEEDS.md`](./PHASE_8_HOME_AND_BUILT_IN_FEEDS.md).
+Phase 8 still owns editorial Home/For You projection and source provenance.
+Presentation code must not parse `raw` to bypass that later boundary. Position
+continuity evidence is recorded in
+[`PHASE_5E_TIMELINE_POSITION_CONTINUITY.md`](./PHASE_5E_TIMELINE_POSITION_CONTINUITY.md).
 
 ## 11. Feed roadmap state
 
