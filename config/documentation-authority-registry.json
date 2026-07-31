@@ -322,7 +322,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical verified current state / Phases 0–5 complete",
-      "contentSha256": "d81351a65d3197d4e5044eeaed25ff189df702411532c18e9530a296f220f22a"
+      "contentSha256": "f90abab275c790b1a08393492c6f7285b96da5319f707b0510a2cf6920b04109"
     },
     {
       "path": "docs/architecture/DATA_PRIVACY_AND_RESILIENCE.md",
@@ -342,7 +342,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Current Phase 0A evidence",
-      "contentSha256": "93ec5e0cab886ffa51bea75f9582e90002c998d1dc57eca27cd13ce9ee00491c"
+      "contentSha256": "beabe1720d89f74193ab3d8b95ecc79bef04a9b78c7c64ab0f3c9888d79a6b76"
     },
     {
       "path": "docs/architecture/DEPENDENCY_REPLACEMENT_QUEUE.md",
@@ -472,7 +472,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Semantic authority complete / surface migration active",
-      "contentSha256": "efd42faa98c4139c4b37076a9fe3bd22f146ffd55d82de8530359ed34bc91ccd"
+      "contentSha256": "22e774ec8882b061f5fec987c99bf3dd453aa2585a15d4fbc0e9764decfb5670"
     },
     {
       "path": "docs/architecture/IMPLEMENTATION_ROADMAP_V2.md",
@@ -592,7 +592,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 1,
       "statusHeader": "Complete",
-      "contentSha256": "83a0e7eb3830415d53c624d5d92d60b1ffadfcee25ec353208078933b0b3eb72"
+      "contentSha256": "74c00f03aecfded880c62fae2781fc71e52f4e86a486d9f11c197c79c551e181"
     },
     {
       "path": "docs/architecture/PHASE_3_FRAMEWORK7_SHELL.md",

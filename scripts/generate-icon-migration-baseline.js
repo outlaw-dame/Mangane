@@ -13,7 +13,7 @@ const root = path.resolve(process.env.ICON_MIGRATION_ROOT || path.resolve(__dirn
 const imports = buildIconImportSnapshot(root);
 const baseline = {
   schemaVersion: 1,
-  status: 'phase-2b-in-progress',
+  status: 'phase-2b-complete',
   policy: 'legacy-imports-may-only-shrink-through-reviewed-baseline-updates',
   canonicalRegistry: canonicalRegistryPath,
   providers: summarizeProviders(imports),

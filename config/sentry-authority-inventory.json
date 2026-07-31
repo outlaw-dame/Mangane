@@ -910,10 +910,18 @@
       "classification": "test-only"
     },
     {
-      "id": "environment-read:scripts/__tests__/icon-migration-foundation.test.js:44",
+      "id": "environment-read:scripts/__tests__/icon-migration-foundation.test.js:46",
       "kind": "environment-read",
       "path": "scripts/__tests__/icon-migration-foundation.test.js",
-      "line": 44,
+      "line": 46,
+      "expression": "env: { ...process.env, ICON_MIGRATION_ROOT: root, ...env },",
+      "classification": "test-only"
+    },
+    {
+      "id": "environment-read:scripts/__tests__/icon-migration-foundation.test.js:52",
+      "kind": "environment-read",
+      "path": "scripts/__tests__/icon-migration-foundation.test.js",
+      "line": 52,
       "expression": "env: { ...process.env, ICON_MIGRATION_ROOT: root },",
       "classification": "test-only"
     },
@@ -1086,11 +1094,19 @@
       "classification": "repository-tooling"
     },
     {
-      "id": "environment-read:scripts/check-icon-migration.js:13",
+      "id": "environment-read:scripts/check-icon-migration.js:15",
       "kind": "environment-read",
       "path": "scripts/check-icon-migration.js",
-      "line": 13,
+      "line": 15,
       "expression": "const root = path.resolve(process.env.ICON_MIGRATION_ROOT || path.resolve(__dirname, '..'));",
+      "classification": "repository-tooling"
+    },
+    {
+      "id": "environment-read:scripts/check-icon-migration.js:22",
+      "kind": "environment-read",
+      "path": "scripts/check-icon-migration.js",
+      "line": 22,
+      "expression": "const trustedRef = process.env.ICON_MIGRATION_BASE_REF;",
       "classification": "repository-tooling"
     },
     {
@@ -1410,7 +1426,7 @@
     "artifact-upload": 3,
     "console": 74,
     "notification-payload": 13,
-    "environment-read": 74,
+    "environment-read": 76,
     "clipboard": 3,
     "error-boundary": 2,
     "devtools": 1,

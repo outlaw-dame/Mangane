@@ -6,7 +6,11 @@ The exhaustive production callsite matrix is
 `config/design-component-authority-inventory.json` under `icons`. Each record
 includes source path, line, provider, symbol, and disposition.
 `config/icon-migration-baseline.json` separately records every raw import,
-including tests and styles, so new raw provider imports fail closed.
+including tests and styles, so new raw provider imports fail closed. CI checks
+both source-to-working-baseline equality and working-to-trusted-base shrinkage;
+regenerating a proposed baseline therefore cannot conceal import growth.
+Static single-quoted, double-quoted, and no-substitution template requests are
+covered. Dynamic template requests are never treated as statically approved.
 
 Phase 2B completed the icon authority, adapter, safety contract, and shrinking
 baseline. It did not claim repository-wide provider replacement. Actual icon
@@ -56,3 +60,5 @@ a bounded non-executable local icon, never markup, a URL, or a remote script.
 A migration PR must keep the previous path revertible, update the generated
 inventories, test decorative and meaningful semantics, test selected state where
 applicable, and avoid mixing unrelated surfaces merely to reduce a global count.
+The trusted comparison revision must be an exact commit SHA available in the
+complete CI checkout; ambiguous revisions and unavailable evidence fail closed.

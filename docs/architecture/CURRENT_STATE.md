@@ -89,7 +89,9 @@ The repository TypeScript authority baseline is now zero diagnostics. A presenta
 Phase 2 is complete. It established the canonical semantic token source,
 Phosphor semantic registry, foundational controls, focus and reduced-motion
 contracts, executable component/icon drift gates, accessibility harness, and
-cross-engine visual baseline. Broad feature-surface migration remains later
+cross-engine visual baseline. The icon gate compares proposed baseline changes
+to the exact trusted base commit and recognizes every static JavaScript string
+form, preventing regeneration from concealing raw-provider growth. Broad feature-surface migration remains later
 roadmap work and does not reopen the completed foundation phase.
 
 Completion evidence, migration, rollback, risks, security properties, and the
