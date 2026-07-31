@@ -115,7 +115,8 @@ const normalizePixelfedKit = (raw: any): DiscoveryPack => ({
   topic: asString(raw?.topic ?? raw?.tag) || null,
   itemCount: asNumber(raw?.item_count ?? raw?.accounts?.length),
   accounts: Array.isArray(raw?.accounts) ? raw.accounts.slice(0, MAX_ACCOUNTS).map((account: any) => normalizeAccount(account)) : [],
-  canApplyAll: Boolean(raw?.apply_url),
+  // Pixelfed deployments do not yet expose one verified, stable apply contract.
+  canApplyAll: false,
   isOwner: Boolean(raw?.is_owner),
 });
 
