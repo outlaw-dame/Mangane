@@ -91,6 +91,8 @@ interface ProfileWallPlacement {
   intent: 'post-to-profile' | 'owner-approved' | 'owner-pinned' | 'native-wall';
   source: 'mangane' | 'protocol';
   federationState: 'ordinary-status' | 'native-wall' | 'unknown';
+  visibility: 'author-private' | 'recipient-visible' | 'public-native';
+  recipientEvidence: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -110,6 +112,14 @@ Required invariants:
 - federated post deletion or loss of access invalidates the projection;
 - local records cannot imply that another server accepted or published a wall relationship.
 
+### Recipient-visible placement authority
+
+A placement created only in the author's account-scoped repository is **author-private**. It can organize the author's own view, but it cannot drive the recipient's wall, wall policy, wall-specific notification, or a visitor's view. An ordinary federated mention is not evidence of recipient-visible placement.
+
+A placement becomes `recipient-visible` only through verified protocol-native wall metadata, or through an authenticated target-controlled synchronization channel carrying a signed, target-addressed claim bound to the canonical status. Such a claim is metadata only: it grants no status access, cannot override canonical visibility or moderation, must be replay-protected and revocable, and must be accepted in the recipient's canonical account scope.
+
+Until such a channel is implemented and verified, another-profile composition on Mastodon-compatible platforms is **mention-only** for the recipient and visitors. Mangane may retain an explicitly labelled author-private record, **Saved to your Mangane view**, but must not describe it as appearing on the target's wall.
+
 ### Composing to a profile
 
 On a profile, Mangane may expose **Post to profile** alongside ordinary mention and reply actions.
@@ -117,7 +127,7 @@ On a profile, Mangane may expose **Post to profile** alongside ordinary mention 
 The composer must show exactly what will happen:
 
 - **Native wall supported:** the adapter may use a verified platform-native wall destination while still returning a canonical post identity.
-- **Mangane wall placement:** Mangane publishes an ordinary compatible status and records the intended wall placement locally.
+- **Mangane wall placement:** recipient-visible only through verified target-addressed authority. Without it, Mangane publishes an ordinary mention and may keep only an explicitly labelled author-private record.
 - **Mention-only fallback:** when the target cannot participate in Mangane wall presentation, the composer publishes an ordinary mention and labels it as such. It must not claim the post will appear on the recipient's wall.
 
 For Mastodon-compatible publication, the default compatible strategy is an ordinary status mentioning the target account. Reply semantics are used only when the author actually chose to reply to a canonical post. Mangane must not create a fake reply solely to force placement.
@@ -131,7 +141,7 @@ Before publication, the composer resolves:
 - block/mute/domain restrictions;
 - target capability evidence;
 - whether the target is the author's own profile;
-- whether the action can create a local placement after confirmed publication.
+- whether confirmed publication creates only an author-private record or a verified recipient-visible placement.
 
 The placement record is written only after the canonical post has a confirmed identity. Ambiguous publication outcomes are reconciled through Phase 6 before creating or retrying placement.
 
@@ -159,7 +169,7 @@ A visitor may post to the profile only when:
 - the resulting status visibility can be represented honestly; and
 - the UI clearly distinguishes native, Mangane-only, and mention-only outcomes.
 
-Mangane-only wall placements cannot be treated as globally public metadata. Another client may show only the underlying ordinary status.
+Author-private placements cannot affect the target or visitors. Recipient-visible placements require verified target-addressed evidence, and neither form is globally public metadata. Other clients may show only the underlying ordinary status.
 
 ### Wall policy
 

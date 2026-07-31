@@ -497,3 +497,10 @@ Migration/rollback:
 
 Supersedes / superseded by:
 ```
+
+## ADR — Profile walls are verified projections, not implied recipient state
+
+**Status:** Accepted
+
+A placement held only in the author's account scope is author-private and cannot affect the recipient, visitors, wall policy, or notifications. Recipient-visible placement requires protocol-native evidence or authenticated, signed, target-addressed synchronization accepted in the recipient's scope. Without that authority, another-profile composition degrades to an ordinary mention. Adaptive thread ordering never rewrites canonical timeline or conversation graph order.
+
