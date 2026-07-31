@@ -212,7 +212,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical ADR index",
-      "contentSha256": "4b6b53748576f1bcfb5d28a68e757d8006e725f7df86da28f54b226aed1640f6"
+      "contentSha256": "6bb8cf019f12c04ed6f4da9f9140814fe302f86acdffe5265d95215d0fe12153"
     },
     {
       "path": "docs/architecture/AUTH_PERSISTENCE_INVENTORY.md",
@@ -482,7 +482,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 0,
       "statusHeader": "Canonical implementation sequence",
-      "contentSha256": "3f0c39f243bdf29785844157eb35caf59c3858e58cfcbf79be893aa05c8e9aa7"
+      "contentSha256": "494832937470de09d5b1f78c87689acacd71ecb9013d3a5ec913e93e8f327d63"
     },
     {
       "path": "docs/architecture/KEYBOARD_AND_GESTURE_INVENTORY.md",
@@ -655,6 +655,26 @@
       "contentSha256": "3c62a953b23f70636075d94168caa3ade7157bba5fae35afcbdb89b4dd6aa5dd"
     },
     {
+      "path": "docs/architecture/PHASE_7A_FEATURED_HASHTAGS_AND_PROFILE_TOPICS.md",
+      "title": "Phase 7A — Featured Hashtags and Profile Topics",
+      "authorityId": "phase-7a-featured-hashtags-and-profile-topics",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": "Compatibility implementation in progress",
+      "contentSha256": "240778c485d98f7d404cbef43d57f4f6e6bcebeaa8f1257b7cb9f35b2373fcc4"
+    },
+    {
+      "path": "docs/architecture/PHASE_7B_COLLECTIONS_STARTER_KITS_AND_EMBEDS.md",
+      "title": "Phase 7B — Collections, Starter Kits, and Safe Rich Embeds",
+      "authorityId": "phase-7b-collections-starter-kits-and-safe-rich-embeds",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": "Implementation in progress",
+      "contentSha256": "2d639f7a4c0120007beed28c3771f2009e147d1384a4276f133722a34dd4f071"
+    },
+    {
       "path": "docs/architecture/PHASE_8A_ORIGIN_AUTHORITY_RECONCILIATION.md",
       "title": "Phase 8A Origin Authority Reconciliation",
       "authorityId": "phase-8a-origin-authority-reconciliation",
@@ -703,6 +723,16 @@
       "inheritedBrandingReferences": 1,
       "statusHeader": "Accepted target / blocked on Phase 5–7 exit criteria",
       "contentSha256": "5800ec1787ce7664c6f90640830f208c7996c90e029f8f6884acdf514f936d36"
+    },
+    {
+      "path": "docs/architecture/PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md",
+      "title": "Phase 9A — Profile Walls and Adaptive Thread Timelines",
+      "authorityId": "phase-9a-profile-walls-and-adaptive-thread-timelines",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": "Accepted target / queued",
+      "contentSha256": "dfc48515eebe3ac5e1053888fdc304fa2e05d45da1538f9d72e9a792adfabfc4"
     },
     {
       "path": "docs/architecture/PHASE_9_ORIGIN_AUTHORITATIVE_CONVERSATION_TREES.md",
@@ -772,7 +802,7 @@
       "replacement": null,
       "inheritedBrandingReferences": 1,
       "statusHeader": "Canonical architecture index / Phase 0 closed",
-      "contentSha256": "9b7c4b5b27484e0890c313a9a030e2036536e29dbd67561cc79cdffb03d318c9"
+      "contentSha256": "5e9e041f2fa8d3f8312bfada278ae4f4aa9ff8de2aeb40b43c139a65741eb4db"
     },
     {
       "path": "docs/architecture/REDUX_AUTHORITY_DRIFT_GATE.md",
