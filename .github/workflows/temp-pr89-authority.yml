@@ -27,6 +27,7 @@ jobs:
         run: |
           yarn generate:network-callsites
           yarn generate:html-safety
+          yarn generate:telemetry
           yarn generate:design-authority
           yarn generate:architecture-boundaries
           node scripts/generate-component-ownership-manifest.js
