@@ -10,27 +10,28 @@ permissions:
 
 jobs:
   sync:
-    if: ${{ !contains(github.event.head_commit.message, '[pr89-main-synced]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[pr89-main-synced]') && !contains(github.event.head_commit.message, '[pr89-conflicts-reported]') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
           ref: feat/collections-starter-kits-embeds
           fetch-depth: 0
-      - name: Merge current main
+      - name: Merge current main or report conflicts
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git fetch origin main
           if ! git merge --no-edit origin/main; then
-            echo 'Merge conflicts:'
-            git diff --name-only --diff-filter=U
-            exit 1
+            conflicts="$(git diff --name-only --diff-filter=U)"
+            git merge --abort
+            printf '%s\n' "$conflicts" > .github/pr89-merge-conflicts.txt
+            git add .github/pr89-merge-conflicts.txt
+            git commit -m "ci: report PR89 merge conflicts [pr89-conflicts-reported]"
+            git push origin HEAD:feat/collections-starter-kits-embeds
+            exit 0
           fi
-      - name: Remove temporary workflow and push
-        run: |
           rm .github/workflows/temp-pr89-sync-main.yml
           git add -A
-          git commit --amend --no-edit
           git commit --amend -m "Merge main into PR89 [pr89-main-synced]"
           git push origin HEAD:feat/collections-starter-kits-embeds
