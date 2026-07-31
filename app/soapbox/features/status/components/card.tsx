@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import Blurhash from 'soapbox/components/blurhash';
 import Icon from 'soapbox/components/icon';
+import SemanticIcon from 'soapbox/components/ui/icon/semantic-icon';
 import { HStack, Stack, Text } from 'soapbox/components/ui';
 import { normalizeAttachment } from 'soapbox/normalizers';
 import { resolveCreatorAttribution } from 'soapbox/utils/embed-creator';
@@ -113,7 +114,7 @@ const Card: React.FC<ICard> = ({
         className='inline-flex max-w-full items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50'
         aria-label={`Creator: ${creator.name}`}
       >
-        <Icon src={require('@tabler/icons/user-circle.svg')} className='h-4 w-4 shrink-0' />
+        <SemanticIcon name='profile' size={16} className='shrink-0' />
         <span className='truncate'>Creator · {creator.name}</span>
       </a>
     ) : (
@@ -122,7 +123,7 @@ const Card: React.FC<ICard> = ({
         aria-label={`Creator metadata: ${creator.name}`}
         title='Creator name supplied by the embed provider; no trusted creator link was available.'
       >
-        <Icon src={require('@tabler/icons/user-circle.svg')} className='h-4 w-4 shrink-0' />
+        <SemanticIcon name='profile' size={16} className='shrink-0' />
         <span className='truncate'>Creator · {creator.name}</span>
       </span>
     )
@@ -168,11 +169,11 @@ const Card: React.FC<ICard> = ({
         />
         <button
           type='button'
-          className='absolute right-2 top-2 rounded-full bg-black/70 p-2 text-white shadow-md'
+          className='absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-xl leading-none text-white shadow-md'
           onClick={(event) => { event.stopPropagation(); setEmbedActive(false); }}
           aria-label='Close embedded content'
         >
-          <Icon src={require('@tabler/icons/x.svg')} className='h-5 w-5' />
+          <span aria-hidden='true'>×</span>
         </button>
       </div>
     ) : (
