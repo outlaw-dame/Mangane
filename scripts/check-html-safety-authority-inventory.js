@@ -63,6 +63,7 @@ for (const requiredFragment of [
   'src={safeEmbed.src}',
   'sandbox=\'allow-scripts allow-same-origin allow-presentation allow-popups\'',
   'referrerPolicy=\'no-referrer\'',
+  'loading=\'lazy\'',
 ]) {
   assert.ok(statusCardSource.includes(requiredFragment), `Status-card iframe safety evidence missing: ${requiredFragment}`);
 }
