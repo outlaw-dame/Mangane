@@ -2,7 +2,7 @@
 
 Status: **Complete**
 
-Last updated: 2026-07-26
+Last updated: 2026-07-31
 
 ## Outcome
 
@@ -13,6 +13,7 @@ migration. It is intentionally split into independently reviewable slices:
 |---|---|---|
 | 2A | Semantic tokens, display modes, compatibility aliases, and drift gates | Complete — [PR 48](https://github.com/outlaw-dame/Mangane/pull/48) |
 | 2B | Phosphor dependency, typed semantic icon registry, migration map, and raw-import gate | Complete — [PR 49](https://github.com/outlaw-dame/Mangane/pull/49) |
+| 2B closure audit | Trusted-base shrink enforcement and complete static-literal detection | Complete |
 | 2C | Foundational controls and documented state contracts | Complete — [PR 50](https://github.com/outlaw-dame/Mangane/pull/50) |
 | 2D | Automated accessibility harness, cross-engine visual baselines, and manual review evidence | Complete — [PR 51](https://github.com/outlaw-dame/Mangane/pull/51) |
 
@@ -108,7 +109,12 @@ and direct provider imports are not prevented.
   it cannot resolve a module, script, URL, or SVG payload.
 - `config/icon-migration-baseline.json` records every raw provider import.
   The baseline may shrink through reviewed migrations, but a new raw import or
-  unreviewed count change fails CI.
+  unreviewed count change fails CI. Pull-request CI compares the proposed
+  baseline to the exact base commit as well as to the working source, so
+  regenerating both files cannot authorize growth.
+- Static provider requests are detected in single-quoted, double-quoted, and
+  no-substitution template literals. Interpolated template requests are not
+  treated as statically allowlisted modules.
 - `ValidationCheckmark` is the bounded runtime proof. Broader component and
   navigation migrations remain separate reviewable work.
 
@@ -139,6 +145,8 @@ account scope, database, or service-worker state is changed.
 
 - Provider mixing is limited by a single Phosphor import boundary and a
   fail-closed raw-import checker.
+- The trusted baseline revision must be a full commit SHA and is passed to Git
+  without a shell; missing, malformed, or unreadable trusted evidence fails CI.
 - Bundle growth is measured by the existing production budget; the package's
   side-effect-free browser ESM entry preserves named-export tree shaking.
 - Accessibility semantics are component-tested for decorative and labelled

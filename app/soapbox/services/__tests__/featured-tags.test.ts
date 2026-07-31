@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 
 import { baseClient } from 'soapbox/api';
+
 import {
   featureTag,
   fetchAccountFeaturedTags,
