@@ -63,6 +63,28 @@ test('fails when raw preview document.write returns', () => {
   assert.notEqual(result.status, 0);
 });
 
+test('fails when the status-card iframe sandbox is weakened', () => {
+  const root = copyRepository();
+  const target = path.join(root, 'app', 'soapbox', 'features', 'status', 'components', 'card.tsx');
+  fs.writeFileSync(target, fs.readFileSync(target, 'utf8').replace(
+    'sandbox=\'allow-scripts allow-same-origin allow-presentation allow-popups\'',
+    'sandbox=\'allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox\'',
+  ));
+  const result = run(root);
+  assert.notEqual(result.status, 0);
+});
+
+test('fails when status-card embeds bypass the allowlist resolver', () => {
+  const root = copyRepository();
+  const target = path.join(root, 'app', 'soapbox', 'features', 'status', 'components', 'card.tsx');
+  fs.writeFileSync(target, fs.readFileSync(target, 'utf8').replace(
+    'src={safeEmbed.src}',
+    'src={card.embed_url}',
+  ));
+  const result = run(root);
+  assert.notEqual(result.status, 0);
+});
+
 test('fails when central native-link enforcement is removed', () => {
   const root = copyRepository();
   const target = path.join(root, 'app', 'soapbox', 'main.tsx');

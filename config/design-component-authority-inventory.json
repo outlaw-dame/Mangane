@@ -3056,6 +3056,16 @@
       ]
     },
     {
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "kind": "component",
+      "owner": "feature:lists",
+      "scope": "feature",
+      "classifications": [
+        "feature-specific",
+        "accessibility-critical"
+      ]
+    },
+    {
       "path": "app/soapbox/features/lists/components/new_list_form.tsx",
       "kind": "component",
       "owner": "feature:lists",
@@ -3071,6 +3081,7 @@
       "scope": "feature",
       "classifications": [
         "feature-specific",
+        "accessibility-critical",
         "phosphor-migration-candidate"
       ]
     },
@@ -3764,6 +3775,7 @@
       "scope": "feature",
       "classifications": [
         "feature-specific",
+        "accessibility-critical",
         "phosphor-migration-candidate"
       ]
     },
@@ -7695,36 +7707,36 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "legacy-font-prop:app/soapbox/features/lists/index.tsx:79:list-ul",
+      "id": "legacy-font-prop:app/soapbox/features/lists/index.tsx:66:list-ul",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 79,
+      "line": 66,
       "kind": "legacy-font-prop",
       "provider": "line-awesome",
       "symbol": "list-ul",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/lists/index.tsx:96:list.svg",
+      "id": "svg-module:app/soapbox/features/lists/index.tsx:84:list.svg",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 96,
+      "line": 84,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "list.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/lists/index.tsx:100:pencil.svg",
+      "id": "svg-module:app/soapbox/features/lists/index.tsx:86:pencil.svg",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 100,
+      "line": 86,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "pencil.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/lists/index.tsx:101:trash.svg",
+      "id": "svg-module:app/soapbox/features/lists/index.tsx:87:trash.svg",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 101,
+      "line": 87,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "trash.svg",
@@ -8136,9 +8148,9 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:127:link.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:138:link.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 127,
+      "line": 138,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "link.svg",
@@ -8154,27 +8166,27 @@
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:160:zoom-in.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:157:zoom-in.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 160,
+      "line": 157,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "zoom-in.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:187:external-link.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:194:external-link.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 187,
+      "line": 194,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "external-link.svg",
       "disposition": "phosphor-migration-candidate"
     },
     {
-      "id": "svg-module:app/soapbox/features/status/components/card.tsx:222:file-text.svg",
+      "id": "svg-module:app/soapbox/features/status/components/card.tsx:211:file-text.svg",
       "path": "app/soapbox/features/status/components/card.tsx",
-      "line": 222,
+      "line": 211,
       "kind": "svg-module",
       "provider": "tabler",
       "symbol": "file-text.svg",
@@ -19532,6 +19544,97 @@
       "classification": "compatibility-critical"
     },
     {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:2",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 2,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/lists/components/discovery-packs-panel.tsx:98",
+      "kind": "label",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 98,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:102",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 102,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:105",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 105,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:109",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 109,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/lists/components/discovery-packs-panel.tsx:115",
+      "kind": "label",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 115,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:116",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 116,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/lists/components/discovery-packs-panel.tsx:119",
+      "kind": "label",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 119,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:120",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 120,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:123",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 123,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:131",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 131,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:141",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 141,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/components/discovery-packs-panel.tsx:145",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/components/discovery-packs-panel.tsx",
+      "line": 145,
+      "classification": "compatibility-critical"
+    },
+    {
       "id": "localization:app/soapbox/features/lists/components/new_list_form.tsx:2",
       "kind": "localization",
       "path": "app/soapbox/features/lists/components/new_list_form.tsx",
@@ -19581,45 +19684,73 @@
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:20",
+      "id": "localization:app/soapbox/features/lists/index.tsx:21",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 20,
+      "line": 21,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:41",
+      "id": "localization:app/soapbox/features/lists/index.tsx:39",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 41,
+      "line": 39,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:67",
+      "id": "localization:app/soapbox/features/lists/index.tsx:56",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 67,
+      "line": 56,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:68",
+      "id": "localization:app/soapbox/features/lists/index.tsx:57",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 68,
+      "line": 57,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:69",
+      "id": "localization:app/soapbox/features/lists/index.tsx:58",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 69,
+      "line": 58,
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:76",
+      "id": "localization:app/soapbox/features/lists/index.tsx:63",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 76,
+      "line": 63,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/index.tsx:66",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/index.tsx",
+      "line": 66,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/lists/index.tsx:70",
+      "kind": "label",
+      "path": "app/soapbox/features/lists/index.tsx",
+      "line": 70,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/index.tsx:72",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/index.tsx",
+      "line": 72,
+      "classification": "compatibility-critical"
+    },
+    {
+      "id": "localization:app/soapbox/features/lists/index.tsx:77",
+      "kind": "localization",
+      "path": "app/soapbox/features/lists/index.tsx",
+      "line": 77,
       "classification": "compatibility-critical"
     },
     {
@@ -19630,10 +19761,10 @@
       "classification": "compatibility-critical"
     },
     {
-      "id": "localization:app/soapbox/features/lists/index.tsx:82",
+      "id": "localization:app/soapbox/features/lists/index.tsx:86",
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
-      "line": 82,
+      "line": 86,
       "classification": "compatibility-critical"
     },
     {
@@ -19641,20 +19772,6 @@
       "kind": "localization",
       "path": "app/soapbox/features/lists/index.tsx",
       "line": 87,
-      "classification": "compatibility-critical"
-    },
-    {
-      "id": "localization:app/soapbox/features/lists/index.tsx:100",
-      "kind": "localization",
-      "path": "app/soapbox/features/lists/index.tsx",
-      "line": 100,
-      "classification": "compatibility-critical"
-    },
-    {
-      "id": "localization:app/soapbox/features/lists/index.tsx:101",
-      "kind": "localization",
-      "path": "app/soapbox/features/lists/index.tsx",
-      "line": 101,
       "classification": "compatibility-critical"
     },
     {
@@ -22689,10 +22806,52 @@
       "classification": "compatibility-critical"
     },
     {
+      "id": "label:app/soapbox/features/status/components/card.tsx:115",
+      "kind": "label",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 115,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/status/components/card.tsx:123",
+      "kind": "label",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 123,
+      "classification": "accessibility-critical"
+    },
+    {
       "id": "inline-style:app/soapbox/features/status/components/card.tsx:147",
       "kind": "inline-style",
       "path": "app/soapbox/features/status/components/card.tsx",
       "line": 147,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "inline-style:app/soapbox/features/status/components/card.tsx:159",
+      "kind": "inline-style",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 159,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/status/components/card.tsx:177",
+      "kind": "label",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 177,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/status/components/card.tsx:189",
+      "kind": "label",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 189,
+      "classification": "accessibility-critical"
+    },
+    {
+      "id": "label:app/soapbox/features/status/components/card.tsx:193",
+      "kind": "label",
+      "path": "app/soapbox/features/status/components/card.tsx",
+      "line": 193,
       "classification": "accessibility-critical"
     },
     {
@@ -26489,15 +26648,15 @@
     "screenshotPlan": "docs/architecture/SCREENSHOT_AND_INTERACTION_BASELINE_PLAN.md"
   },
   "counts": {
-    "components": 491,
+    "components": 492,
     "styles": 76,
     "icons": 392,
     "behaviors": {
-      "localization": 1996,
+      "localization": 2007,
       "focus": 141,
-      "inline-style": 75,
+      "inline-style": 76,
       "keyboard": 90,
-      "label": 95,
+      "label": 104,
       "motion": 74,
       "gesture": 37,
       "rtl": 13,
@@ -26566,7 +26725,7 @@
       "feature:list_adder": 3,
       "feature:list_editor": 4,
       "feature:list_timeline": 1,
-      "feature:lists": 2,
+      "feature:lists": 3,
       "feature:migration": 1,
       "feature:mobile": 1,
       "feature:mutes": 1,

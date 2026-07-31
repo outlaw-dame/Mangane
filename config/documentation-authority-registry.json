@@ -665,6 +665,16 @@
       "contentSha256": "240778c485d98f7d404cbef43d57f4f6e6bcebeaa8f1257b7cb9f35b2373fcc4"
     },
     {
+      "path": "docs/architecture/PHASE_7B_COLLECTIONS_STARTER_KITS_AND_EMBEDS.md",
+      "title": "Phase 7B — Collections, Starter Kits, and Safe Rich Embeds",
+      "authorityId": "phase-7b-collections-starter-kits-and-safe-rich-embeds",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": "Implementation in progress",
+      "contentSha256": "2d639f7a4c0120007beed28c3771f2009e147d1384a4276f133722a34dd4f071"
+    },
+    {
       "path": "docs/architecture/PHASE_8A_ORIGIN_AUTHORITY_RECONCILIATION.md",
       "title": "Phase 8A Origin Authority Reconciliation",
       "authorityId": "phase-8a-origin-authority-reconciliation",
