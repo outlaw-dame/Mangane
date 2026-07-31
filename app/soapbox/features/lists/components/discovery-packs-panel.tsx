@@ -1,9 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import api from 'soapbox/api';
 import { Button, Spinner, Text } from 'soapbox/components/ui';
-import { useAppSelector, useOwnAccount } from 'soapbox/hooks';
+import { useApi, useAppSelector, useOwnAccount } from 'soapbox/hooks';
 import {
   applyLoopsStarterKit,
   createMastodonCollection,
@@ -12,33 +11,44 @@ import {
   fetchPixelfedStarterKits,
   supportsMastodonCollections,
 } from 'soapbox/services/discovery-packs';
+import { parseVersion } from 'soapbox/utils/features';
 
 import type { DiscoveryPack } from 'soapbox/services/discovery-packs';
 
-const softwareName = (instance: any): string => String(
-  instance?.get?.('version') || instance?.version || '',
-).split(/[-\s]/)[0].toLocaleLowerCase();
+const softwareName = (instance: any): string => {
+  const version = String(instance?.get?.('version') || instance?.version || '');
+  return (parseVersion(version).software || '').toLocaleLowerCase();
+};
 
 const DiscoveryPacksPanel: React.FC = () => {
-  const state = useAppSelector((root) => root);
   const instance = useAppSelector((root) => root.instance);
   const account = useOwnAccount();
+  const apiClient = useApi();
+  const clientRef = React.useRef(apiClient);
+  clientRef.current = apiClient;
+
   const [packs, setPacks] = React.useState<DiscoveryPack[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [busyId, setBusyId] = React.useState<string | null>(null);
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
-  const client = React.useMemo(() => api(() => state), [state]);
   const software = softwareName(instance);
   const mastodonCollections = supportsMastodonCollections(instance);
+  const accountId = account?.id;
 
   const load = React.useCallback(async() => {
-    if (!account) return;
+    if (!accountId) {
+      setPacks([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      if (mastodonCollections) setPacks(await fetchMastodonCollections(client, account.id));
+      const client = clientRef.current;
+      if (mastodonCollections) setPacks(await fetchMastodonCollections(client, accountId));
       else if (software.includes('loops')) setPacks(await fetchLoopsStarterKits(client));
       else if (software.includes('pixelfed')) setPacks(await fetchPixelfedStarterKits(client));
       else setPacks([]);
@@ -47,7 +57,7 @@ const DiscoveryPacksPanel: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [account, client, mastodonCollections, software]);
+  }, [accountId, mastodonCollections, software]);
 
   React.useEffect(() => {
     load();
@@ -59,7 +69,7 @@ const DiscoveryPacksPanel: React.FC = () => {
     setBusyId('create');
     setError(null);
     try {
-      const pack = await createMastodonCollection(client, { name, description, discoverable: true });
+      const pack = await createMastodonCollection(clientRef.current, { name, description, discoverable: true });
       setPacks((current) => [pack, ...current]);
       setName('');
       setDescription('');
@@ -75,7 +85,7 @@ const DiscoveryPacksPanel: React.FC = () => {
     setBusyId(pack.id);
     setError(null);
     try {
-      await applyLoopsStarterKit(client, pack.id);
+      await applyLoopsStarterKit(clientRef.current, pack.id);
       await load();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unable to apply starter kit');
@@ -128,7 +138,7 @@ const DiscoveryPacksPanel: React.FC = () => {
                     <h3 className='truncate font-semibold text-gray-900 dark:text-white'>{pack.name}</h3>
                     <Text size='xs' theme='muted'>{pack.provider === 'mastodon' ? 'Mastodon Collection' : `${pack.provider} starter kit`} · {pack.itemCount} accounts</Text>
                   </div>
-                  {pack.canApplyAll && <Button theme='primary' disabled={busyId === pack.id} onClick={() => applyKit(pack)}><FormattedMessage id='discovery_packs.apply' defaultMessage='Follow accounts' /></Button>}
+                  {pack.provider === 'loops' && pack.canApplyAll && <Button theme='primary' disabled={busyId === pack.id} onClick={() => applyKit(pack)}><FormattedMessage id='discovery_packs.apply' defaultMessage='Follow accounts' /></Button>}
                 </div>
                 {pack.description && <Text tag='p' className='mt-2'>{pack.description}</Text>}
                 {pack.topic && <Text tag='p' size='sm' theme='muted' className='mt-2'>#{pack.topic}</Text>}
