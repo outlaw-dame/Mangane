@@ -1,0 +1,3 @@
+config/design-component-authority-inventory.json
+config/documentation-authority-registry.json
+config/network-callsite-manifest.json
