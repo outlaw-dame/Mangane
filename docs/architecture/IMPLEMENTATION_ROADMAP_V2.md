@@ -400,6 +400,12 @@ Goal: make long, branched social conversations understandable through one immuta
 
 Deliverables and exit criteria are authoritative in the detailed Phase 9 plan. Phase 9 reuses Phase 8A origin authority, the Context Recovery Coordinator, canonical repositories, Phase 5E semantic anchors, the Phase 8 renderer, and existing moderation and protocol boundaries. It must not introduce a second origin resolver, context fetcher, status/reply store, moderation path, renderer, router, pagination system, or AI dependency.
 
+### Phase 9A — Profile walls and adaptive thread timelines
+
+**Status:** Accepted target / queued.
+
+After Phase 9 establishes canonical conversation graphs, implement [`PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md`](./PHASE_9A_PROFILE_WALLS_AND_ADAPTIVE_THREAD_TIMELINES.md). Author-private placement never appears to recipients or visitors; another-profile wall behavior requires verified recipient-visible authority or degrades to mention-only. Thread ordering remains a bounded presentation projection.
+
 ## Phase 10 — Composer and publishing migration
 
 Goal: create a lightweight, reliable Framework7 composer before adding intelligence.
