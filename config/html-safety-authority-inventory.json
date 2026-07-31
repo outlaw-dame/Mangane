@@ -904,7 +904,7 @@
       "line": 160,
       "column": 9,
       "expression": "<iframe",
-      "classification": "unverified"
+      "classification": "sandboxed-policy-governed-src"
     },
     {
       "id": "dynamic-link-destination:app/soapbox/features/status/components/card.tsx:190:65",
