@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosError, AxiosInstance } from 'axios';
 
 export type FeaturedTagSource = 'server' | 'mangane';
 
@@ -12,14 +12,8 @@ export interface FeaturedTagEntity {
   federated: boolean,
 }
 
-interface StoredFeaturedTags {
-  version: 1,
-  tags: string[],
-}
-
 const MAX_FEATURED_TAGS = 10;
 const MAX_TAG_LENGTH = 100;
-const STORAGE_PREFIX = 'mangane:featured-tags:v1:';
 const UNSUPPORTED_STATUSES = new Set([404, 405, 410, 501]);
 const TAG_PATTERN = /^[\p{L}\p{M}\p{N}_]+$/u;
 
@@ -32,8 +26,6 @@ const normalizeTagName = (value: string): string => {
 
   return name;
 };
-
-const storageKey = (accountScope: string): string => `${STORAGE_PREFIX}${encodeURIComponent(accountScope)}`;
 
 const normalizeServerTag = (tag: Record<string, unknown>): FeaturedTagEntity => ({
   id: String(tag.id ?? tag.name ?? ''),
@@ -55,52 +47,37 @@ const localTag = (name: string): FeaturedTagEntity => ({
   federated: false,
 });
 
+const normalizeLocalFeaturedTags = (values: unknown): FeaturedTagEntity[] => {
+  if (!Array.isArray(values)) return [];
+
+  const seen = new Set<string>();
+  return values.slice(0, MAX_FEATURED_TAGS).flatMap((value) => {
+    if (typeof value !== 'string') return [];
+    try {
+      const name = normalizeTagName(value);
+      const key = name.toLocaleLowerCase();
+      if (seen.has(key)) return [];
+      seen.add(key);
+      return [localTag(name)];
+    } catch {
+      return [];
+    }
+  });
+};
+
 const isUnsupportedFeaturedTagsError = (error: unknown): boolean => {
   const status = (error as AxiosError | undefined)?.response?.status;
   return typeof status === 'number' && UNSUPPORTED_STATUSES.has(status);
 };
 
-const readLocalFeaturedTags = (accountScope: string): FeaturedTagEntity[] => {
-  try {
-    const raw = localStorage.getItem(storageKey(accountScope));
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw) as Partial<StoredFeaturedTags>;
-    if (parsed.version !== 1 || !Array.isArray(parsed.tags)) return [];
-
-    const seen = new Set<string>();
-    return parsed.tags.slice(0, MAX_FEATURED_TAGS).flatMap((value) => {
-      if (typeof value !== 'string') return [];
-      try {
-        const name = normalizeTagName(value);
-        const key = name.toLocaleLowerCase();
-        if (seen.has(key)) return [];
-        seen.add(key);
-        return [localTag(name)];
-      } catch {
-        return [];
-      }
-    });
-  } catch {
-    return [];
-  }
-};
-
-const writeLocalFeaturedTags = (accountScope: string, tags: FeaturedTagEntity[]): FeaturedTagEntity[] => {
-  const normalized = tags.slice(0, MAX_FEATURED_TAGS).map(({ name }) => normalizeTagName(name));
-  const value: StoredFeaturedTags = { version: 1, tags: normalized };
-  localStorage.setItem(storageKey(accountScope), JSON.stringify(value));
-  return normalized.map(localTag);
-};
-
-const fetchOwnFeaturedTags = async(client: AxiosInstance, accountScope: string): Promise<FeaturedTagEntity[]> => {
+const fetchOwnFeaturedTags = async(client: AxiosInstance, localNames: unknown): Promise<FeaturedTagEntity[]> => {
   try {
     const { data } = await client.get('/api/v1/featured_tags');
     if (!Array.isArray(data)) throw new Error('Invalid featured hashtag response');
     return data.map(normalizeServerTag);
   } catch (error) {
     if (!isUnsupportedFeaturedTagsError(error)) throw error;
-    return readLocalFeaturedTags(accountScope);
+    return normalizeLocalFeaturedTags(localNames);
   }
 };
 
@@ -127,12 +104,7 @@ const fetchFeaturedTagSuggestions = async(client: AxiosInstance): Promise<string
   }
 };
 
-const featureTag = async(
-  client: AxiosInstance,
-  accountScope: string,
-  nameInput: string,
-  current: FeaturedTagEntity[],
-): Promise<FeaturedTagEntity[]> => {
+const featureTag = async(client: AxiosInstance, nameInput: string, current: FeaturedTagEntity[]): Promise<FeaturedTagEntity[]> => {
   const name = normalizeTagName(nameInput);
   const hasLocalAuthority = current.some(({ source }) => source === 'mangane');
 
@@ -146,22 +118,19 @@ const featureTag = async(
     }
   }
 
-  const next = [...current.filter(({ name: existing }) => existing.toLocaleLowerCase() !== name.toLocaleLowerCase()), localTag(name)];
-  return writeLocalFeaturedTags(accountScope, next);
+  return normalizeLocalFeaturedTags([
+    ...current.map(({ name: existing }) => existing).filter((existing) => existing.toLocaleLowerCase() !== name.toLocaleLowerCase()),
+    name,
+  ]);
 };
 
-const unfeatureTag = async(
-  client: AxiosInstance,
-  accountScope: string,
-  tag: FeaturedTagEntity,
-  current: FeaturedTagEntity[],
-): Promise<FeaturedTagEntity[]> => {
+const unfeatureTag = async(client: AxiosInstance, tag: FeaturedTagEntity, current: FeaturedTagEntity[]): Promise<FeaturedTagEntity[]> => {
   if (tag.source === 'server') {
     await client.delete(`/api/v1/featured_tags/${encodeURIComponent(tag.id)}`);
     return current.filter(({ id }) => id !== tag.id);
   }
 
-  return writeLocalFeaturedTags(accountScope, current.filter(({ name }) => name.toLocaleLowerCase() !== tag.name.toLocaleLowerCase()));
+  return normalizeLocalFeaturedTags(current.map(({ name }) => name).filter((name) => name.toLocaleLowerCase() !== tag.name.toLocaleLowerCase()));
 };
 
 export {
@@ -171,7 +140,7 @@ export {
   fetchFeaturedTagSuggestions,
   fetchOwnFeaturedTags,
   isUnsupportedFeaturedTagsError,
+  normalizeLocalFeaturedTags,
   normalizeTagName,
-  readLocalFeaturedTags,
   unfeatureTag,
 };
