@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   regenerate:
-    if: ${{ !contains(github.event.pull_request.head.sha, '[pr89-authority-generated]') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +19,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
       - run: corepack enable
       - run: yarn install --immutable
       - name: Regenerate affected authorities
