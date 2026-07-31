@@ -24,7 +24,7 @@ Native entries retain the server-provided identifier, profile-specific URL, auth
 
 Servers that return a verified unsupported response for the native endpoints use an account-scoped Mangane fallback. The fallback:
 
-- stores at most ten normalized hashtag names for the authenticated account;
+- stores at most ten normalized hashtag names in the authenticated account's existing Mangane settings authority;
 - rejects empty, overlong, malformed, and numeric-only tags;
 - prevents duplicate names case-insensitively;
 - never exposes one account's topics to another account;
@@ -52,9 +52,9 @@ Account profile presentation may consume `GET /api/v1/accounts/:id/featured_tags
 
 - Only `404`, `405`, `410`, and `501` select the fallback path. Authentication, authorization, validation, rate-limit, timeout, and server failures remain errors.
 - Account identifiers and featured-tag identifiers are URL encoded before entering endpoint paths.
-- Local data is schema-versioned, bounded, parsed defensively, and discarded when invalid.
+- Fallback values pass the same bounded validation whenever they enter or leave account settings.
 - Native delete operations use the FeaturedTag identifier, not the ordinary Tag identifier.
-- The client does not upload fallback data or imply federation.
+- The client does not publish fallback values as featured tags or imply federation.
 
 ## Tests
 
@@ -62,14 +62,14 @@ The service contract covers:
 
 - native retrieval and normalization;
 - unsupported-endpoint fallback;
-- account isolation;
+- invalid and duplicate fallback settings;
 - input validation;
 - local add/remove behavior;
 - public retrieval for another account.
 
 ## Migration and rollback
 
-Migration to the Phase 7 canonical repository must preserve account scope, tag order, source, and federation semantics. Rollback can remove the management UI and service wiring without modifying server-owned featured tags; Mangane-only data remains namespaced and can be safely ignored or purged.
+Migration to the Phase 7 canonical repository must preserve account scope, tag order, source, and federation semantics. Rollback can remove the management UI and service wiring without modifying server-owned featured tags; Mangane-only settings remain safe to ignore or remove.
 
 ## Exit criteria
 
