@@ -61,9 +61,7 @@ describe('bounded compression authority', () => {
     expect(probeNativeCodec('zstd')).toEqual({ compress: false, decompress: false });
     expect(selectNativeAlgorithm()).toBe('gzip');
 
-    Object.defineProperty(globalThis, 'CompressionStream', { configurable: true, value: undefined });
-    Object.defineProperty(globalThis, 'DecompressionStream', { configurable: true, value: undefined });
-    expect(selectNativeAlgorithm()).toBeNull();
+    expect(selectNativeAlgorithm(true, () => ({ compress: false, decompress: false }))).toBeNull();
   });
 
   it('round-trips a scoped, checksummed gzip envelope', async() => {

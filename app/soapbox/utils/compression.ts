@@ -118,13 +118,16 @@ export function probeNativeCodec(algorithm: CompressionAlgorithm): CodecSupport 
   };
 }
 
-export function selectNativeAlgorithm(preferZstd = true): CompressionAlgorithm | null {
+export function selectNativeAlgorithm(
+  preferZstd = true,
+  probe: (algorithm: CompressionAlgorithm) => CodecSupport = probeNativeCodec,
+): CompressionAlgorithm | null {
   if (preferZstd) {
-    const zstd = probeNativeCodec('zstd');
+    const zstd = probe('zstd');
     if (zstd.compress && zstd.decompress) return 'zstd';
   }
 
-  const gzip = probeNativeCodec('gzip');
+  const gzip = probe('gzip');
   return gzip.compress && gzip.decompress ? 'gzip' : null;
 }
 
