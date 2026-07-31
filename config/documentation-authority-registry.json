@@ -65,6 +65,16 @@
       "contentSha256": "3ede635c6a2d0c03f469f16975861b38b666288d09ed284e868e48735ce12115"
     },
     {
+      "path": "docs/.post-pr77-ci-validation.md",
+      "title": "Post-PR77 CI validation",
+      "authorityId": "post-pr77-ci-validation",
+      "classification": "current-supporting-evidence",
+      "replacement": null,
+      "inheritedBrandingReferences": 0,
+      "statusHeader": null,
+      "contentSha256": "4348298ba45029aeafb000dd60f80c1fbaa52b6a5f78f32533645fc81abfcf11"
+    },
+    {
       "path": "docs/administration/akkoma.md",
       "title": "Akkoma features",
       "authorityId": "akkoma-features",
