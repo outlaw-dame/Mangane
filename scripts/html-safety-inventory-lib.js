@@ -50,6 +50,7 @@ const classifyHtmlSink = (relativePath, source, index, expression) => {
   return 'unverified';
 };
 
+// Fail closed unless every required preview-iframe control remains present in the reviewed callsite.
 const isVerifiedPreviewCardIframe = (relativePath, source) => (
   relativePath === 'app/soapbox/features/status/components/card.tsx'
   && source.includes('resolveSafeEmbed({')
