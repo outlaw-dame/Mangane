@@ -310,16 +310,12 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                       )
                     }
 
-                    {
-                      features.followTags && (
-                        <SidebarLink
-                          onClick={onClose}
-                          to='/followed_hashtags'
-                          icon={require('@tabler/icons/hash.svg')}
-                          text={<FormattedMessage id='navigation_bar.tags' defaultMessage='Hashtags' />}
-                        />
-                      )
-                    }
+                    <SidebarLink
+                      onClick={onClose}
+                      to='/followed_hashtags'
+                      icon={require('@tabler/icons/hash.svg')}
+                      text={<FormattedMessage id='navigation_bar.tags' defaultMessage='Hashtags' />}
+                    />
 
                     <Divider />
 
