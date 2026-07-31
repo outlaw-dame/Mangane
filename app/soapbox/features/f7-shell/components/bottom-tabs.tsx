@@ -11,6 +11,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { SemanticIcon } from 'soapbox/components/ui';
 import { useAppSelector } from 'soapbox/hooks';
 
+const frontendBasename = (process.env.FE_SUBDIRECTORY || '').replace(/\/+$/, '');
+
+const externalHref = (path: string): string => `${frontendBasename}${path}` || '/';
+
 const F7BottomTabs: React.FC = () => {
   const history = useHistory();
   const { pathname } = useLocation();
@@ -34,7 +38,7 @@ const F7BottomTabs: React.FC = () => {
     >
       <Link
         tabLink
-        href='/'
+        href={externalHref('/')}
         tabLinkActive={homeActive}
         onClick={navigate('/')}
         text='Home'
@@ -43,7 +47,7 @@ const F7BottomTabs: React.FC = () => {
       </Link>
       <Link
         tabLink
-        href='/search'
+        href={externalHref('/search')}
         tabLinkActive={searchActive}
         onClick={navigate('/search')}
         text='Search'
@@ -52,7 +56,7 @@ const F7BottomTabs: React.FC = () => {
       </Link>
       <Link
         tabLink
-        href='/notifications'
+        href={externalHref('/notifications')}
         tabLinkActive={notificationsActive}
         onClick={navigate('/notifications')}
         text='Alerts'
@@ -71,7 +75,7 @@ const F7BottomTabs: React.FC = () => {
       </Link>
       <Link
         tabLink
-        href='/settings'
+        href={externalHref('/settings')}
         tabLinkActive={settingsActive}
         onClick={navigate('/settings')}
         text='Settings'
@@ -82,4 +86,5 @@ const F7BottomTabs: React.FC = () => {
   );
 };
 
+export { externalHref };
 export default F7BottomTabs;
