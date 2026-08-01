@@ -1,4 +1,5 @@
 import { getFilters } from 'soapbox/selectors';
+import { normalizeMastodonQuoteStatus } from 'soapbox/utils/mastodon-quotes';
 
 import { getSettings } from '../settings';
 
@@ -69,6 +70,8 @@ export function importFetchedAccounts(accounts: APIEntity[], args = { should_ref
 
 export function importFetchedStatus(status: APIEntity, idempotencyKey?: string) {
   return (dispatch: AppDispatch) => {
+    normalizeMastodonQuoteStatus(status);
+
     // Skip broken statuses
     if (isBroken(status)) return;
 
@@ -76,7 +79,7 @@ export function importFetchedStatus(status: APIEntity, idempotencyKey?: string) 
       dispatch(importFetchedStatus(status.reblog));
     }
 
-    // Fedibird quotes
+    // Fedibird and normalized Mastodon quotes
     if (status.quote?.id) {
       dispatch(importFetchedStatus(status.quote));
     }
@@ -128,6 +131,8 @@ export function importFetchedStatuses(statuses: APIEntity[]) {
     const polls: APIEntity[] = [];
 
     function processStatus(status: APIEntity) {
+      normalizeMastodonQuoteStatus(status);
+
       // Skip broken statuses
       if (isBroken(status)) return;
 
@@ -138,7 +143,7 @@ export function importFetchedStatuses(statuses: APIEntity[]) {
         processStatus(status.reblog);
       }
 
-      // Fedibird quotes
+      // Fedibird and normalized Mastodon quotes
       if (status.quote?.id) {
         processStatus(status.quote);
       }
