@@ -1,6 +1,7 @@
 import { isLoggedIn } from 'soapbox/utils/auth';
 import { recoverAncestorContext } from 'soapbox/utils/context-recovery';
 import { getFeatures } from 'soapbox/utils/features';
+import { normalizeQuoteCreateParams } from 'soapbox/utils/mastodon-quotes';
 import { shouldHaveCard } from 'soapbox/utils/status';
 
 import api, { getNextLink } from '../api';
@@ -76,23 +77,30 @@ const translateStatus = (statusId: string, language: string) => {
 
 const createStatus = (params: Record<string, any>, idempotencyKey: string, statusId: string | null) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
+    let requestParams: Record<string, any>;
+
+    try {
+      requestParams = normalizeQuoteCreateParams(params, getState().instance, Boolean(statusId));
+    } catch (error) {
+      dispatch({ type: STATUS_CREATE_FAIL, error, params, idempotencyKey, editing: !!statusId });
+      return Promise.reject(error);
+    }
+
+    dispatch({ type: STATUS_CREATE_REQUEST, params: requestParams, idempotencyKey, editing: !!statusId });
 
     return api(getState).request({
       url: statusId === null ? '/api/v1/statuses' : `/api/v1/statuses/${statusId}`,
       method: statusId === null ? 'post' : 'put',
-      data: params,
+      data: requestParams,
       headers: { 'Idempotency-Key': idempotencyKey },
     }).then(({ data: status }) => {
-      // The backend might still be processing the rich media attachment
       if (!status.card && shouldHaveCard(status)) {
         status.expectsCard = true;
       }
 
       dispatch(importFetchedStatus(status, idempotencyKey));
-      dispatch({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey });
+      dispatch({ type: STATUS_CREATE_SUCCESS, status, params: requestParams, idempotencyKey });
 
-      // Poll the backend for the updated card
       if (status.expectsCard) {
         const delay = 1000;
 
@@ -111,7 +119,7 @@ const createStatus = (params: Record<string, any>, idempotencyKey: string, statu
 
       return status;
     }).catch(error => {
-      dispatch({ type: STATUS_CREATE_FAIL, error, params, idempotencyKey, editing: !!statusId });
+      dispatch({ type: STATUS_CREATE_FAIL, error, params: requestParams, idempotencyKey, editing: !!statusId });
       throw error;
     });
   };
@@ -131,7 +139,6 @@ const editStatus = (id: string) => (dispatch: AppDispatch, getState: () => RootS
     dispatch(setComposeToStatus(status, response.data.text, response.data.spoiler_text, response.data.content_type));
   }).catch(error => {
     dispatch({ type: STATUS_FETCH_SOURCE_FAIL, error });
-
   });
 };
 
@@ -151,6 +158,7 @@ const fetchStatus = (id: string, throwOnError = false) => {
     });
   };
 };
+
 const deleteStatus = (id: string, withRedraft = false) => {
   return (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return null;
@@ -189,10 +197,8 @@ const fetchContext = (id: string) =>
 
     return api(getState).get(`/api/v1/statuses/${id}/context`).then(({ data: context }) => {
       if (Array.isArray(context)) {
-        // Mitra: returns a list of statuses
         dispatch(importFetchedStatuses(context));
       } else if (typeof context === 'object') {
-        // Standard Mastodon API returns a map with `ancestors` and `descendants`
         const { ancestors, descendants } = context;
         const statuses = ancestors.concat(descendants);
         dispatch(importFetchedStatuses(statuses));
@@ -263,9 +269,6 @@ const fetchStatusWithContext = (id: string) =>
       return dispatch(coordinateStatusContext(id, known, descendants)).then(recovery => ({ next: undefined, recovery }));
     }
   };
-
-
-
 
 const muteStatus = (id: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
