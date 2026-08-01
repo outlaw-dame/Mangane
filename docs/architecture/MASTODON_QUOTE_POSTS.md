@@ -1,6 +1,6 @@
 # Mastodon quote posts compatibility
 
-Status: **Runtime compatibility implemented; management surfaces remain incremental**
+Status: **Runtime compatibility implemented; management and notification surfaces remain incremental**
 
 Last updated: 2026-07-31
 
@@ -16,8 +16,9 @@ Mangane already supported older Pleroma, Akkoma, Fedibird, and Rebased quote sha
 - `PUT /api/v1/statuses/:id/interaction_policy`;
 - `PATCH /api/v1/accounts/update_credentials` using `source[quote_policy]`;
 - `GET /api/v1/preferences` for `posting:default:quote_policy`;
-- status fields `quote`, `quote_approval`, `quotes_count`, and normalized quote state;
-- forward-compatible notification ingestion for `quote` and `quoted_update`, because server-provided notification types remain data rather than a closed enum and their statuses use the canonical importer.
+- status fields `quote`, `quote_approval`, `quotes_count`, and normalized quote state.
+
+Mastodon's `quote` and `quoted_update` notification types still require explicit notification-type registration and presentation work. They are not claimed complete by this change.
 
 ## Compatibility rules
 
@@ -42,7 +43,7 @@ The server-provided `.quote-inline` compatibility paragraph continues to be remo
 
 ## Remaining presentation work
 
-The API, capability, creation, and normalization boundaries are implemented. Later UI slices may add a posting-default quote-policy selector, per-post interaction-policy sheet, quotes-list surface, explicit pending/revoked placeholders, and a one-tap revoke control from quote notifications. They must reuse this authority and preserve fail-closed behavior.
+The API, capability, creation, and normalization boundaries are implemented. Later UI slices may add a posting-default quote-policy selector, per-post interaction-policy sheet, quotes-list surface, explicit pending/revoked placeholders, `quote` and `quoted_update` notification presentation, and a one-tap revoke control. They must reuse this authority and preserve fail-closed behavior.
 
 ## Primary references
 
