@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   apply:
+    # Temporary branch-local applicator; removed before merge.
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     steps:
