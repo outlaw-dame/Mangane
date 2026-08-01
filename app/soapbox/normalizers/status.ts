@@ -45,6 +45,10 @@ export const StatusRecord = ImmutableRecord({
   pleroma: ImmutableMap<string, any>(),
   poll: null as EmbeddedEntity<Poll>,
   quote: null as EmbeddedEntity<any>,
+  quote_approval: null as ImmutableMap<string, any> | null,
+  quote_state: null as string | null,
+  quoted_status_id: null as string | null,
+  quotes_count: 0,
   reblog: null as EmbeddedEntity<any>,
   reblogged: false,
   reblogs_count: 0,
@@ -137,7 +141,7 @@ const addSelfMention = (status: ImmutableMap<string, any>) => {
   }
 };
 
-// Move the quote to the top-level
+// Move legacy quote data to the top-level
 const fixQuote = (status: ImmutableMap<string, any>) => {
   return status.withMutations(status => {
     status.update('quote', quote => quote || status.getIn(['pleroma', 'quote']) || null);
