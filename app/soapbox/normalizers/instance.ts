@@ -70,7 +70,6 @@ export const InstanceRecord = ImmutableRecord({
   version: '0.0.0',
 });
 
-// Build Mastodon configuration from Pleroma instance
 const pleromaToMastodonConfig = (instance: ImmutableMap<string, any>) => {
   return ImmutableMap({
     statuses: ImmutableMap({
@@ -85,13 +84,10 @@ const pleromaToMastodonConfig = (instance: ImmutableMap<string, any>) => {
   });
 };
 
-// Get the software's default attachment limit
 const getAttachmentLimit = (software: string | null) => (software === PLEROMA || software === AKKOMA) ? Infinity : 4;
 
-// Normalize version
 const normalizeVersion = (instance: ImmutableMap<string, any>) => {
   return instance.update('version', '0.0.0', version => {
-    // Handle Mastodon release candidates
     if (new RegExp(/[0-9\.]+rc[0-9]+/g).test(version)) {
       return version.split('rc').join('-rc');
     } else {
@@ -100,27 +96,29 @@ const normalizeVersion = (instance: ImmutableMap<string, any>) => {
   });
 };
 
-// Normalize instance (Pleroma, Mastodon, etc.) to Mastodon's format
+const normalizeQuoteCapability = (instance: ImmutableMap<string, any>) => {
+  const mastodonApiVersion = Number(instance.getIn(['api_versions', 'mastodon'], 0));
+  if (Number.isFinite(mastodonApiVersion) && mastodonApiVersion >= 7) {
+    instance.set('feature_quote', true);
+  }
+};
+
 export const normalizeInstance = (instance: Record<string, any>) => {
   return InstanceRecord(
     ImmutableMap(fromJS(instance)).withMutations((instance: ImmutableMap<string, any>) => {
       const { software } = parseVersion(instance.get('version'));
       const mastodonConfig = pleromaToMastodonConfig(instance);
 
-      // Merge configuration
       instance.update('configuration', ImmutableMap(), configuration => (
         configuration.mergeDeepWith(mergeDefined, mastodonConfig)
       ));
 
-      // If max attachments isn't set, check the backend software
       instance.updateIn(['configuration', 'statuses', 'max_media_attachments'], value => {
         return isNumber(value) ? value : getAttachmentLimit(software);
       });
 
-      // Normalize version
       normalizeVersion(instance);
-
-      // Merge defaults
+      normalizeQuoteCapability(instance);
       instance.mergeDeepWith(mergeDefined, InstanceRecord());
     }),
   );
