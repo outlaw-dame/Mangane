@@ -31,3 +31,5 @@ jobs:
           git add app docs
           git commit -m "feat: add Mastodon quote management UI"
           git push origin HEAD:feat/mastodon-quote-posts
+
+# Triggered after workflow registration.
